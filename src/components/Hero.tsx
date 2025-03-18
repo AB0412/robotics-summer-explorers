@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Cog, ArrowDown } from 'lucide-react';
 
 const Hero = () => {
@@ -21,17 +20,8 @@ const Hero = () => {
           </h1>
           
           <p className="text-xl md:text-2xl mb-8">
-            Hands-on summer program teaching VEX and LEGO robotics for elementary students grades 2-5
+            Hands-on summer program teaching VEX robotics for elementary students grades 1-5
           </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" className="bg-robotics-accent text-robotics-navy hover:bg-robotics-lightblue font-semibold text-lg">
-              Register for Summer Camp
-            </Button>
-            <Button size="lg" variant="outline" className="border-white hover:bg-white hover:text-robotics-navy">
-              Learn More
-            </Button>
-          </div>
           
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg inline-block">
             <h2 className="font-display font-bold text-2xl mb-4">Summer Camp 2024</h2>

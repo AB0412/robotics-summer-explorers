@@ -12,7 +12,7 @@ const AboutSection = () => {
             About Our Robotics Program
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Our robotics summer camp introduces elementary students to the exciting world of robotics through hands-on activities with VEX and LEGO robotics platforms.
+            Our robotics summer camp introduces elementary students to the exciting world of robotics through hands-on activities with VEX robotics platform.
           </p>
         </div>
         
@@ -24,8 +24,8 @@ const AboutSection = () => {
           />
           <FeatureCard 
             icon={<Brain />}
-            title="LEGO Robotics"
-            description="Using LEGO robotics platforms, students learn to design, build and program functional robots."
+            title="Computational Thinking"
+            description="Students develop logical thinking and problem-solving skills through robotics challenges."
           />
           <FeatureCard 
             icon={<Lightbulb />}
@@ -51,7 +51,7 @@ const AboutSection = () => {
         
         <div className="mt-16 bg-robotics-navy rounded-lg p-8 text-white text-center">
           <h3 className="font-display font-bold text-2xl mb-4">Designed for Elementary Students</h3>
-          <p className="text-lg mb-6">Our program is specifically designed for children in grades 2-5, with age-appropriate activities and challenges.</p>
+          <p className="text-lg mb-6">Our program is specifically designed for children in grades 1-5, with age-appropriate activities and challenges.</p>
           <p className="text-robotics-accent font-bold text-xl">No prior experience necessary!</p>
         </div>
       </div>

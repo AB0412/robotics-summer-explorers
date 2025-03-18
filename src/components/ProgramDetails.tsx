@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -101,10 +100,9 @@ const ProgramDetails = () => {
         </div>
         
         <Tabs defaultValue="curriculum" className="max-w-4xl mx-auto">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
             <TabsTrigger value="skills">Skills Learned</TabsTrigger>
-            <TabsTrigger value="equipment">Equipment</TabsTrigger>
           </TabsList>
           
           <TabsContent value="curriculum" className="mt-6">
@@ -119,7 +117,7 @@ const ProgramDetails = () => {
                     <h4 className="font-bold text-lg">Weeks 1-4: Introduction to Robotics</h4>
                     <p className="text-sm text-gray-600">
                       Students learn the basics of robotics, including robot components, simple machines, 
-                      and basic building techniques using LEGO and VEX platforms.
+                      and basic building techniques using VEX platform.
                     </p>
                   </div>
                   
@@ -182,42 +180,6 @@ const ProgramDetails = () => {
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                     <span>Public speaking (for final presentations)</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="equipment" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Equipment Used</CardTitle>
-                <CardDescription>Tools and technology students will work with</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-bold text-lg">VEX Robotics Kits</h4>
-                    <p className="text-sm text-gray-600">
-                      Industry-standard educational robotics platform with structural pieces, motors, sensors, 
-                      and a programmable brain to create versatile robots.
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-bold text-lg">LEGO Robotics Kits</h4>
-                    <p className="text-sm text-gray-600">
-                      User-friendly robotics platform with colorful LEGO pieces, motors, and sensors, 
-                      perfect for beginners to learn fundamental robotics concepts.
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-bold text-lg">Programming Software</h4>
-                    <p className="text-sm text-gray-600">
-                      Age-appropriate visual programming interfaces designed for elementary students,
-                      allowing them to create programs through a drag-and-drop interface.
-                    </p>
                   </div>
                 </div>
               </CardContent>
