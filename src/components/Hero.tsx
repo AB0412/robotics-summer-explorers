@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Cog, ArrowDown } from 'lucide-react';
+import { Cog, ArrowDown, MapPin } from 'lucide-react';
 
 const Hero = () => {
   return (
@@ -38,6 +38,10 @@ const Hero = () => {
                 <p className="font-bold text-robotics-accent text-xl">1.5 Hours</p>
                 <p>Weekly Classes</p>
               </div>
+            </div>
+            <div className="flex items-center justify-center gap-2 mt-4 text-robotics-accent">
+              <MapPin size={18} />
+              <span>683 Carryduff St NW, Concord - 28027</span>
             </div>
           </div>
           

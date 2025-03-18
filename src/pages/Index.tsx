@@ -5,7 +5,7 @@ import Hero from '@/components/Hero';
 import AboutSection from '@/components/AboutSection';
 import ProgramDetails from '@/components/ProgramDetails';
 import { Card, CardContent } from '@/components/ui/card';
-import { Phone, Mail, MessageSquare } from 'lucide-react';
+import { Phone, Mail, MessageSquare, MapPin } from 'lucide-react';
 
 const Index = () => {
   return (
@@ -121,8 +121,11 @@ const Index = () => {
                       
                       <div className="mt-6">
                         <h4 className="font-medium mb-2">Program Location</h4>
-                        <p>Classes are held in the Nashua area</p>
-                        <p>Limited spots available!</p>
+                        <div className="flex items-start gap-2">
+                          <MapPin size={18} className="mt-1 flex-shrink-0" />
+                          <p>683 Carryduff St NW, Concord - 28027</p>
+                        </div>
+                        <p className="mt-2">Limited spots available!</p>
                       </div>
                     </div>
                   </div>
