@@ -5,7 +5,6 @@ import Hero from '@/components/Hero';
 import AboutSection from '@/components/AboutSection';
 import ProgramDetails from '@/components/ProgramDetails';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Phone, Mail, MessageSquare } from 'lucide-react';
 
 const Index = () => {
@@ -24,7 +23,7 @@ const Index = () => {
               Contact Information
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Get in touch to learn more about our 12-week robotics summer program for grades 1-5.
+              Get in touch to learn more about our 8-week robotics summer program for grades 1-5.
             </p>
           </div>
           
@@ -78,11 +77,11 @@ const Index = () => {
                       <ul className="space-y-2 text-gray-600">
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
-                          <span>12-week summer program</span>
+                          <span>8-week summer program</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
-                          <span>$200 per month</span>
+                          <span>$100 per month</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>

@@ -27,11 +27,11 @@ const Hero = () => {
             <h2 className="font-display font-bold text-2xl mb-4">Summer Camp 2024</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
               <div>
-                <p className="font-bold text-robotics-accent text-xl">12 Weeks</p>
+                <p className="font-bold text-robotics-accent text-xl">8 Weeks</p>
                 <p>Summer Program</p>
               </div>
               <div>
-                <p className="font-bold text-robotics-accent text-xl">$200</p>
+                <p className="font-bold text-robotics-accent text-xl">$100</p>
                 <p>Per Month</p>
               </div>
               <div>

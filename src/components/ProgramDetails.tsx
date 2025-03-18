@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +13,7 @@ const ProgramDetails = () => {
             Program Details
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Our comprehensive 12-week summer robotics program offers a blend of education and fun for elementary students.
+            Our comprehensive 8-week summer robotics program offers a blend of education and fun for elementary students.
           </p>
         </div>
         
@@ -27,11 +28,11 @@ const ProgramDetails = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>12-week summer program</span>
+                <span>8-week summer program</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>3 months total duration</span>
+                <span>2 months total duration</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
@@ -81,11 +82,11 @@ const ProgramDetails = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>$200 per month</span>
+                <span>$100 per month</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>$600 total for full program</span>
+                <span>$200 total for full program</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
@@ -108,13 +109,13 @@ const ProgramDetails = () => {
           <TabsContent value="curriculum" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>12-Week Curriculum</CardTitle>
+                <CardTitle>8-Week Curriculum</CardTitle>
                 <CardDescription>What students will learn throughout the program</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-bold text-lg">Weeks 1-4: Introduction to Robotics</h4>
+                    <h4 className="font-bold text-lg">Weeks 1-3: Introduction to Robotics</h4>
                     <p className="text-sm text-gray-600">
                       Students learn the basics of robotics, including robot components, simple machines, 
                       and basic building techniques using VEX platform.
@@ -122,7 +123,7 @@ const ProgramDetails = () => {
                   </div>
                   
                   <div>
-                    <h4 className="font-bold text-lg">Weeks 5-8: Basic Programming</h4>
+                    <h4 className="font-bold text-lg">Weeks 4-6: Basic Programming</h4>
                     <p className="text-sm text-gray-600">
                       Introduction to programming concepts with visual programming languages. Students will 
                       learn to control motors, use sensors, and create simple programs for their robots.
@@ -130,7 +131,7 @@ const ProgramDetails = () => {
                   </div>
                   
                   <div>
-                    <h4 className="font-bold text-lg">Weeks 9-12: Engineering Challenges & Final Projects</h4>
+                    <h4 className="font-bold text-lg">Weeks 7-8: Engineering Challenges & Final Projects</h4>
                     <p className="text-sm text-gray-600">
                       Students apply their knowledge to solve engineering challenges and work on a final project 
                       to showcase their learning. The program concludes with a presentation event.
