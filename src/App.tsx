@@ -17,8 +17,12 @@ const queryClient = new QueryClient({
   },
 });
 
-// Force HTTPS redirection for GitHub Pages
-if (window.location.protocol === 'http:' && !window.location.hostname.includes('localhost')) {
+// Only force HTTPS redirection if not on localhost and not already on HTTPS
+if (
+  window.location.protocol === 'http:' && 
+  !window.location.hostname.includes('localhost') && 
+  !window.location.hostname.includes('127.0.0.1')
+) {
   window.location.href = window.location.href.replace('http:', 'https:');
 }
 
