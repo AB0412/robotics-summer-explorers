@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "./", // Ensure this is set for GitHub Pages
+  base: "", // Empty base for GitHub Pages with custom domain
   server: {
     host: "::",
     port: 8080,
@@ -23,8 +23,8 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     sourcemap: true,
-    outDir: "dist", // Ensure the output directory is set
-    assetsDir: "assets", // Place assets in a separate directory
+    outDir: "dist",
+    assetsDir: "assets",
     rollupOptions: {
       output: {
         manualChunks: {
