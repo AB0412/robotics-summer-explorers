@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "./", // Add this line to make relative paths work correctly in deployed environments
+  base: "./", // Ensure this is set for GitHub Pages
   server: {
     host: "::",
     port: 8080,
@@ -19,6 +19,18 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    sourcemap: true,
+    outDir: "dist", // Ensure the output directory is set
+    assetsDir: "assets", // Place assets in a separate directory
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
     },
   },
 }));
