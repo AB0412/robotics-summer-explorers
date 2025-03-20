@@ -6,12 +6,25 @@ import AboutSection from '@/components/AboutSection';
 import ProgramDetails from '@/components/ProgramDetails';
 import { Card, CardContent } from '@/components/ui/card';
 import { Phone, Mail, MessageSquare, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <Hero />
+      
+      <div className="bg-robotics-accent/20 py-4">
+        <div className="container text-center">
+          <Link to="/flyer">
+            <Button variant="outline" className="border-robotics-navy text-robotics-navy hover:bg-robotics-navy hover:text-white">
+              View Printable Flyer
+            </Button>
+          </Link>
+        </div>
+      </div>
+      
       <AboutSection />
       <ProgramDetails />
       
