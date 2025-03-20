@@ -24,7 +24,7 @@ const Hero = () => {
           </p>
           
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg inline-block">
-            <h2 className="font-display font-bold text-2xl mb-4">Summer Camp 2024</h2>
+            <h2 className="font-display font-bold text-2xl mb-4">Summer Camp 2025</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
               <div>
                 <p className="font-bold text-robotics-accent text-xl">8 Weeks</p>

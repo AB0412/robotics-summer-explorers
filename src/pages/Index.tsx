@@ -139,7 +139,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-robotics-navy text-white py-8">
         <div className="container text-center">
-          <p>© 2024 Robotics Summer Explorers. All rights reserved.</p>
+          <p>© 2025 Robotics Summer Explorers. All rights reserved.</p>
         </div>
       </footer>
     </div>
