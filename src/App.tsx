@@ -26,6 +26,9 @@ if (
   window.location.href = window.location.href.replace('http:', 'https:');
 }
 
+// Add console log to help debug
+console.log('App initializing with base URL:', window.location.origin);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
