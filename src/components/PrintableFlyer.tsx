@@ -1,6 +1,6 @@
 
 import React, { useRef } from 'react';
-import { Cog, MapPin, Phone, Mail } from 'lucide-react';
+import { Cog, MapPin, Phone, Mail, Robot, Lightbulb, Wrench } from 'lucide-react';
 import { Button } from './ui/button';
 
 const PrintableFlyer = () => {
@@ -45,6 +45,18 @@ const PrintableFlyer = () => {
             </p>
           </div>
           
+          {/* Featured Image */}
+          <div className="relative h-64 md:h-96 overflow-hidden">
+            <img 
+              src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e" 
+              alt="Kids learning robotics" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+              <h2 className="text-white font-bold text-xl md:text-2xl">Summer Camp 2025</h2>
+            </div>
+          </div>
+          
           {/* Content */}
           <div className="p-8">
             {/* Program Details */}
@@ -68,6 +80,24 @@ const PrintableFlyer = () => {
               </div>
             </div>
             
+            {/* Image Grid */}
+            <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-lg overflow-hidden h-48">
+                <img 
+                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81" 
+                  alt="Children learning robotics" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="rounded-lg overflow-hidden h-48">
+                <img 
+                  src="https://images.unsplash.com/photo-1519389950473-47ba0277781c" 
+                  alt="Kids working with technology" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            
             {/* What Students Will Learn */}
             <div className="mb-8">
               <h2 className="font-display font-bold text-2xl mb-4 text-robotics-navy border-b border-robotics-accent pb-2">
@@ -76,7 +106,7 @@ const PrintableFlyer = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-start gap-3">
                   <div className="h-8 w-8 rounded-full bg-robotics-lightblue/20 flex items-center justify-center text-robotics-blue shrink-0">
-                    <Cog size={18} />
+                    <Robot size={18} />
                   </div>
                   <div>
                     <p className="font-medium">VEX Robotics</p>
@@ -86,7 +116,7 @@ const PrintableFlyer = () => {
                 
                 <div className="flex items-start gap-3">
                   <div className="h-8 w-8 rounded-full bg-robotics-lightblue/20 flex items-center justify-center text-robotics-blue shrink-0">
-                    <Cog size={18} />
+                    <Lightbulb size={18} />
                   </div>
                   <div>
                     <p className="font-medium">Problem Solving</p>
@@ -106,7 +136,7 @@ const PrintableFlyer = () => {
                 
                 <div className="flex items-start gap-3">
                   <div className="h-8 w-8 rounded-full bg-robotics-lightblue/20 flex items-center justify-center text-robotics-blue shrink-0">
-                    <Cog size={18} />
+                    <Wrench size={18} />
                   </div>
                   <div>
                     <p className="font-medium">Teamwork</p>
@@ -166,20 +196,22 @@ const PrintableFlyer = () => {
       </div>
       
       {/* Print Styles */}
-      <style jsx global>{`
-        @media print {
-          @page {
-            margin: 0.5cm;
+      <style>
+        {`
+          @media print {
+            @page {
+              margin: 0.5cm;
+            }
+            body {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .print\\:hidden {
+              display: none !important;
+            }
           }
-          body {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          .print\\:hidden {
-            display: none !important;
-          }
-        }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
