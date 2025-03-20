@@ -1,6 +1,5 @@
-
 import React, { useRef } from 'react';
-import { Cog, MapPin, Phone, Mail, Robot, Lightbulb, Wrench } from 'lucide-react';
+import { Cog, MapPin, Phone, Mail, Bot, Lightbulb, Wrench } from 'lucide-react';
 import { Button } from './ui/button';
 
 const PrintableFlyer = () => {
@@ -106,7 +105,7 @@ const PrintableFlyer = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-start gap-3">
                   <div className="h-8 w-8 rounded-full bg-robotics-lightblue/20 flex items-center justify-center text-robotics-blue shrink-0">
-                    <Robot size={18} />
+                    <Bot size={18} />
                   </div>
                   <div>
                     <p className="font-medium">VEX Robotics</p>
