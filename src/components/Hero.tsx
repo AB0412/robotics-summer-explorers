@@ -3,6 +3,14 @@ import React from 'react';
 import { Cog, ArrowDown, MapPin } from 'lucide-react';
 
 const Hero = () => {
+  const scrollToAbout = (event: React.MouseEvent) => {
+    event.preventDefault();
+    const aboutSection = document.getElementById('about');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="relative bg-robotics-navy text-white py-20 overflow-hidden">
       {/* Decorative gears */}
@@ -45,10 +53,14 @@ const Hero = () => {
             </div>
           </div>
           
-          <a href="#about" className="inline-block mt-12 text-white/60 hover:text-white">
+          <button 
+            onClick={scrollToAbout} 
+            className="inline-block mt-12 text-white/60 hover:text-white cursor-pointer"
+            aria-label="Scroll to about section"
+          >
             <ArrowDown className="mx-auto animate-bounce" />
             <span className="sr-only">Scroll down</span>
-          </a>
+          </button>
         </div>
       </div>
     </section>
