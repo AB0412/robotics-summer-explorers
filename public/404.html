@@ -14,16 +14,15 @@
     // Base redirect URL
     var redirectUrl = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/';
     
-    // Special handling for navigation hash links
+    // Special handling for navigation hash links - this is the key part
     if (l.pathname === '/about' || l.pathname === '/program' || l.pathname === '/contact') {
-      // These should be hash-based navigation
       redirectUrl += '#' + l.pathname.slice(1);
     } else if (l.pathname.length > 1) {
       // For other paths, preserve them in the hash
       redirectUrl += '#' + l.pathname.slice(1);
     }
     
-    // Preserve any existing hash
+    // Preserve any existing hash if not already included
     if (l.hash && !redirectUrl.includes('#')) {
       redirectUrl += l.hash;
     }
@@ -34,7 +33,7 @@
     }
     
     console.log("Redirecting to:", redirectUrl);
-    l.replace(redirectUrl);
+    window.location.replace(redirectUrl);
   </script>
 </head>
 <body>

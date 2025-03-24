@@ -9,6 +9,9 @@ const Header = () => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+      
+      // Also update the URL hash for better navigation and sharing
+      window.history.pushState(null, '', `#${sectionId}`);
     }
   };
 
