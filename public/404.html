@@ -18,11 +18,17 @@
     if (l.pathname.length > 1) {
       // Get the path without the leading slash
       var path = l.pathname.slice(1);
-      // If there's already a hash, we'll append to it, otherwise we'll create one
-      if (l.hash) {
-        redirectUrl += l.hash;
+      
+      // Handle special case for about section
+      if (path === 'about') {
+        redirectUrl += '#about';
       } else {
-        redirectUrl += '#' + path;
+        // If there's already a hash, we'll append to it, otherwise we'll create one
+        if (l.hash) {
+          redirectUrl += l.hash;
+        } else {
+          redirectUrl += '#' + path;
+        }
       }
     } else if (l.hash) {
       // Just preserve the existing hash

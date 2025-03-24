@@ -53,14 +53,14 @@ const Hero = () => {
             </div>
           </div>
           
-          <button 
+          <div 
             onClick={scrollToAbout} 
             className="inline-block mt-12 text-white/60 hover:text-white cursor-pointer"
             aria-label="Scroll to about section"
           >
             <ArrowDown className="mx-auto animate-bounce" />
             <span className="sr-only">Scroll down</span>
-          </button>
+          </div>
         </div>
       </div>
     </section>
