@@ -55,11 +55,11 @@ const Hero = () => {
           
           <div 
             onClick={scrollToAbout} 
-            className="inline-block mt-12 text-white/60 hover:text-white cursor-pointer"
+            className="inline-flex flex-col items-center mt-12 text-white/60 hover:text-white cursor-pointer transition-colors"
             aria-label="Scroll to about section"
           >
-            <ArrowDown className="mx-auto animate-bounce" />
-            <span className="sr-only">Scroll down</span>
+            <p className="mb-2 font-medium">Scroll For More Info</p>
+            <ArrowDown className="animate-bounce" />
           </div>
         </div>
       </div>
