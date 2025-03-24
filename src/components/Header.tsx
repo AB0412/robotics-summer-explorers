@@ -4,6 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Bot } from 'lucide-react';
 
 const Header = () => {
+  const scrollToSection = (sectionId: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <header className="bg-robotics-navy text-white">
       <div className="container py-4 flex justify-between items-center">
@@ -13,9 +21,27 @@ const Header = () => {
         </div>
         
         <nav className="hidden md:flex items-center gap-8 font-medium">
-          <a href="#about" className="hover:text-robotics-accent transition-colors">About</a>
-          <a href="#program" className="hover:text-robotics-accent transition-colors">Program</a>
-          <a href="#contact" className="hover:text-robotics-accent transition-colors">Contact</a>
+          <a 
+            href="#about" 
+            onClick={scrollToSection('about')} 
+            className="hover:text-robotics-accent transition-colors"
+          >
+            About
+          </a>
+          <a 
+            href="#program" 
+            onClick={scrollToSection('program')} 
+            className="hover:text-robotics-accent transition-colors"
+          >
+            Program
+          </a>
+          <a 
+            href="#contact" 
+            onClick={scrollToSection('contact')} 
+            className="hover:text-robotics-accent transition-colors"
+          >
+            Contact
+          </a>
         </nav>
         
         <Button className="md:hidden bg-robotics-accent text-robotics-navy hover:bg-robotics-lightblue">

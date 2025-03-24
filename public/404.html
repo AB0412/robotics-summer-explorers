@@ -11,27 +11,20 @@
     var l = window.location;
     console.log("404 redirect running, current path:", l.pathname);
     
-    // If the URL contains a hash, we want to preserve it
+    // Base redirect URL
     var redirectUrl = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/';
     
-    // If there was a pathname (other than /), convert it to a hash
-    if (l.pathname.length > 1) {
-      // Get the path without the leading slash
-      var path = l.pathname.slice(1);
-      
-      // Handle special case for about section
-      if (path === 'about') {
-        redirectUrl += '#about';
-      } else {
-        // If there's already a hash, we'll append to it, otherwise we'll create one
-        if (l.hash) {
-          redirectUrl += l.hash;
-        } else {
-          redirectUrl += '#' + path;
-        }
-      }
-    } else if (l.hash) {
-      // Just preserve the existing hash
+    // Special handling for navigation hash links
+    if (l.pathname === '/about' || l.pathname === '/program' || l.pathname === '/contact') {
+      // These should be hash-based navigation
+      redirectUrl += '#' + l.pathname.slice(1);
+    } else if (l.pathname.length > 1) {
+      // For other paths, preserve them in the hash
+      redirectUrl += '#' + l.pathname.slice(1);
+    }
+    
+    // Preserve any existing hash
+    if (l.hash && !redirectUrl.includes('#')) {
       redirectUrl += l.hash;
     }
     
