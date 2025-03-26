@@ -1,7 +1,6 @@
-
 import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '../supabase/client';
 import { Registration } from './types';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 // Get all registrations
 export const getAllRegistrations = async (): Promise<Registration[]> => {
@@ -50,10 +49,9 @@ export const addRegistration = async (registration: Registration): Promise<boole
   // If no valid Supabase credentials, don't attempt to save
   if (!hasValidCredentials()) {
     console.error('Missing Supabase credentials. Cannot add registration.');
-    toast({
-      title: "Database Configuration Required",
-      description: "Please configure valid Supabase credentials to use this application.",
-      variant: "destructive",
+    console.log('Current credentials state:', { 
+      hasCredentials: hasValidCredentials(),
+      tableName: REGISTRATIONS_TABLE
     });
     return false;
   }
@@ -69,11 +67,7 @@ export const addRegistration = async (registration: Registration): Promise<boole
       
     if (testError) {
       console.error('Database connection test failed:', testError);
-      toast({
-        title: "Database Connection Failed",
-        description: "Could not connect to the database. Please check if the 'registrations' table exists.",
-        variant: "destructive",
-      });
+      console.log('Table name being used:', REGISTRATIONS_TABLE);
       return false;
     }
     

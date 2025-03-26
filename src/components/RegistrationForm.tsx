@@ -13,10 +13,13 @@ import DatabaseAlerts from './registration/DatabaseAlerts';
 import { useRegistrationForm } from '@/hooks/useRegistrationForm';
 import { hasValidCredentials, initializeDatabase, supabase, REGISTRATIONS_TABLE } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const RegistrationForm = () => {
   const { toast } = useToast();
   const [databaseReady, setDatabaseReady] = React.useState<boolean | null>(null);
+  const [databaseError, setDatabaseError] = React.useState<string | null>(null);
   const { form, registrationId, isSubmitting, onSubmit } = useRegistrationForm();
 
   // Initialize database connection
@@ -35,6 +38,7 @@ const RegistrationForm = () => {
         if (error) {
           console.error('Database check failed:', error);
           setDatabaseReady(false);
+          setDatabaseError(`Database error: ${error.message || 'Unknown error'}`);
           toast({
             title: "Database Issue",
             description: `Please ensure the ${REGISTRATIONS_TABLE} table exists in your Supabase project.`,
@@ -43,10 +47,12 @@ const RegistrationForm = () => {
         } else {
           console.log('Database connection successful');
           setDatabaseReady(true);
+          setDatabaseError(null);
         }
       } catch (error) {
         console.error('Failed to initialize database:', error);
         setDatabaseReady(false);
+        setDatabaseError(error instanceof Error ? error.message : 'Unknown database error');
       }
     };
     
@@ -60,6 +66,15 @@ const RegistrationForm = () => {
         databaseReady={databaseReady} 
         registrationId={registrationId} 
       />
+
+      {databaseError && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {databaseError}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

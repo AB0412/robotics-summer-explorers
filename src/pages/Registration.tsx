@@ -12,11 +12,14 @@ const Registration = () => {
     const checkDatabaseSchema = async () => {
       if (!hasValidCredentials()) {
         setDatabaseStatus('invalid');
+        console.log('No valid Supabase credentials found for database schema validation');
         return;
       }
 
       try {
+        console.log('Validating database schema...');
         const isValid = await validateDatabaseSchema();
+        console.log('Database schema validation result:', isValid);
         setDatabaseStatus(isValid ? 'valid' : 'invalid');
       } catch (error) {
         console.error('Error checking database schema:', error);

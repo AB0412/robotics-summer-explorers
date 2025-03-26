@@ -56,7 +56,7 @@ export const useRegistrationForm = () => {
     }
 
     setIsSubmitting(true);
-    console.log('Form submitted:', data);
+    console.log('Form submitted with data:', data);
     
     try {
       // Generate a unique registration ID
@@ -89,21 +89,24 @@ export const useRegistrationForm = () => {
         volunteerInterest: data.volunteerInterest
       };
       
-      // Submit registration to database using the more reliable addRegistration function
+      console.log('Prepared registration data:', registrationWithIdAndTimestamp);
+      
+      // Submit registration to database using the addRegistration function
       const success = await addRegistration(registrationWithIdAndTimestamp);
       
       if (!success) {
+        console.error('Failed to submit registration to database');
         throw new Error('Failed to submit registration to database');
       }
       
       // Set registration ID for display
       setRegistrationId(newRegistrationId);
       
-      // Show success toast with the updated message about registration ID
+      // Show success toast with the registration ID
       toast({
         title: "Registration Submitted Successfully",
-        description: `Please note your unique registration ID for future reference: ${newRegistrationId}`,
-        duration: 8000, // Extended duration for longer message
+        description: `Your registration has been submitted successfully! Your registration ID is: ${newRegistrationId}`,
+        duration: 8000,
       });
       
       // Send confirmation email
