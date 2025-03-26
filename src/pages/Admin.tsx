@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { Search } from 'lucide-react';
 import { 
   Table, 
   TableBody, 
@@ -20,6 +21,13 @@ import {
   PaginationNext, 
   PaginationPrevious 
 } from '@/components/ui/pagination';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { FormValues } from '@/components/registration/RegistrationTypes';
 
 // Hard-coded admin password - in a real app, this would be handled securely
@@ -31,6 +39,7 @@ const Admin = () => {
   const [registrations, setRegistrations] = useState<FormValues[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFilter, setSearchFilter] = useState('all');
   const { toast } = useToast();
   
   const itemsPerPage = 5;
@@ -82,12 +91,26 @@ const Admin = () => {
     setPassword('');
   };
 
-  // Filter registrations based on search term
-  const filteredRegistrations = registrations.filter(reg => 
-    reg.parentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reg.childName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reg.parentEmail.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter registrations based on search term and selected filter
+  const filteredRegistrations = registrations.filter(reg => {
+    const searchTermLower = searchTerm.toLowerCase();
+    
+    switch(searchFilter) {
+      case 'childName':
+        return reg.childName.toLowerCase().includes(searchTermLower);
+      case 'parentName':
+        return reg.parentName.toLowerCase().includes(searchTermLower);
+      case 'email':
+        return reg.parentEmail.toLowerCase().includes(searchTermLower);
+      case 'all':
+      default:
+        return (
+          reg.parentName.toLowerCase().includes(searchTermLower) ||
+          reg.childName.toLowerCase().includes(searchTermLower) ||
+          reg.parentEmail.toLowerCase().includes(searchTermLower)
+        );
+    }
+  });
 
   // Pagination logic
   const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
@@ -126,12 +149,31 @@ const Admin = () => {
       ) : (
         <>
           <div className="flex justify-between items-center mb-4">
-            <Input
-              placeholder="Search registrations..."
-              className="max-w-sm"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <div className="flex space-x-2 items-center max-w-md w-full">
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search registrations..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Select
+                value={searchFilter}
+                onValueChange={setSearchFilter}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Search filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Fields</SelectItem>
+                  <SelectItem value="childName">Student Name</SelectItem>
+                  <SelectItem value="parentName">Parent Name</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button variant="outline" onClick={handleLogout}>Logout</Button>
           </div>
           
