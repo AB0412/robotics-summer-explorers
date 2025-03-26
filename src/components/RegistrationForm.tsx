@@ -103,11 +103,30 @@ const RegistrationForm = () => {
     setRegistrationId(newRegistrationId);
     
     // Add registration to database with registration ID and timestamp
-    // Explicitly create the Registration object to ensure all required fields are present
+    // Create a Registration object with required fields explicitly typed
     const registrationWithIdAndTimestamp: Registration = {
-      ...data,
       registrationId: newRegistrationId,
-      submittedAt: new Date().toISOString()
+      submittedAt: new Date().toISOString(),
+      parentName: data.parentName,
+      parentEmail: data.parentEmail,
+      parentPhone: data.parentPhone,
+      emergencyContact: data.emergencyContact,
+      childName: data.childName,
+      childAge: data.childAge,
+      childGrade: data.childGrade,
+      schoolName: data.schoolName,
+      medicalInfo: data.medicalInfo,
+      preferredBatch: data.preferredBatch,
+      alternateBatch: data.alternateBatch,
+      hasPriorExperience: data.hasPriorExperience,
+      experienceDescription: data.experienceDescription,
+      interestLevel: data.interestLevel,
+      referralSource: data.referralSource,
+      photoConsent: data.photoConsent,
+      waiverAgreement: data.waiverAgreement,
+      tShirtSize: data.tShirtSize,
+      specialRequests: data.specialRequests,
+      volunteerInterest: data.volunteerInterest
     };
     
     addRegistration(registrationWithIdAndTimestamp);
