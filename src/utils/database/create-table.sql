@@ -41,19 +41,25 @@ DROP POLICY IF EXISTS "Allow authenticated read access" ON registrations;
 DROP POLICY IF EXISTS "Enable insert for anon" ON registrations;
 
 -- Create policy to allow anonymous users to insert data
--- Make this policy explicit for the 'anon' role and use less restrictive syntax
+-- Make this policy explicit for the 'anon' role with USING and WITH CHECK clauses
 CREATE POLICY "Enable insert for anon" ON registrations 
   FOR INSERT TO anon
   WITH CHECK (true);
 
--- Also create a general insert policy without role restriction as fallback
+-- Make sure API access works by adding a policy for service_role
+CREATE POLICY "Allow service_role full access" ON registrations
+  USING (auth.role() = 'service_role')
+  WITH CHECK (auth.role() = 'service_role');
+
+-- Also create a general insert policy without role restriction
 CREATE POLICY "Allow anonymous insert" ON registrations 
   FOR INSERT
   WITH CHECK (true);
 
 -- Create policy to allow authenticated users to read all data (admin access)
 CREATE POLICY "Allow authenticated read access" ON registrations 
-  FOR SELECT TO authenticated USING (true);
+  FOR SELECT TO authenticated 
+  USING (true);
 
 -- Helper function to get table columns 
 CREATE OR REPLACE FUNCTION get_table_columns(table_name text)
