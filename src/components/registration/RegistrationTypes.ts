@@ -38,6 +38,11 @@ export const formSchema = z.object({
     message: "You must agree to the terms and conditions",
   }),
   
+  // 6. Payment Options
+  paymentMethod: z.enum(['zelle', 'cheque', 'cash'], {
+    required_error: "Please select a payment method",
+  }),
+  
   // Bonus Fields
   tShirtSize: z.string().optional(),
   specialRequests: z.string().optional(),
@@ -74,4 +79,11 @@ export const referralSources = [
   { value: "search", label: "Internet Search" },
   { value: "returning", label: "Returning Student" },
   { value: "other", label: "Other" },
+];
+
+// Payment method options
+export const paymentMethods = [
+  { value: "zelle", label: "Zelle" },
+  { value: "cheque", label: "Cheque" },
+  { value: "cash", label: "Cash" },
 ];

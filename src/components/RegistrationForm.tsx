@@ -10,6 +10,7 @@ import ChildDetailsSection from './registration/ChildDetailsSection';
 import ProgramPreferencesSection from './registration/ProgramPreferencesSection';
 import RoboticsExperienceSection from './registration/RoboticsExperienceSection';
 import LogisticsConsentSection from './registration/LogisticsConsentSection';
+import PaymentOptionsSection from './registration/PaymentOptionsSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
 
 const RegistrationForm = () => {
@@ -36,6 +37,7 @@ const RegistrationForm = () => {
       referralSource: '',
       photoConsent: false,
       waiverAgreement: false,
+      paymentMethod: 'zelle',
       tShirtSize: '',
       specialRequests: '',
       volunteerInterest: false,
@@ -92,6 +94,9 @@ const RegistrationForm = () => {
           
           {/* Section 5: Logistics & Consent */}
           <LogisticsConsentSection form={form} />
+          
+          {/* Section 6: Payment Options */}
+          <PaymentOptionsSection form={form} />
           
           {/* Submit Button */}
           <Button 
