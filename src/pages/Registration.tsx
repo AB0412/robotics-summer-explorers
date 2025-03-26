@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
 import { validateDatabaseSchema } from '@/utils/database/schema/validation';
 import { hasValidCredentials } from '@/utils/supabase/client';
 
@@ -36,18 +34,6 @@ const Registration = () => {
         Please complete this form to register your child for our Summer Robotics Program. 
         All fields marked as required must be filled in to complete the registration.
       </p>
-      
-      {databaseStatus === 'invalid' && (
-        <Alert className="mb-8 max-w-2xl mx-auto">
-          <Info className="h-4 w-4" />
-          <AlertTitle>Database Setup Required</AlertTitle>
-          <AlertDescription>
-            Before using this form, please ensure your Supabase database has a 'registrations' table with the correct schema.
-            You can find the SQL script to create the table in the project at:
-            <code className="block mt-2 p-2 bg-gray-100 rounded">src/utils/database/create-table.sql</code>
-          </AlertDescription>
-        </Alert>
-      )}
       
       <RegistrationForm />
     </div>
