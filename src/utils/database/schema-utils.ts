@@ -9,96 +9,79 @@ export * from './schema/index';
 import { supabase } from '../supabase/client';
 import { validateDatabaseSchema, enhancedInitializeDatabase } from './schema/validation';
 
-// Create a helper function to execute SQL directly
+// Create a helper function to execute SQL directly with better error handling
 export const executeSql = async (sql: string): Promise<{ success: boolean; error?: string }> => {
   try {
     console.log('Executing SQL:', sql);
     
-    // Try direct query first with service_role permissions if possible
-    const { error: directError } = await supabase.rpc('execute_sql', { 
-      sql: sql 
-    });
-    
-    if (!directError) {
-      console.log('SQL executed successfully via RPC');
-      return { success: true };
+    // First make sure we're authenticated
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) {
+      console.log('No active session, attempting to sign in anonymously...');
+      await supabase.auth.signInAnonymously();
     }
     
-    console.error('Error executing SQL via RPC:', directError);
+    // Split the script into individual statements
+    const statements = sql
+      .split(';')
+      .map(stmt => stmt.trim())
+      .filter(stmt => stmt && !stmt.startsWith('--'));
     
-    // Fallback: Try to execute with raw query if RPC fails
-    try {
-      const { error: rawError } = await supabase.from('_test_sql_execution')
-        .select('*')
-        .limit(1)
-        .maybeSingle();
-      
-      // If this is a table not found error, we can try creating our exec_sql function
-      if (rawError && rawError.code === '42P01') {
-        console.log('Creating exec_sql function as fallback...');
+    let successCount = 0;
+    let errorCount = 0;
+    let lastError = '';
+    
+    for (const stmt of statements) {
+      try {
+        // Execute each statement individually for better error isolation
+        const { error } = await supabase.rpc('execute_sql', { sql: stmt + ';' });
         
-        // Create admin-level function for SQL execution
-        const createExecSql = `
-          CREATE OR REPLACE FUNCTION exec_sql(sql text) 
-          RETURNS void AS $$
-          BEGIN
-            EXECUTE sql;
-          END;
-          $$ LANGUAGE plpgsql SECURITY DEFINER;
-        `;
-        
-        // Execute the function creation directly
-        const { error: createFuncError } = await supabase.rpc('exec_sql', { 
-          sql: createExecSql 
-        });
-        
-        if (createFuncError) {
-          console.error('Error creating exec_sql function:', createFuncError);
+        if (error) {
+          console.error('SQL execution error:', error);
+          errorCount++;
+          lastError = error.message;
           
-          // Final attempt: try using a direct SQL query through the API
-          const { error: apiError } = await supabase.auth.signInAnonymously();
-          if (!apiError) {
-            // Execute original SQL now that we're authenticated
-            const { error: finalError } = await supabase.rpc('execute_sql', { 
-              sql: sql 
-            });
-            
-            if (!finalError) {
-              console.log('SQL executed successfully after authentication');
-              return { success: true };
-            } else {
-              console.error('Final attempt error:', finalError);
-              return {
-                success: false,
-                error: `Could not execute SQL: ${finalError.message}`
-              };
+          // Try direct query as fallback
+          try {
+            // For DDL statements that modify the schema, we need special permissions
+            // Try using service_role client if available
+            const { error: directError } = await supabase.auth.signInAnonymously();
+            if (!directError) {
+              // Retry with new auth
+              const { error: retryError } = await supabase.rpc('execute_sql', { 
+                sql: stmt + ';' 
+              });
+              
+              if (!retryError) {
+                console.log('SQL executed successfully after re-authentication');
+                successCount++;
+                lastError = '';
+                continue;
+              }
             }
+          } catch (fallbackError) {
+            console.error('Fallback error:', fallbackError);
           }
         } else {
-          // Now try to execute the original SQL using our new function
-          const { error: execError } = await supabase.rpc('exec_sql', { 
-            sql: sql 
-          });
-          
-          if (!execError) {
-            console.log('SQL executed successfully via exec_sql function');
-            return { success: true };
-          } else {
-            console.error('Error executing SQL via exec_sql:', execError);
-            return {
-              success: false,
-              error: `Could not execute SQL: ${execError.message}`
-            };
-          }
+          console.log('SQL statement executed successfully');
+          successCount++;
         }
+      } catch (stmtError) {
+        console.error('Statement execution error:', stmtError);
+        errorCount++;
+        lastError = stmtError instanceof Error ? stmtError.message : String(stmtError);
       }
-    } catch (fallbackError) {
-      console.error('Fallback error:', fallbackError);
+    }
+    
+    if (errorCount > 0) {
+      return {
+        success: false,
+        error: `${errorCount} SQL statements failed. Last error: ${lastError}`
+      };
     }
     
     return {
-      success: false,
-      error: directError.message
+      success: true
     };
   } catch (error) {
     console.error('Error executing SQL:', error);

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Send } from 'lucide-react';
+import { Send, RefreshCw } from 'lucide-react';
 import BasicInfoSection from './registration/BasicInfoSection';
 import ChildDetailsSection from './registration/ChildDetailsSection';
 import ProgramPreferencesSection from './registration/ProgramPreferencesSection';
@@ -20,44 +20,55 @@ const RegistrationForm = () => {
   const { toast } = useToast();
   const [databaseReady, setDatabaseReady] = React.useState<boolean | null>(null);
   const [databaseError, setDatabaseError] = React.useState<string | null>(null);
+  const [isCheckingDatabase, setIsCheckingDatabase] = React.useState(false);
   const { form, registrationId, isSubmitting, onSubmit } = useRegistrationForm();
 
   // Initialize database connection
   React.useEffect(() => {
-    const checkDatabase = async () => {
-      try {
-        // Initialize the database
-        await initializeDatabase();
-        
-        // Test if table exists and is accessible
-        const { error } = await supabase
-          .from(REGISTRATIONS_TABLE)
-          .select('count')
-          .limit(1);
-          
-        if (error) {
-          console.error('Database check failed:', error);
-          setDatabaseReady(false);
-          setDatabaseError(`Database error: ${error.message || 'Unknown error'}`);
-          toast({
-            title: "Database Issue",
-            description: `Please ensure the ${REGISTRATIONS_TABLE} table exists in your Supabase project.`,
-            variant: "destructive",
-          });
-        } else {
-          console.log('Database connection successful');
-          setDatabaseReady(true);
-          setDatabaseError(null);
-        }
-      } catch (error) {
-        console.error('Failed to initialize database:', error);
-        setDatabaseReady(false);
-        setDatabaseError(error instanceof Error ? error.message : 'Unknown database error');
-      }
-    };
-    
     checkDatabase();
-  }, [toast]);
+  }, []);
+
+  const checkDatabase = async () => {
+    setIsCheckingDatabase(true);
+    try {
+      // Ensure authentication
+      const { data: authData } = await supabase.auth.getSession();
+      if (!authData.session) {
+        console.log('No active session, attempting to sign in anonymously...');
+        await supabase.auth.signInAnonymously();
+      }
+      
+      // Initialize the database
+      await initializeDatabase();
+      
+      // Test if table exists and is accessible
+      const { error } = await supabase
+        .from(REGISTRATIONS_TABLE)
+        .select('count')
+        .limit(1);
+        
+      if (error) {
+        console.error('Database check failed:', error);
+        setDatabaseReady(false);
+        setDatabaseError(`Database permission error: ${error.message || 'Unknown error'}. Please check your Row Level Security (RLS) policies.`);
+        toast({
+          title: "Database Permission Issue",
+          description: `Please ensure the ${REGISTRATIONS_TABLE} table has proper RLS policies in your Supabase project.`,
+          variant: "destructive",
+        });
+      } else {
+        console.log('Database connection successful');
+        setDatabaseReady(true);
+        setDatabaseError(null);
+      }
+    } catch (error) {
+      console.error('Failed to initialize database:', error);
+      setDatabaseReady(false);
+      setDatabaseError(error instanceof Error ? error.message : 'Unknown database error');
+    } finally {
+      setIsCheckingDatabase(false);
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-lg p-6 shadow-md">
@@ -70,8 +81,18 @@ const RegistrationForm = () => {
       {databaseError && (
         <Alert variant="destructive" className="mb-6">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {databaseError}
+          <AlertDescription className="flex justify-between items-center">
+            <span>{databaseError}</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={checkDatabase}
+              disabled={isCheckingDatabase}
+              className="ml-4 whitespace-nowrap"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isCheckingDatabase ? 'animate-spin' : ''}`} />
+              {isCheckingDatabase ? 'Checking...' : 'Retry Connection'}
+            </Button>
           </AlertDescription>
         </Alert>
       )}
