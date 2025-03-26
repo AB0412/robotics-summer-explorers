@@ -2,11 +2,10 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot, Menu, X } from 'lucide-react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
   
   const toggleMobileMenu = () => {
@@ -19,7 +18,7 @@ const Header = () => {
     // Check if we're on the home page
     if (location.pathname !== '/') {
       // Navigate to home page with the hash
-      navigate('/#' + sectionId);
+      window.location.href = '/#' + sectionId;
       return;
     }
     
@@ -35,13 +34,6 @@ const Header = () => {
     if (mobileMenuOpen) {
       setMobileMenuOpen(false);
     }
-  };
-
-  // Direct navigation to registration page
-  const handleRegisterClick = () => {
-    console.log("Register button clicked, navigating to /registration");
-    setMobileMenuOpen(false);
-    navigate('/registration');
   };
 
   return (
@@ -74,12 +66,6 @@ const Header = () => {
           >
             Contact
           </a>
-          <Button 
-            onClick={handleRegisterClick}
-            className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy px-4 py-2 rounded-md"
-          >
-            Register
-          </Button>
         </nav>
         
         <div className="md:hidden">
