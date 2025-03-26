@@ -1,5 +1,5 @@
+
 import React from 'react';
-import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import AboutSection from '@/components/AboutSection';
 import ProgramDetails from '@/components/ProgramDetails';
@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <Hero />
       
       <AboutSection />
@@ -136,13 +135,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-      
-      {/* Footer */}
-      <footer className="bg-robotics-navy text-white py-8">
-        <div className="container text-center">
-          <p>© 2025 Robotics Summer Explorers. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 };
