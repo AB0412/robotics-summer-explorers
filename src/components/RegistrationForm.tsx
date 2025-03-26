@@ -11,7 +11,7 @@ import ProgramPreferencesSection from './registration/ProgramPreferencesSection'
 import RoboticsExperienceSection from './registration/RoboticsExperienceSection';
 import LogisticsConsentSection from './registration/LogisticsConsentSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
-import { Mail, Send, AlertTriangle } from 'lucide-react';
+import { Send, AlertTriangle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const generateRegistrationId = () => {
@@ -80,7 +80,6 @@ const RegistrationForm = () => {
       console.log("Also sending notification to: billoreavinash12@gmail.com");
       
       // For a real implementation, you would call a backend API or email service
-      // We're simulating success for now
       toast({
         title: "Email Notification",
         description: "In a production environment, emails would be sent to " + data.parentEmail + " and billoreavinash12@gmail.com",
@@ -126,7 +125,7 @@ const RegistrationForm = () => {
     // Show success toast with additional information including registration ID
     toast({
       title: "Registration Submitted Successfully",
-      description: `Your registration ID is: ${newRegistrationId}. ${emailSent ? 'A confirmation email has been sent to your email address.' : ''} Thank you for registering!`,
+      description: `Your registration ID is: ${newRegistrationId}. Thank you for registering!`,
       duration: 8000, // Extended duration for longer message
     });
     
@@ -173,10 +172,6 @@ const RegistrationForm = () => {
             <Send className="h-4 w-4" />
             Submit Registration
           </Button>
-          <p className="text-sm text-gray-500 text-center mt-2">
-            <Mail className="inline h-4 w-4 mr-1" />
-            A confirmation email will be sent upon successful registration
-          </p>
         </form>
       </Form>
     </div>
