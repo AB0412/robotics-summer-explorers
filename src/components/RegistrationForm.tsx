@@ -2,7 +2,7 @@
 import React from 'react';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Send, RefreshCw } from 'lucide-react';
+import { Send, RefreshCw, Database } from 'lucide-react';
 import BasicInfoSection from './registration/BasicInfoSection';
 import ChildDetailsSection from './registration/ChildDetailsSection';
 import ProgramPreferencesSection from './registration/ProgramPreferencesSection';
@@ -15,12 +15,14 @@ import { hasValidCredentials, initializeDatabase, supabase, REGISTRATIONS_TABLE 
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { checkDatabaseConnection } from '@/utils/database/schema-utils';
 
 const RegistrationForm = () => {
   const { toast } = useToast();
   const [databaseReady, setDatabaseReady] = React.useState<boolean | null>(null);
   const [databaseError, setDatabaseError] = React.useState<string | null>(null);
   const [isCheckingDatabase, setIsCheckingDatabase] = React.useState(false);
+  const [connectionDetails, setConnectionDetails] = React.useState<any>(null);
   const { form, registrationId, isSubmitting, onSubmit } = useRegistrationForm();
 
   // Initialize database connection
@@ -31,6 +33,8 @@ const RegistrationForm = () => {
   const checkDatabase = async () => {
     setIsCheckingDatabase(true);
     try {
+      console.log('Starting database check...');
+      
       // Ensure authentication
       const { data: authData } = await supabase.auth.getSession();
       if (!authData.session) {
@@ -40,6 +44,24 @@ const RegistrationForm = () => {
       
       // Initialize the database
       await initializeDatabase();
+      
+      // Check database connection
+      const connectionResult = await checkDatabaseConnection();
+      setConnectionDetails(connectionResult);
+      
+      console.log('Connection check result:', connectionResult);
+      
+      if (!connectionResult.connected) {
+        console.error('Database connection failed:', connectionResult.error);
+        setDatabaseReady(false);
+        setDatabaseError(`Database connection error: ${connectionResult.error || 'Unknown error'}. ${connectionResult.permissions?.read === false ? 'Read permission denied. Please check your Row Level Security (RLS) policies.' : ''}`);
+        toast({
+          title: "Database Connection Issue",
+          description: `Unable to connect to the database. Please check your Supabase project settings.`,
+          variant: "destructive",
+        });
+        return;
+      }
       
       // Test if table exists and is accessible
       const { error } = await supabase
@@ -60,6 +82,10 @@ const RegistrationForm = () => {
         console.log('Database connection successful');
         setDatabaseReady(true);
         setDatabaseError(null);
+        toast({
+          title: "Database Connection Successful",
+          description: "Successfully connected to the Supabase database.",
+        });
       }
     } catch (error) {
       console.error('Failed to initialize database:', error);
@@ -93,6 +119,23 @@ const RegistrationForm = () => {
               <RefreshCw className={`h-4 w-4 mr-2 ${isCheckingDatabase ? 'animate-spin' : ''}`} />
               {isCheckingDatabase ? 'Checking...' : 'Retry Connection'}
             </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {connectionDetails && !connectionDetails.connected && (
+        <Alert className="mb-6 bg-yellow-50 border-yellow-200">
+          <Database className="h-4 w-4 text-yellow-700" />
+          <AlertDescription className="text-yellow-700">
+            <div className="font-medium">Database Permission Details:</div>
+            <ul className="list-disc pl-5 mt-2">
+              <li>Read Access: {connectionDetails.permissions?.read ? 'Yes ✓' : 'No ✗'}</li>
+              <li>Write Access: {connectionDetails.permissions?.write ? 'Yes ✓' : 'No ✗'}</li>
+              <li>Execute SQL: {connectionDetails.permissions?.execute ? 'Yes ✓' : 'No ✗'}</li>
+            </ul>
+            <div className="mt-2 text-sm">
+              To fix permission issues, go to the Registration page and click "Fix Permissions" button.
+            </div>
           </AlertDescription>
         </Alert>
       )}
