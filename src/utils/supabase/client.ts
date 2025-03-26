@@ -27,7 +27,12 @@ export const initializeDatabase = async (): Promise<void> => {
   try {
     // Check if we have valid credentials before proceeding
     if (!hasValidCredentials()) {
-      console.warn('Using placeholder Supabase credentials. Database operations will fall back to local storage.');
+      console.warn('Using placeholder Supabase credentials. Please configure valid Supabase credentials to use the application.');
+      toast({
+        title: "Database Configuration Required",
+        description: "Please configure valid Supabase credentials to use this application.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -39,10 +44,18 @@ export const initializeDatabase = async (): Promise<void> => {
 
     if (error) {
       console.error('Table might not exist, please create it in Supabase dashboard:', error);
-      // We can't create tables from the client side with Supabase
-      console.warn(`Please create a table named '${REGISTRATIONS_TABLE}' in your Supabase dashboard with the appropriate columns.`);
+      toast({
+        title: "Database Configuration Required",
+        description: `Please create a table named '${REGISTRATIONS_TABLE}' in your Supabase dashboard with the appropriate columns.`,
+        variant: "destructive",
+      });
     }
   } catch (error) {
     console.error('Error initializing database:', error);
+    toast({
+      title: "Database Error",
+      description: "Could not connect to the database. Please check your configuration.",
+      variant: "destructive",
+    });
   }
 };

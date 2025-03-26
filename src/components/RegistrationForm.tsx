@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +13,7 @@ import PaymentOptionsSection from './registration/PaymentOptionsSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
 import { Send, AlertTriangle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { addRegistration, Registration } from '@/utils/database';
+import { addRegistration, Registration, hasValidCredentials } from '@/utils/database';
 
 const generateRegistrationId = () => {
   return 'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -23,6 +22,7 @@ const generateRegistrationId = () => {
 const RegistrationForm = () => {
   const { toast } = useToast();
   const [registrationId, setRegistrationId] = React.useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   // Initialize the form
   const form = useForm<FormValues>({
@@ -97,11 +97,20 @@ const RegistrationForm = () => {
 
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
+    if (!hasValidCredentials()) {
+      toast({
+        title: "Database Configuration Required",
+        description: "Please configure valid Supabase credentials to submit registrations.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
     console.log('Form submitted:', data);
     
     // Generate a unique registration ID
     const newRegistrationId = generateRegistrationId();
-    setRegistrationId(newRegistrationId);
     
     // Add registration to database with registration ID and timestamp
     // Create a Registration object with required fields explicitly typed
@@ -131,20 +140,30 @@ const RegistrationForm = () => {
     };
     
     try {
-      await addRegistration(registrationWithIdAndTimestamp);
+      const success = await addRegistration(registrationWithIdAndTimestamp);
       
-      // Send confirmation email
-      const emailSent = await sendConfirmationEmail(data, newRegistrationId);
-      
-      // Show success toast with the updated message about registration ID
-      toast({
-        title: "Registration Submitted Successfully",
-        description: `Please note your unique registration ID for future reference: ${newRegistrationId}`,
-        duration: 8000, // Extended duration for longer message
-      });
-      
-      // Reset form
-      form.reset();
+      if (success) {
+        setRegistrationId(newRegistrationId);
+        
+        // Send confirmation email
+        const emailSent = await sendConfirmationEmail(data, newRegistrationId);
+        
+        // Show success toast with the updated message about registration ID
+        toast({
+          title: "Registration Submitted Successfully",
+          description: `Please note your unique registration ID for future reference: ${newRegistrationId}`,
+          duration: 8000, // Extended duration for longer message
+        });
+        
+        // Reset form
+        form.reset();
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: "Could not submit your registration. Please check database configuration.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error during registration submission:', error);
       toast({
@@ -152,11 +171,23 @@ const RegistrationForm = () => {
         description: "There was a problem submitting your registration. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-lg p-6 shadow-md">
+      {!hasValidCredentials() && (
+        <Alert className="mb-6 bg-red-50 border-red-200">
+          <AlertTriangle className="h-4 w-4 text-red-700" />
+          <AlertTitle className="text-red-800">Database Configuration Required</AlertTitle>
+          <AlertDescription className="text-red-700">
+            Please configure Supabase credentials to enable registration submissions.
+          </AlertDescription>
+        </Alert>
+      )}
+    
       {registrationId && (
         <Alert className="mb-6 bg-blue-50 border-blue-200">
           <AlertTriangle className="h-4 w-4 text-blue-700" />
@@ -193,9 +224,10 @@ const RegistrationForm = () => {
           <Button 
             type="submit" 
             className="w-full bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy flex items-center justify-center gap-2"
+            disabled={isSubmitting || !hasValidCredentials()}
           >
             <Send className="h-4 w-4" />
-            Submit Registration
+            {isSubmitting ? 'Submitting...' : 'Submit Registration'}
           </Button>
         </form>
       </Form>

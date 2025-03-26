@@ -5,22 +5,22 @@ import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, Database, AlertTriangle } from 'lucide-react';
 import { initializeDatabase, hasValidCredentials } from '@/utils/supabase/client';
-import { Button } from '@/components/ui/button';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
-  const [useLocalStorage, setUseLocalStorage] = useState(false);
+  const [hasValidDb, setHasValidDb] = useState(false);
   
   useEffect(() => {
     // Initialize the Supabase connection
     const init = async () => {
       try {
         await initializeDatabase();
-        setUseLocalStorage(!hasValidCredentials());
+        const valid = hasValidCredentials();
+        setHasValidDb(valid);
       } catch (error) {
         console.error("Failed to initialize database:", error);
-        setUseLocalStorage(true);
+        setHasValidDb(false);
       } finally {
         setIsInitializing(false);
       }
@@ -62,19 +62,18 @@ const Admin = () => {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
         <Database className="h-6 w-6" />
-        Admin Dashboard {useLocalStorage ? "(Local Storage)" : "(Supabase)"}
+        Admin Dashboard
       </h1>
       
       {!isAuthenticated ? (
         <AdminLogin onLogin={handleAuthentication} />
       ) : (
         <>
-          {useLocalStorage ? (
+          {!hasValidDb ? (
             <Alert className="mb-4 bg-yellow-50">
               <AlertTriangle className="h-4 w-4 text-yellow-700" />
               <AlertDescription className="text-yellow-700">
-                Using local storage mode. Your data is only stored in this browser and not accessible from other devices.
-                To use cloud storage, please configure your Supabase credentials.
+                Database configuration required. Please configure your Supabase credentials to use the admin features.
               </AlertDescription>
             </Alert>
           ) : (
@@ -82,7 +81,7 @@ const Admin = () => {
               <Info className="h-4 w-4 text-blue-700" />
               <AlertDescription className="text-blue-700">
                 Your registration data is stored in Supabase. All administrators can access the same data from anywhere.
-                You can still export/import data using the buttons above the table.
+                You can export/import data using the buttons above the table.
               </AlertDescription>
             </Alert>
           )}
