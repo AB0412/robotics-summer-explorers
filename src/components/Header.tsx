@@ -31,10 +31,9 @@ const Header = () => {
     }
   };
 
-  // Use React Router navigation
-  const handleRegisterClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    console.log("Register button clicked - using React Router navigation");
+  // Simplified registration button handler - using direct navigation for reliability
+  const handleRegisterClick = () => {
+    console.log("Register button clicked - using direct navigation");
     setMobileMenuOpen(false);
     navigate('/registration');
   };
@@ -71,10 +70,7 @@ const Header = () => {
           </a>
           <Link 
             to="/registration" 
-            onClick={(e) => {
-              e.preventDefault();
-              handleRegisterClick(e);
-            }}
+            onClick={handleRegisterClick}
             className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy px-4 py-2 rounded-md"
           >
             Register

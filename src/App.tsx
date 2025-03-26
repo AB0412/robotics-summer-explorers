@@ -21,7 +21,7 @@ function App() {
   console.log("App component mounted, initial URL:", window.location.href);
   
   return (
-    <Router>
+    <Router basename="/">
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Index />} />

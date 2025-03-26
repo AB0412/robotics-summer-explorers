@@ -5,13 +5,20 @@
   <meta charset="utf-8">
   <title>Robotics Summer Explorers - Redirecting</title>
   <script type="text/javascript">
-    // Get the path from the URL
-    var path = window.location.pathname;
-    console.log("404 page loaded, path:", path);
+    // Single page app navigation
+    var pathSegmentsToKeep = 0;
+    var locationPath = window.location.pathname;
+    console.log("404 page loaded, path:", locationPath);
     
-    // Single page app navigation - redirects all routes to index.html
-    // and lets the React Router handle the routing
-    window.location.href = '/' + window.location.search + window.location.hash;
+    // Redirect to the root allowing React Router to handle routing
+    var newPath = window.location.protocol + '//' + window.location.hostname + 
+                 (window.location.port ? ':' + window.location.port : '') +
+                 '/' +
+                 locationPath.split('/').slice(1 + pathSegmentsToKeep).join('/') +
+                 window.location.search + 
+                 window.location.hash;
+    
+    window.location.replace(newPath);
   </script>
 </head>
 <body>
