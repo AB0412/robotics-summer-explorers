@@ -120,6 +120,7 @@ export const useRegistrationForm = () => {
         title: "Registration Error",
         description: error instanceof Error ? error.message : "There was a problem submitting your registration. Please try again.",
         variant: "destructive",
+        duration: 8000, // Make the error toast stay longer
       });
     } finally {
       setIsSubmitting(false);
