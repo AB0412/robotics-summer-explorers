@@ -30,48 +30,9 @@ console.log('Credentials valid:', hasValidCredentials());
 // Table name in Supabase
 export const REGISTRATIONS_TABLE = 'registrations';
 
-// Check if the table has the required schema
-const validateTableSchema = async (): Promise<boolean> => {
-  try {
-    // Try to get the table definition using system tables
-    const { data, error } = await supabase
-      .from('information_schema.columns')
-      .select('column_name')
-      .eq('table_name', REGISTRATIONS_TABLE);
-      
-    if (error) {
-      console.error('Error checking table schema:', error);
-      return false;
-    }
-    
-    if (!data || data.length === 0) {
-      console.error('Table exists but has no columns');
-      return false;
-    }
-    
-    // Check for essential columns
-    const requiredColumns = [
-      'registrationid', 'parentname', 'parentemail', 'childname', 
-      'childage', 'preferredbatch', 'haspriorexperience'
-    ];
-    
-    const columnNames = data.map(col => col.column_name.toLowerCase());
-    
-    const missingColumns = requiredColumns.filter(
-      col => !columnNames.includes(col)
-    );
-    
-    if (missingColumns.length > 0) {
-      console.error('Missing required columns:', missingColumns);
-      return false;
-    }
-    
-    return true;
-  } catch (err) {
-    console.error('Error in schema validation:', err);
-    return false;
-  }
-};
+// Check if the table has the required schema - moved to schema-utils.ts
+// validateTableSchema is now moved to schema-utils.ts and enhanced
+import { validateDatabaseSchema, enhancedInitializeDatabase } from '../database/schema-utils';
 
 // Initialize the database (create tables if they don't exist)
 export const initializeDatabase = async (): Promise<void> => {
@@ -103,19 +64,10 @@ export const initializeDatabase = async (): Promise<void> => {
       return;
     }
     
-    // Validate table schema
-    const isSchemaValid = await validateTableSchema();
+    // Use our enhanced schema validation
+    await enhancedInitializeDatabase();
     
-    if (!isSchemaValid) {
-      toast({
-        title: "Table Schema Issue",
-        description: `The '${REGISTRATIONS_TABLE}' table exists but doesn't have all required columns. Please update your table schema according to the documentation.`,
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    console.log(`Successfully connected to ${REGISTRATIONS_TABLE} table in Supabase with valid schema`);
+    console.log(`Successfully connected to ${REGISTRATIONS_TABLE} table in Supabase`);
     
   } catch (error) {
     console.error('Error initializing database:', error);

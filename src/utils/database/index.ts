@@ -6,6 +6,7 @@ export * from './core';
 export * from './registrationOperations';
 export * from './search';
 export * from './import-export';
+export * from './schema-utils';
 
 // Re-export the EnhancedRegistration type from RegistrationsTable
 export type { EnhancedRegistration } from '@/components/admin/RegistrationsTable';
