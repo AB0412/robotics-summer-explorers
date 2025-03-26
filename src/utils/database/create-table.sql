@@ -35,15 +35,20 @@ CREATE TABLE registrations (
 -- Add row level security (RLS) policies
 ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
 
+-- First, drop existing policies if they exist
+DROP POLICY IF EXISTS "Allow anonymous insert" ON registrations;
+DROP POLICY IF EXISTS "Allow authenticated read access" ON registrations;
+
 -- Create policy to allow anonymous users to insert data
+-- The true condition means there are no restrictions
 CREATE POLICY "Allow anonymous insert" ON registrations 
-  FOR INSERT TO anon WITH CHECK (true);
+  FOR INSERT WITH CHECK (true);
 
 -- Create policy to allow authenticated users to read all data (admin access)
 CREATE POLICY "Allow authenticated read access" ON registrations 
   FOR SELECT TO authenticated USING (true);
 
--- Create helper function to get table columns 
+-- Helper function to get table columns 
 CREATE OR REPLACE FUNCTION get_table_columns(table_name text)
 RETURNS TABLE(column_name text, data_type text) LANGUAGE sql AS $$
   SELECT column_name::text, data_type::text

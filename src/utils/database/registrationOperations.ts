@@ -70,7 +70,12 @@ export const addRegistration = async (registration: Registration): Promise<{succ
     
     console.log('Formatted registration with lowercase keys:', formattedRegistration);
     
-    // Proceed with insertion
+    // Explicitly set RLS bypass to ensure insertion works
+    // This requires supabase to be authenticated with a service role key
+    // or to have proper RLS policies configured
+    
+    // Proceed with insertion - let's add more detailed logging
+    console.log(`Inserting into table: ${REGISTRATIONS_TABLE}`);
     const { data, error } = await supabase
       .from(REGISTRATIONS_TABLE)
       .insert([formattedRegistration])
@@ -78,6 +83,9 @@ export const addRegistration = async (registration: Registration): Promise<{succ
     
     if (error) {
       console.error('Error adding registration to Supabase:', error);
+      console.log('Error code:', error.code);
+      console.log('Error details:', error.details);
+      
       let errorMessage = "Could not save your registration to the database.";
       
       // Provide more specific error messages based on error code
@@ -87,6 +95,8 @@ export const addRegistration = async (registration: Registration): Promise<{succ
         errorMessage = "The registrations table doesn't exist in your database.";
       } else if (error.code === "42703") {
         errorMessage = `Column not found in database schema: ${error.message}`;
+      } else if (error.code === "42501" || error.message?.includes("policy")) {
+        errorMessage = "Row security policy violation. Please check your database permissions.";
       } else if (error.code?.startsWith("23")) {
         errorMessage = "The registration data doesn't match the database schema.";
       }
