@@ -195,7 +195,7 @@ const RegistrationForm = () => {
               name="childGrade"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Grade (Fall 2024)</FormLabel>
+                  <FormLabel>Grade (Fall 2025)</FormLabel>
                   <FormControl>
                     <Input placeholder="Grade" {...field} />
                   </FormControl>
