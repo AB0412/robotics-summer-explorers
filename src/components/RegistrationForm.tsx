@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,7 +36,6 @@ const RegistrationForm = () => {
       referralSource: '',
       photoConsent: false,
       waiverAgreement: false,
-      paymentMethod: 'zelle',
       tShirtSize: '',
       specialRequests: '',
       volunteerInterest: false,
@@ -95,7 +93,7 @@ const RegistrationForm = () => {
           {/* Section 5: Logistics & Consent */}
           <LogisticsConsentSection form={form} />
           
-          {/* Section 6: Payment Options */}
+          {/* Section 6: Payment Information */}
           <PaymentOptionsSection form={form} />
           
           {/* Submit Button */}

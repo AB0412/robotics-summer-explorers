@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 // Define the form validation schema
@@ -36,11 +35,6 @@ export const formSchema = z.object({
     required_error: "You must agree to the terms and conditions",
   }).refine(val => val === true, {
     message: "You must agree to the terms and conditions",
-  }),
-  
-  // 6. Payment Options
-  paymentMethod: z.enum(['zelle', 'cheque', 'cash'], {
-    required_error: "Please select a payment method",
   }),
   
   // Bonus Fields
@@ -81,7 +75,7 @@ export const referralSources = [
   { value: "other", label: "Other" },
 ];
 
-// Payment method options
+// Payment method options - keeping this for reference even though we're not using the form field anymore
 export const paymentMethods = [
   { value: "zelle", label: "Zelle" },
   { value: "cheque", label: "Cheque" },
