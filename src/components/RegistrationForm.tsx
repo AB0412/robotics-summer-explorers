@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,7 +13,7 @@ import LogisticsConsentSection from './registration/LogisticsConsentSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
 import { Send, AlertTriangle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { addRegistration } from '@/utils/database';
+import { addRegistration, Registration } from '@/utils/database';
 
 const generateRegistrationId = () => {
   return 'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -102,7 +103,8 @@ const RegistrationForm = () => {
     setRegistrationId(newRegistrationId);
     
     // Add registration to database with registration ID and timestamp
-    const registrationWithIdAndTimestamp = {
+    // Explicitly create the Registration object to ensure all required fields are present
+    const registrationWithIdAndTimestamp: Registration = {
       ...data,
       registrationId: newRegistrationId,
       submittedAt: new Date().toISOString()

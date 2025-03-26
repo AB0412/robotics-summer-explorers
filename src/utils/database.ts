@@ -21,7 +21,7 @@ export interface Registration {
   medicalInfo?: string;
   preferredBatch: string;
   alternateBatch?: string;
-  hasPriorExperience: string;
+  hasPriorExperience: "yes" | "no"; // Updated to match enum in form schema
   experienceDescription?: string;
   interestLevel?: string;
   referralSource: string;

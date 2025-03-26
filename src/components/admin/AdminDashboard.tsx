@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { SearchBar } from './SearchBar';
 import { RegistrationsTable, EnhancedRegistration } from './RegistrationsTable';
 import { PaginationControls } from './PaginationControls';
-import { getAllRegistrations, deleteRegistration, exportDatabase, importDatabase } from '@/utils/database';
+import { getAllRegistrations, deleteRegistration, exportDatabase, importDatabase, Registration } from '@/utils/database';
 import { Download, Upload } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -31,7 +31,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       // Load registrations from our database utility
       const loadedRegistrations = getAllRegistrations();
       console.log("Loaded registrations:", loadedRegistrations);
-      setRegistrations(loadedRegistrations);
+      // Convert Registration[] to EnhancedRegistration[] - they should be compatible now
+      setRegistrations(loadedRegistrations as EnhancedRegistration[]);
       
       // If no registrations in new DB but exist in old storage, migrate them
       if (loadedRegistrations.length === 0) {
@@ -42,7 +43,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             if (Array.isArray(parsedOldRegistrations) && parsedOldRegistrations.length > 0) {
               console.log("Migrating old registrations to new database format");
               importDatabase(JSON.stringify({ registrations: parsedOldRegistrations }));
-              setRegistrations(parsedOldRegistrations);
+              // Need the as EnhancedRegistration[] type assertion to satisfy TypeScript
+              setRegistrations(parsedOldRegistrations as EnhancedRegistration[]);
             }
           } catch (error) {
             console.error("Error parsing old registrations:", error);

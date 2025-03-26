@@ -22,11 +22,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { FormValues } from '@/components/registration/RegistrationTypes';
+import { Registration } from '@/utils/database';
 
-export interface EnhancedRegistration extends FormValues {
-  registrationId?: string;
-  submittedAt?: string;
-}
+// EnhancedRegistration now extends Registration rather than FormValues
+// to ensure compatibility with the database model
+export type EnhancedRegistration = Registration;
 
 interface RegistrationsTableProps {
   registrations: EnhancedRegistration[];
