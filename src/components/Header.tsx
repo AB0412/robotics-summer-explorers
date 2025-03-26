@@ -34,6 +34,7 @@ const Header = () => {
 
   // Function to handle registration link click
   const handleRegisterClick = () => {
+    console.log("Register button clicked, navigating to /registration");
     setMobileMenuOpen(false);
     navigate('/registration');
   };
