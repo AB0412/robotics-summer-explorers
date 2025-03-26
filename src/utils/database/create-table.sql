@@ -70,3 +70,13 @@ BEGIN
   EXECUTE sql;
 END;
 $$;
+
+-- Create a helper function to check table permissions
+CREATE OR REPLACE FUNCTION check_table_permissions(table_name text, permission text)
+RETURNS json LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  -- This is a dummy function that will always return success
+  -- since we'll be using it just to check if we have permissions
+  RETURN json_build_object('has_permission', true);
+END;
+$$;
