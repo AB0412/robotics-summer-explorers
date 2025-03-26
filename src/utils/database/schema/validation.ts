@@ -7,10 +7,25 @@ export const validateDatabaseSchema = async (): Promise<boolean> => {
   try {
     console.log('Validating database schema...');
     
+    // First check if the table exists at all
+    const { data: tableExists, error: tableError } = await supabase
+      .from('information_schema.tables')
+      .select('table_name')
+      .eq('table_name', REGISTRATIONS_TABLE)
+      .eq('table_schema', 'public')
+      .single();
+      
+    if (tableError || !tableExists) {
+      console.error('Table does not exist:', tableError);
+      return false;
+    }
+    
     // Get all columns from the registration table
     const { data: columns, error: columnsError } = await supabase
-      .rpc('get_table_columns', { table_name: REGISTRATIONS_TABLE })
-      .select('column_name');
+      .from('information_schema.columns')
+      .select('column_name')
+      .eq('table_name', REGISTRATIONS_TABLE)
+      .eq('table_schema', 'public');
       
     if (columnsError) {
       console.error('Error fetching table schema:', columnsError);
@@ -42,6 +57,27 @@ export const validateDatabaseSchema = async (): Promise<boolean> => {
     return true;
   } catch (err) {
     console.error('Error validating schema:', err);
+    return false;
+  }
+};
+
+// Create a function to enhance the database schema validation
+export const enhancedInitializeDatabase = async (): Promise<boolean> => {
+  try {
+    // First check if the database schema is valid
+    const isValid = await validateDatabaseSchema();
+    
+    if (isValid) {
+      console.log('Database schema is valid, no initialization needed');
+      return true;
+    }
+    
+    // TODO: In a future update, we could improve this to actually create
+    // or alter the table as needed based on the missing columns
+    
+    return false;
+  } catch (error) {
+    console.error('Error initializing database schema:', error);
     return false;
   }
 };

@@ -6,11 +6,11 @@ import { FormValues, formSchema } from '@/components/registration/RegistrationTy
 import { useToast } from '@/hooks/use-toast';
 import { 
   generateRegistrationId, 
-  sendConfirmationEmail, 
-  submitRegistration 
+  sendConfirmationEmail
 } from '@/utils/registration/registrationHelpers';
-import { Registration } from '@/utils/database';
+import { Registration } from '@/utils/database/types';
 import { hasValidCredentials } from '@/utils/supabase/client';
+import { addRegistration } from '@/utils/database/registrationOperations';
 
 export const useRegistrationForm = () => {
   const { toast } = useToast();
@@ -58,42 +58,42 @@ export const useRegistrationForm = () => {
     setIsSubmitting(true);
     console.log('Form submitted:', data);
     
-    // Generate a unique registration ID
-    const newRegistrationId = generateRegistrationId();
-    console.log('Generated registration ID:', newRegistrationId);
-    
-    // Create a Registration object with required fields explicitly typed
-    const registrationWithIdAndTimestamp: Registration = {
-      registrationId: newRegistrationId,
-      submittedAt: new Date().toISOString(),
-      parentName: data.parentName,
-      parentEmail: data.parentEmail,
-      parentPhone: data.parentPhone,
-      emergencyContact: data.emergencyContact,
-      childName: data.childName,
-      childAge: data.childAge,
-      childGrade: data.childGrade,
-      schoolName: data.schoolName,
-      medicalInfo: data.medicalInfo,
-      preferredBatch: data.preferredBatch,
-      alternateBatch: data.alternateBatch,
-      hasPriorExperience: data.hasPriorExperience,
-      experienceDescription: data.experienceDescription,
-      interestLevel: data.interestLevel,
-      referralSource: data.referralSource,
-      photoConsent: data.photoConsent,
-      waiverAgreement: data.waiverAgreement,
-      tShirtSize: data.tShirtSize,
-      specialRequests: data.specialRequests,
-      volunteerInterest: data.volunteerInterest
-    };
-    
     try {
-      // Submit registration to database
-      const result = await submitRegistration(registrationWithIdAndTimestamp);
+      // Generate a unique registration ID
+      const newRegistrationId = generateRegistrationId();
+      console.log('Generated registration ID:', newRegistrationId);
       
-      if (!result.success) {
-        throw new Error(result.error || 'Unknown error occurred');
+      // Create a Registration object with required fields explicitly typed
+      const registrationWithIdAndTimestamp: Registration = {
+        registrationId: newRegistrationId,
+        submittedAt: new Date().toISOString(),
+        parentName: data.parentName,
+        parentEmail: data.parentEmail,
+        parentPhone: data.parentPhone,
+        emergencyContact: data.emergencyContact,
+        childName: data.childName,
+        childAge: data.childAge,
+        childGrade: data.childGrade,
+        schoolName: data.schoolName,
+        medicalInfo: data.medicalInfo || '',
+        preferredBatch: data.preferredBatch,
+        alternateBatch: data.alternateBatch || '',
+        hasPriorExperience: data.hasPriorExperience,
+        experienceDescription: data.experienceDescription || '',
+        interestLevel: data.interestLevel || '',
+        referralSource: data.referralSource,
+        photoConsent: data.photoConsent,
+        waiverAgreement: data.waiverAgreement,
+        tShirtSize: data.tShirtSize || '',
+        specialRequests: data.specialRequests || '',
+        volunteerInterest: data.volunteerInterest
+      };
+      
+      // Submit registration to database using the more reliable addRegistration function
+      const success = await addRegistration(registrationWithIdAndTimestamp);
+      
+      if (!success) {
+        throw new Error('Failed to submit registration to database');
       }
       
       // Set registration ID for display
