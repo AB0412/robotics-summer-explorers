@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -29,8 +30,42 @@ export function useAdminDashboard() {
       // Load registrations from our database utility - now properly awaiting the Promise
       const loadedRegistrations = await getAllRegistrations();
       console.log("Loaded registrations:", loadedRegistrations);
-      // Convert Registration[] to EnhancedRegistration[] - they should be compatible now
-      setRegistrations(loadedRegistrations as EnhancedRegistration[]);
+      
+      // Map registrations to normalized format with consistent casing
+      // This ensures we handle any case inconsistencies between DB and frontend
+      const normalizedRegistrations = loadedRegistrations.map(reg => {
+        // Create a properly cased registration object
+        const normalized: EnhancedRegistration = {
+          registrationId: reg.registrationid || reg.registrationId || '',
+          parentName: reg.parentname || reg.parentName || '',
+          parentEmail: reg.parentemail || reg.parentEmail || '',
+          parentPhone: reg.parentphone || reg.parentPhone || '',
+          emergencyContact: reg.emergencycontact || reg.emergencyContact || '',
+          childName: reg.childname || reg.childName || '',
+          childAge: reg.childage || reg.childAge || '',
+          childGrade: reg.childgrade || reg.childGrade || '',
+          schoolName: reg.schoolname || reg.schoolName || '',
+          medicalInfo: reg.medicalinfo || reg.medicalInfo || '',
+          preferredBatch: reg.preferredbatch || reg.preferredBatch || '',
+          alternateBatch: reg.alternatebatch || reg.alternateBatch || '',
+          hasPriorExperience: (reg.haspriorexperience || reg.hasPriorExperience || 'no') as "yes" | "no",
+          experienceDescription: reg.experiencedescription || reg.experienceDescription || '',
+          interestLevel: reg.interestlevel || reg.interestLevel || '',
+          referralSource: reg.referralsource || reg.referralSource || '',
+          photoConsent: !!reg.photoconsent || !!reg.photoConsent,
+          waiverAgreement: !!reg.waiveragreement || !!reg.waiverAgreement,
+          tShirtSize: reg.tshirtsize || reg.tShirtSize || '',
+          specialRequests: reg.specialrequests || reg.specialRequests || '',
+          volunteerInterest: !!reg.volunteerinterest || !!reg.volunteerInterest,
+          submittedAt: reg.submittedat || reg.submittedAt || ''
+        };
+        return normalized;
+      });
+      
+      console.log("Normalized registrations:", normalizedRegistrations);
+      
+      // Set the normalized registrations
+      setRegistrations(normalizedRegistrations);
       
       // If no registrations in new DB but exist in old storage, migrate them
       if (loadedRegistrations.length === 0) {

@@ -1,102 +1,154 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Database } from 'lucide-react';
-import { generateSchemaUpdateSQL } from '@/utils/database/schema/sql-generator';
 import { useToast } from '@/hooks/use-toast';
+import { RefreshCcw } from 'lucide-react';
+import { getAllRegistrations } from '@/utils/database';
 
 interface SchemaUpdateModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export const SchemaUpdateModal: React.FC<SchemaUpdateModalProps> = ({ open, onOpenChange }) => {
-  const [sqlScript, setSqlScript] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
+export const SchemaUpdateModal: React.FC<SchemaUpdateModalProps> = ({ 
+  open, 
+  onOpenChange 
+}) => {
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (open) {
-      loadSqlScript();
-    }
-  }, [open]);
-
-  const loadSqlScript = async () => {
-    setLoading(true);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+  
+  const handleRefreshRegistrations = async () => {
+    setIsRefreshing(true);
     try {
-      const sql = await generateSchemaUpdateSQL();
-      console.log("Generated SQL script:", sql); // Debug log to see what's returned
+      const registrations = await getAllRegistrations();
+      console.log('Manually refreshed registrations:', registrations);
       
-      if (!sql || sql.trim() === '' || sql.includes('No schema updates needed')) {
-        setSqlScript('-- No schema updates needed or unable to generate SQL script');
+      if (registrations.length > 0) {
+        toast({
+          title: "Success",
+          description: `Found ${registrations.length} registrations in the database. Please reload the page to see them.`,
+        });
       } else {
-        setSqlScript(sql);
+        toast({
+          title: "No registrations found",
+          description: "The database connection works, but no registrations were found.",
+        });
       }
     } catch (error) {
-      console.error('Error generating SQL script:', error);
-      setSqlScript('-- Error generating SQL script: ' + (error instanceof Error ? error.message : String(error)));
+      console.error('Error refreshing registrations:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to generate SQL script',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to refresh registrations. See console for details.",
+        variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsRefreshing(false);
     }
-  };
-
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(sqlScript).then(() => {
-      toast({
-        title: 'SQL Copied',
-        description: 'SQL script copied to clipboard',
-      });
-    }).catch(() => {
-      toast({
-        title: 'Copy Failed',
-        description: 'Failed to copy SQL script',
-        variant: 'destructive',
-      });
-    });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Database className="h-5 w-5" />
-            Database Schema Update Required
-          </DialogTitle>
+          <DialogTitle>Database Schema Update</DialogTitle>
           <DialogDescription>
-            Run the following SQL in the Supabase SQL Editor to update your database schema.
+            Run the following SQL script in your Supabase SQL Editor to update your database schema.
           </DialogDescription>
         </DialogHeader>
         
-        {loading ? (
-          <div className="flex justify-center p-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
-          </div>
-        ) : (
-          <div className="bg-slate-800 text-white p-4 rounded-md mt-4 overflow-x-auto max-h-[300px]">
-            <pre className="text-xs whitespace-pre-wrap">{sqlScript || '-- No SQL updates required'}</pre>
-          </div>
-        )}
+        <div className="bg-gray-100 p-4 rounded-md overflow-auto max-h-[400px]">
+          <pre className="text-xs">
+            {`-- SQL query to create the registrations table with all the required fields
+-- You can run this in the Supabase SQL Editor
+
+-- Drop the table if it exists (be careful with this in production!)
+DROP TABLE IF EXISTS registrations;
+
+-- Create the table with all fields from our registration form
+CREATE TABLE registrations (
+  id SERIAL PRIMARY KEY,
+  registrationid TEXT UNIQUE NOT NULL,
+  parentname TEXT NOT NULL,
+  parentemail TEXT NOT NULL,
+  parentphone TEXT NOT NULL,
+  emergencycontact TEXT NOT NULL,
+  childname TEXT NOT NULL,
+  childage TEXT NOT NULL,
+  childgrade TEXT NOT NULL,
+  schoolname TEXT NOT NULL,
+  medicalinfo TEXT,
+  preferredbatch TEXT NOT NULL,
+  alternatebatch TEXT,
+  haspriorexperience TEXT NOT NULL,
+  experiencedescription TEXT,
+  interestlevel TEXT,
+  referralsource TEXT NOT NULL,
+  photoconsent BOOLEAN NOT NULL DEFAULT FALSE,
+  waiveragreement BOOLEAN NOT NULL DEFAULT FALSE,
+  tshirtsize TEXT,
+  specialrequests TEXT,
+  volunteerinterest BOOLEAN NOT NULL DEFAULT FALSE,
+  submittedat TEXT NOT NULL
+);
+
+-- Add row level security (RLS) policies
+ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
+
+-- First, drop existing policies if they exist
+DROP POLICY IF EXISTS "Allow anonymous insert" ON registrations;
+DROP POLICY IF EXISTS "Allow authenticated read access" ON registrations;
+DROP POLICY IF EXISTS "Enable insert for anon" ON registrations;
+DROP POLICY IF EXISTS "Allow service_role full access" ON registrations;
+
+-- Create policy to allow anonymous users to insert data
+CREATE POLICY "Enable insert for anon" ON registrations 
+  FOR INSERT TO anon
+  WITH CHECK (true);
+
+-- Make sure API access works by adding a policy for service_role
+CREATE POLICY "Allow service_role full access" ON registrations
+  USING (auth.role() = 'service_role')
+  WITH CHECK (auth.role() = 'service_role');
+
+-- Also create a general insert policy without role restriction
+CREATE POLICY "Allow anonymous insert" ON registrations 
+  FOR INSERT
+  WITH CHECK (true);
+
+-- Create policy to allow authenticated users to read all data (admin access)
+CREATE POLICY "Allow authenticated read access" ON registrations 
+  FOR SELECT TO authenticated 
+  USING (true);
+
+-- Create a policy for public read access for testing
+CREATE POLICY "Allow public read access" ON registrations 
+  FOR SELECT
+  USING (true);`}
+          </pre>
+        </div>
         
-        <DialogFooter>
-          <Button variant="outline" onClick={handleCopyToClipboard} disabled={!sqlScript || sqlScript.startsWith('-- No')}>
-            Copy SQL to Clipboard
+        <DialogFooter className="flex items-center justify-between">
+          <Button 
+            onClick={handleRefreshRegistrations} 
+            disabled={isRefreshing}
+            variant="outline"
+            className="mr-auto"
+          >
+            <RefreshCcw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
           </Button>
-          <Button onClick={() => onOpenChange(false)}>Close</Button>
+          
+          <Button onClick={() => onOpenChange(false)}>
+            Close
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

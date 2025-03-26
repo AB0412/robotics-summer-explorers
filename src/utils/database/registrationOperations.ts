@@ -12,16 +12,51 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
 
   try {
     console.log('Attempting to get all registrations from Supabase...');
+    
+    // Add a console log to show the table name we're querying
+    console.log(`Query table: ${REGISTRATIONS_TABLE}`);
+    
+    // First, try to get a count to see if we can access the table at all
+    const { count, error: countError } = await supabase
+      .from(REGISTRATIONS_TABLE)
+      .select('*', { count: 'exact', head: true });
+    
+    if (countError) {
+      console.error('Error checking registrations count:', countError);
+      console.log('Error details:', countError.details);
+      console.log('Error hint:', countError.hint);
+      console.log('Error code:', countError.code);
+      return [];
+    }
+    
+    console.log(`Table contains approximately ${count} records`);
+    
+    // Now get the actual data
     const { data, error } = await supabase
       .from(REGISTRATIONS_TABLE)
       .select('*');
     
     if (error) {
       console.error('Error getting registrations:', error);
+      console.log('Error details:', error.details);
+      console.log('Error hint:', error.hint);
+      console.log('Error code:', error.code);
       return [];
     }
     
+    // Log the retrieved data for debugging
     console.log(`Successfully retrieved ${data?.length || 0} registrations from Supabase`);
+    if (data && data.length > 0) {
+      console.log('First registration:', data[0]);
+    } else {
+      console.log('No registrations found in database');
+    }
+    
+    // If we get an empty array but know there should be data, there might be a permission issue
+    if (data && data.length === 0 && count && count > 0) {
+      console.warn('Found a mismatch: count shows records exist but query returned empty array. Possible RLS policy issue.');
+    }
+    
     return data as Registration[];
   } catch (error) {
     console.error('Error accessing Supabase:', error);

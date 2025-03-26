@@ -6,7 +6,7 @@ import { RegistrationsTable } from './RegistrationsTable';
 import { PaginationControls } from './PaginationControls';
 import { useAdminDashboard } from '@/hooks/useAdminDashboard';
 import { Button } from '@/components/ui/button';
-import { Database } from 'lucide-react';
+import { Database, RefreshCw } from 'lucide-react';
 import { SchemaUpdateModal } from './SchemaUpdateModal';
 import { validateDatabaseSchema } from '@/utils/database/schema-utils';
 
@@ -32,6 +32,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
   const [schemaModalOpen, setSchemaModalOpen] = useState(false);
   const [needsSchemaUpdate, setNeedsSchemaUpdate] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Check if schema needs updating
   React.useEffect(() => {
@@ -51,6 +52,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     (currentPage - 1) * itemsPerPage, 
     currentPage * itemsPerPage
   );
+
+  // Handle manual refresh
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await loadRegistrations();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   return (
     <>
@@ -76,8 +87,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       )}
       
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Registrations ({filteredRegistrations.length})</CardTitle>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleManualRefresh}
+            disabled={isRefreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
+          </Button>
         </CardHeader>
         <CardContent>
           {isLoading ? (

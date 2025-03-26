@@ -18,7 +18,9 @@ export const supabase = createClient(
   supabaseAnonKey,
   {
     auth: {
-      persistSession: true
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
     }
   }
 );
@@ -47,6 +49,8 @@ export const initializeDatabase = async (): Promise<void> => {
       return;
     }
 
+    console.log('Initializing database connection...');
+    
     // Check if the table exists by trying to select from it
     const { error: tableCheckError } = await supabase
       .from(REGISTRATIONS_TABLE)
