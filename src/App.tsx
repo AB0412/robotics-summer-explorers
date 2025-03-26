@@ -52,7 +52,6 @@ function App() {
         <Route path="/" element={<Index />} />
         <Route path="/registration" element={<Registration />} />
         <Route path="/admin" element={<Admin />} />
-        {/* Add a catch-all redirect for 404s */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

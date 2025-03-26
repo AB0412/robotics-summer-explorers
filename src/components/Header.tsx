@@ -33,8 +33,7 @@ const Header = () => {
   };
 
   // Function to handle registration link click
-  const handleRegisterClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleRegisterClick = () => {
     setMobileMenuOpen(false);
     navigate('/registration');
   };
@@ -69,13 +68,12 @@ const Header = () => {
           >
             Contact
           </a>
-          <a 
-            href="/registration" 
+          <Button 
             onClick={handleRegisterClick}
-            className="hover:text-robotics-accent transition-colors"
+            className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy"
           >
             Register
-          </a>
+          </Button>
         </nav>
         
         <div className="md:hidden">
