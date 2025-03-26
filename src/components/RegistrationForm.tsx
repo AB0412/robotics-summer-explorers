@@ -122,10 +122,10 @@ const RegistrationForm = () => {
     // Send confirmation email
     const emailSent = await sendConfirmationEmail(data, newRegistrationId);
     
-    // Show success toast with additional information including registration ID
+    // Show success toast with the updated message about registration ID
     toast({
       title: "Registration Submitted Successfully",
-      description: `Your registration ID is: ${newRegistrationId}. Thank you for registering!`,
+      description: `Please note your unique registration ID for future reference: ${newRegistrationId}`,
       duration: 8000, // Extended duration for longer message
     });
     
