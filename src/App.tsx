@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import './App.css';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
-import Admin from './pages/Admin';
 import Registration from './pages/Registration';
 
 function ScrollToTop() {
@@ -27,7 +26,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/registration" element={<Registration />} />
-          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
