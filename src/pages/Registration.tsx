@@ -2,7 +2,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/toaster';
-import RegistrationForm from '@/components/RegistrationForm';
+import RegistrationForm from '@/components/registration/RegistrationForm';
 
 const Registration = () => {
   return (
