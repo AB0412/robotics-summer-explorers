@@ -32,6 +32,13 @@ const Header = () => {
     }
   };
 
+  // Function to handle registration link click
+  const handleRegisterClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    navigate('/registration');
+  };
+
   return (
     <header className="bg-robotics-navy text-white">
       <div className="container py-4 flex justify-between items-center">
@@ -62,13 +69,13 @@ const Header = () => {
           >
             Contact
           </a>
-          <Link 
-            to="/registration" 
+          <a 
+            href="/registration" 
+            onClick={handleRegisterClick}
             className="hover:text-robotics-accent transition-colors"
-            onClick={() => setMobileMenuOpen(false)}
           >
             Register
-          </Link>
+          </a>
         </nav>
         
         <div className="md:hidden">
