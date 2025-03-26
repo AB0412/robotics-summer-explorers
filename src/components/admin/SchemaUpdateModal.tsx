@@ -78,7 +78,7 @@ export const SchemaUpdateModal: React.FC<SchemaUpdateModalProps> = ({ open, onOp
             Database Schema Update Required
           </DialogTitle>
           <DialogDescription>
-            Your database table is missing some required columns. Run the following SQL in the Supabase SQL Editor.
+            Run the following SQL in the Supabase SQL Editor to update your database schema.
           </DialogDescription>
         </DialogHeader>
         
@@ -93,7 +93,7 @@ export const SchemaUpdateModal: React.FC<SchemaUpdateModalProps> = ({ open, onOp
         )}
         
         <DialogFooter>
-          <Button variant="outline" onClick={handleCopyToClipboard} disabled={!sqlScript || sqlScript.startsWith('--')}>
+          <Button variant="outline" onClick={handleCopyToClipboard} disabled={!sqlScript || sqlScript.startsWith('-- No')}>
             Copy SQL to Clipboard
           </Button>
           <Button onClick={() => onOpenChange(false)}>Close</Button>
