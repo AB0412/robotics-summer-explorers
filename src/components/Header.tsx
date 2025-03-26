@@ -47,7 +47,7 @@ const Header = () => {
             Contact
           </a>
           <Link 
-            to="/register" 
+            to="/registration" 
             className="hover:text-robotics-accent transition-colors"
           >
             Register
