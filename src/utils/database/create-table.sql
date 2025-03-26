@@ -38,11 +38,18 @@ ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
 -- First, drop existing policies if they exist
 DROP POLICY IF EXISTS "Allow anonymous insert" ON registrations;
 DROP POLICY IF EXISTS "Allow authenticated read access" ON registrations;
+DROP POLICY IF EXISTS "Enable insert for anon" ON registrations;
 
 -- Create policy to allow anonymous users to insert data
--- The true condition means there are no restrictions
+-- Make this policy explicit for the 'anon' role and use less restrictive syntax
+CREATE POLICY "Enable insert for anon" ON registrations 
+  FOR INSERT TO anon
+  WITH CHECK (true);
+
+-- Also create a general insert policy without role restriction as fallback
 CREATE POLICY "Allow anonymous insert" ON registrations 
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT
+  WITH CHECK (true);
 
 -- Create policy to allow authenticated users to read all data (admin access)
 CREATE POLICY "Allow authenticated read access" ON registrations 

@@ -70,9 +70,20 @@ export const addRegistration = async (registration: Registration): Promise<{succ
     
     console.log('Formatted registration with lowercase keys:', formattedRegistration);
     
-    // Explicitly set RLS bypass to ensure insertion works
-    // This requires supabase to be authenticated with a service role key
-    // or to have proper RLS policies configured
+    // Try to verify if we can insert with RLS policies
+    console.log('Checking if we have insert permissions...');
+    const { error: policyError } = await supabase.rpc('check_table_permissions', { 
+      table_name: REGISTRATIONS_TABLE,
+      permission: 'INSERT' 
+    }).catch(e => {
+      // If RPC fails (function doesn't exist), we'll proceed anyway
+      console.log('RPC check_table_permissions not available, skipping check');
+      return { error: null };
+    });
+    
+    if (policyError) {
+      console.warn('Permission check failed, but proceeding with insert attempt:', policyError);
+    }
     
     // Proceed with insertion - let's add more detailed logging
     console.log(`Inserting into table: ${REGISTRATIONS_TABLE}`);
@@ -96,7 +107,7 @@ export const addRegistration = async (registration: Registration): Promise<{succ
       } else if (error.code === "42703") {
         errorMessage = `Column not found in database schema: ${error.message}`;
       } else if (error.code === "42501" || error.message?.includes("policy")) {
-        errorMessage = "Row security policy violation. Please check your database permissions.";
+        errorMessage = "Row security policy violation. Please check your database permissions and make sure to run the create-table.sql script in the Supabase SQL Editor.";
       } else if (error.code?.startsWith("23")) {
         errorMessage = "The registration data doesn't match the database schema.";
       }
