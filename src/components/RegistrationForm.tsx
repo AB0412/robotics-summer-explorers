@@ -8,6 +8,8 @@ import { Form } from '@/components/ui/form';
 import BasicInfoSection from './registration/BasicInfoSection';
 import ChildDetailsSection from './registration/ChildDetailsSection';
 import ProgramPreferencesSection from './registration/ProgramPreferencesSection';
+import RoboticsExperienceSection from './registration/RoboticsExperienceSection';
+import LogisticsConsentSection from './registration/LogisticsConsentSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
 
 const RegistrationForm = () => {
@@ -28,6 +30,15 @@ const RegistrationForm = () => {
       medicalInfo: '',
       preferredBatch: '',
       alternateBatch: '',
+      hasPriorExperience: 'no',
+      experienceDescription: '',
+      interestLevel: '',
+      referralSource: '',
+      photoConsent: false,
+      waiverAgreement: false,
+      tShirtSize: '',
+      specialRequests: '',
+      volunteerInterest: false,
     },
   });
 
@@ -35,10 +46,11 @@ const RegistrationForm = () => {
   const onSubmit = (data: FormValues) => {
     console.log('Form submitted:', data);
     
-    // Show success toast
+    // Show success toast with additional information
     toast({
       title: "Registration Submitted",
-      description: "Thank you for your registration!",
+      description: "Thank you for registering! Please check your email for confirmation. Remember to bring a laptop or tablet if available for take-home assignments.",
+      duration: 6000, // Extended duration for longer message
     });
     
     // Reset form
@@ -57,6 +69,12 @@ const RegistrationForm = () => {
           
           {/* Section 3: Program Preferences */}
           <ProgramPreferencesSection form={form} />
+          
+          {/* Section 4: Robotics Experience */}
+          <RoboticsExperienceSection form={form} />
+          
+          {/* Section 5: Logistics & Consent */}
+          <LogisticsConsentSection form={form} />
           
           {/* Submit Button */}
           <Button 
