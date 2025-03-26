@@ -8,14 +8,23 @@ const Registration = () => {
   useEffect(() => {
     console.log("Registration page component mounted");
     
-    // Log the document title and URL to diagnose loading issues
+    // Log detailed diagnostics
     console.log("Document title:", document.title);
     console.log("Current URL:", window.location.href);
     console.log("Path:", window.location.pathname);
+    
+    // Force page title update to ensure we're really on this page
+    document.title = "Registration - Robotics Summer Explorers";
+    
+    // Fix any potential history or URL issues
+    if (!window.location.pathname.includes('registration')) {
+      console.log("URL doesn't contain 'registration', attempting to fix history state");
+      window.history.replaceState(null, "Registration", "/registration");
+    }
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-1 container py-10">
         <h1 className="font-display font-bold text-3xl md:text-4xl mb-6 text-robotics-navy">

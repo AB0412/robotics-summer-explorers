@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import './App.css';
 import Index from './pages/Index';
@@ -20,6 +20,17 @@ const RouteLogger = () => {
 
 function App() {
   console.log("App component mounted, initial URL:", window.location.href);
+  
+  // Force a browser-based navigation to registration if needed (for direct links)
+  useEffect(() => {
+    // Check if we're trying to access the registration page directly
+    const path = window.location.pathname;
+    if (path.includes('registration') && !path.endsWith('/')) {
+      console.log("Detected registration route that needs fixing:", path);
+      // Redirect to the correct route
+      window.location.replace('/registration');
+    }
+  }, []);
   
   return (
     <Router>
