@@ -9,12 +9,20 @@
     // MIT License
     // https://github.com/rafgraph/spa-github-pages
     var l = window.location;
-    console.log("404 redirect running, current path:", l.pathname);
+    console.log("404 redirect script running", Date.now());
+    console.log("Current path:", l.pathname);
+    console.log("Current URL:", l.href);
     
     // Create redirect URL - preserve exact paths for all routes
     var redirectUrl = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + l.pathname;
     
+    // Preserve any query parameters or hash fragments
+    if (l.search) redirectUrl += l.search;
+    if (l.hash) redirectUrl += l.hash;
+    
     console.log("Final redirect URL:", redirectUrl);
+    
+    // Execute the redirect immediately
     window.location.replace(redirectUrl);
   </script>
 </head>

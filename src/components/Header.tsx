@@ -32,13 +32,28 @@ const Header = () => {
     }
   };
 
-  // Function to handle registration link click - direct and reliable method
+  // Try both navigation methods for maximum reliability
   const handleRegisterClick = () => {
-    console.log("Register button clicked - navigating to registration page");
+    console.log("Register button clicked - trying multiple navigation methods");
     setMobileMenuOpen(false);
     
-    // Use React Router navigation
-    navigate('/registration');
+    try {
+      // First try React Router navigation
+      navigate('/registration');
+      console.log("React Router navigation executed");
+      
+      // As a backup (in case of navigation issues), use direct URL after a brief delay
+      setTimeout(() => {
+        if (window.location.pathname !== '/registration') {
+          console.log("Fallback to direct URL navigation");
+          window.location.href = '/registration';
+        }
+      }, 100);
+    } catch (error) {
+      console.error("Navigation error:", error);
+      // Last resort - direct navigation
+      window.location.href = '/registration';
+    }
   };
 
   return (

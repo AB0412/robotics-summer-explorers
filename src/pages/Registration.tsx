@@ -7,6 +7,11 @@ import RegistrationForm from '@/components/registration/RegistrationForm';
 const Registration = () => {
   useEffect(() => {
     console.log("Registration page component mounted");
+    
+    // Log the document title and URL to diagnose loading issues
+    console.log("Document title:", document.title);
+    console.log("Current URL:", window.location.href);
+    console.log("Path:", window.location.pathname);
   }, []);
 
   return (
