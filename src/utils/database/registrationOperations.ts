@@ -47,7 +47,7 @@ export const addRegistration = async (registration: Registration): Promise<{succ
   try {
     console.log('Attempting to add registration to Supabase:', registration);
     
-    // Test database connection before trying to insert
+    // Test if table exists and is accessible
     const { error: testError } = await supabase
       .from(REGISTRATIONS_TABLE)
       .select('count')
@@ -63,9 +63,9 @@ export const addRegistration = async (registration: Registration): Promise<{succ
     }
     
     // Proceed with insertion
-    const { error, data } = await supabase
+    const { data, error } = await supabase
       .from(REGISTRATIONS_TABLE)
-      .insert(registration)
+      .insert([registration])
       .select();
     
     if (error) {
@@ -83,7 +83,7 @@ export const addRegistration = async (registration: Registration): Promise<{succ
       
       return {
         success: false,
-        error: errorMessage
+        error: `${errorMessage} (${error.message})`
       };
     } else {
       console.log('Registration successfully added to Supabase:', data);

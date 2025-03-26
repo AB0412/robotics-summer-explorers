@@ -91,11 +91,17 @@ export const useRegistrationForm = () => {
       
       console.log('Prepared registration data:', registrationWithIdAndTimestamp);
       
-      // Submit registration to database using the addRegistration function
+      // Submit registration to database
       const result = await addRegistration(registrationWithIdAndTimestamp);
       
       if (!result.success) {
         console.error('Failed to submit registration to database:', result.error);
+        toast({
+          title: "Registration Error",
+          description: result.error || "Could not save your registration to the database.",
+          variant: "destructive",
+          duration: 8000,
+        });
         throw new Error(result.error || 'Failed to submit registration to database');
       }
       

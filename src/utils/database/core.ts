@@ -92,16 +92,18 @@ export const saveDatabase = async (db: DBStorage): Promise<{success: boolean; er
     }
     
     // Then insert all the registrations
-    const { error: insertError } = await supabase
-      .from(REGISTRATIONS_TABLE)
-      .insert(db.registrations);
-    
-    if (insertError) {
-      console.error('Error inserting registrations:', insertError);
-      return {
-        success: false,
-        error: `Failed to save your changes to the database: ${insertError.message}`
-      };
+    if (db.registrations.length > 0) {
+      const { error: insertError } = await supabase
+        .from(REGISTRATIONS_TABLE)
+        .insert(db.registrations);
+      
+      if (insertError) {
+        console.error('Error inserting registrations:', insertError);
+        return {
+          success: false,
+          error: `Failed to save your changes to the database: ${insertError.message}`
+        };
+      }
     }
     
     // Create downloadable blob for export feature
