@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,7 +10,6 @@ import ChildDetailsSection from './registration/ChildDetailsSection';
 import ProgramPreferencesSection from './registration/ProgramPreferencesSection';
 import RoboticsExperienceSection from './registration/RoboticsExperienceSection';
 import LogisticsConsentSection from './registration/LogisticsConsentSection';
-import PaymentOptionsSection from './registration/PaymentOptionsSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
 
 const RegistrationForm = () => {
@@ -92,9 +92,6 @@ const RegistrationForm = () => {
           
           {/* Section 5: Logistics & Consent */}
           <LogisticsConsentSection form={form} />
-          
-          {/* Section 6: Payment Information */}
-          <PaymentOptionsSection form={form} />
           
           {/* Submit Button */}
           <Button 
