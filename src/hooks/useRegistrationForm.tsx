@@ -110,7 +110,14 @@ export const useRegistrationForm = () => {
       });
       
       // Send confirmation email
-      await sendConfirmationEmail(data, newRegistrationId);
+      const emailResult = await sendConfirmationEmail(data, newRegistrationId);
+      if (emailResult) {
+        toast({
+          title: "Email Notification Sent",
+          description: "A confirmation email has been sent with your registration details.",
+          duration: 5000,
+        });
+      }
       
       // Reset form
       form.reset();

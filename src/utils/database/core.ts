@@ -1,7 +1,6 @@
 
 import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '../supabase/client';
 import { DBStorage, emptyDB } from './types';
-import { toast } from '@/hooks/use-toast';
 
 // Check database readiness
 export const isDatabaseReady = async (): Promise<boolean> => {
@@ -23,16 +22,15 @@ export const isDatabaseReady = async (): Promise<boolean> => {
 };
 
 // Load all data from Supabase
-export const loadDatabase = async (): Promise<DBStorage> => {
+export const loadDatabase = async (): Promise<{success: boolean; data?: DBStorage; error?: string}> => {
   // Check if we have valid Supabase credentials
   if (!hasValidCredentials()) {
     console.error('Missing Supabase credentials. Cannot load database.');
-    toast({
-      title: "Database Configuration Required",
-      description: "Please configure valid Supabase credentials to use this application.",
-      variant: "destructive",
-    });
-    return emptyDB;
+    return {
+      success: false,
+      error: 'Missing Supabase credentials. Cannot load database.',
+      data: emptyDB
+    };
   }
 
   try {
@@ -43,40 +41,39 @@ export const loadDatabase = async (): Promise<DBStorage> => {
     
     if (error) {
       console.error('Error loading registrations from Supabase:', error);
-      toast({
-        title: "Database Error",
-        description: "Could not load registrations from the database. Please check your configuration.",
-        variant: "destructive",
-      });
-      return emptyDB;
+      return {
+        success: false,
+        error: `Could not load registrations from the database: ${error.message}`,
+        data: emptyDB
+      };
     }
     
     console.log(`Successfully loaded ${data?.length || 0} registrations from Supabase`);
     return {
-      registrations: data || []
+      success: true,
+      data: {
+        registrations: data || []
+      }
     };
   } catch (error) {
     console.error('Error accessing Supabase database:', error);
-    toast({
-      title: "Connection Error",
-      description: "Could not connect to the database. Please check your configuration.",
-      variant: "destructive",
-    });
-    return emptyDB;
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown database error',
+      data: emptyDB
+    };
   }
 };
 
 // Save the entire database
-export const saveDatabase = async (db: DBStorage): Promise<void> => {
+export const saveDatabase = async (db: DBStorage): Promise<{success: boolean; error?: string}> => {
   // If no valid Supabase credentials, don't attempt to save
   if (!hasValidCredentials()) {
     console.error('Missing Supabase credentials. Cannot save database.');
-    toast({
-      title: "Database Configuration Required",
-      description: "Please configure valid Supabase credentials to use this application.",
-      variant: "destructive",
-    });
-    return;
+    return {
+      success: false,
+      error: 'Missing Supabase credentials. Cannot save database.'
+    };
   }
 
   try {
@@ -88,12 +85,10 @@ export const saveDatabase = async (db: DBStorage): Promise<void> => {
     
     if (deleteError) {
       console.error('Error deleting registrations:', deleteError);
-      toast({
-        title: "Update Error",
-        description: "Failed to update the database. Could not clear existing records.",
-        variant: "destructive",
-      });
-      return;
+      return {
+        success: false,
+        error: `Failed to update the database. Could not clear existing records: ${deleteError.message}`
+      };
     }
     
     // Then insert all the registrations
@@ -103,11 +98,10 @@ export const saveDatabase = async (db: DBStorage): Promise<void> => {
     
     if (insertError) {
       console.error('Error inserting registrations:', insertError);
-      toast({
-        title: "Update Error",
-        description: "Failed to save your changes to the database.",
-        variant: "destructive",
-      });
+      return {
+        success: false,
+        error: `Failed to save your changes to the database: ${insertError.message}`
+      };
     }
     
     // Create downloadable blob for export feature
@@ -116,12 +110,15 @@ export const saveDatabase = async (db: DBStorage): Promise<void> => {
     
     // Store the latest blob in sessionStorage for easy access
     sessionStorage.setItem('latestRegistrationsBlob', URL.createObjectURL(blob));
+    
+    return {
+      success: true
+    };
   } catch (error) {
     console.error('Error saving database to Supabase:', error);
-    toast({
-      title: "Connection Error",
-      description: "Could not connect to the database. Please check your configuration.",
-      variant: "destructive",
-    });
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown database error'
+    };
   }
 };

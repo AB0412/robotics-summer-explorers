@@ -1,6 +1,5 @@
 
 import { FormValues } from '@/components/registration/RegistrationTypes';
-import { useToast } from '@/hooks/use-toast';
 import { Registration } from '@/utils/database';
 
 // Generate a unique registration ID
