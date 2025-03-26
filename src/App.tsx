@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import './App.css';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
+import Registration from './pages/Registration';
+import Admin from './pages/Admin';
 
 // This component will handle hash-based navigation
 function App() {
@@ -46,6 +48,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/register" element={<Registration />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
