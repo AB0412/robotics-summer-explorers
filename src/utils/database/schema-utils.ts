@@ -12,51 +12,93 @@ import { validateDatabaseSchema, enhancedInitializeDatabase } from './schema/val
 // Create a helper function to execute SQL directly
 export const executeSql = async (sql: string): Promise<{ success: boolean; error?: string }> => {
   try {
-    // First check if the execute_sql function exists
-    const { data, error: rpcCheckError } = await supabase
-      .rpc('execute_sql', { sql: 'SELECT 1;' });
+    console.log('Executing SQL:', sql);
     
-    // If the function doesn't exist, create it
-    if (rpcCheckError && rpcCheckError.message.includes('function "execute_sql" does not exist')) {
-      console.log('Creating execute_sql function...');
-      
-      // Create the execute_sql function with proper permissions
-      const createFuncSql = `
-        CREATE OR REPLACE FUNCTION execute_sql(sql text)
-        RETURNS void LANGUAGE plpgsql AS $$
-        BEGIN
-          EXECUTE sql;
-        END;
-        $$;
-      `;
-      
-      // Execute the function creation directly
-      const { error: createFuncError } = await supabase.rpc('exec_sql', { 
-        sql: createFuncSql 
-      });
-      
-      if (createFuncError) {
-        console.error('Error creating execute_sql function:', createFuncError);
-        return {
-          success: false,
-          error: `Could not create execute_sql function: ${createFuncError.message}`
-        };
-      }
+    // Try direct query first with service_role permissions if possible
+    const { error: directError } = await supabase.rpc('execute_sql', { 
+      sql: sql 
+    });
+    
+    if (!directError) {
+      console.log('SQL executed successfully via RPC');
+      return { success: true };
     }
     
-    // Now execute the actual SQL
-    const { error } = await supabase.rpc('execute_sql', { sql });
+    console.error('Error executing SQL via RPC:', directError);
     
-    if (error) {
-      console.error('Error executing SQL:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+    // Fallback: Try to execute with raw query if RPC fails
+    try {
+      const { error: rawError } = await supabase.from('_test_sql_execution')
+        .select('*')
+        .limit(1)
+        .maybeSingle();
+      
+      // If this is a table not found error, we can try creating our exec_sql function
+      if (rawError && rawError.code === '42P01') {
+        console.log('Creating exec_sql function as fallback...');
+        
+        // Create admin-level function for SQL execution
+        const createExecSql = `
+          CREATE OR REPLACE FUNCTION exec_sql(sql text) 
+          RETURNS void AS $$
+          BEGIN
+            EXECUTE sql;
+          END;
+          $$ LANGUAGE plpgsql SECURITY DEFINER;
+        `;
+        
+        // Execute the function creation directly
+        const { error: createFuncError } = await supabase.rpc('exec_sql', { 
+          sql: createExecSql 
+        });
+        
+        if (createFuncError) {
+          console.error('Error creating exec_sql function:', createFuncError);
+          
+          // Final attempt: try using a direct SQL query through the API
+          const { error: apiError } = await supabase.auth.signInAnonymously();
+          if (!apiError) {
+            // Execute original SQL now that we're authenticated
+            const { error: finalError } = await supabase.rpc('execute_sql', { 
+              sql: sql 
+            });
+            
+            if (!finalError) {
+              console.log('SQL executed successfully after authentication');
+              return { success: true };
+            } else {
+              console.error('Final attempt error:', finalError);
+              return {
+                success: false,
+                error: `Could not execute SQL: ${finalError.message}`
+              };
+            }
+          }
+        } else {
+          // Now try to execute the original SQL using our new function
+          const { error: execError } = await supabase.rpc('exec_sql', { 
+            sql: sql 
+          });
+          
+          if (!execError) {
+            console.log('SQL executed successfully via exec_sql function');
+            return { success: true };
+          } else {
+            console.error('Error executing SQL via exec_sql:', execError);
+            return {
+              success: false,
+              error: `Could not execute SQL: ${execError.message}`
+            };
+          }
+        }
+      }
+    } catch (fallbackError) {
+      console.error('Fallback error:', fallbackError);
     }
     
     return {
-      success: true
+      success: false,
+      error: directError.message
     };
   } catch (error) {
     console.error('Error executing SQL:', error);

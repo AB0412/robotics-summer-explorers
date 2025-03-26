@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { RefreshCcw, Database, Copy, Play } from 'lucide-react';
-import { getAllRegistrations, supabase, REGISTRATIONS_TABLE } from '@/utils/database';
+import { getAllRegistrations, supabase, REGISTRATIONS_TABLE, executeSql } from '@/utils/database';
 
 interface SchemaUpdateModalProps {
   open: boolean;
@@ -73,29 +73,55 @@ CREATE TABLE IF NOT EXISTS registrations (
 -- Add row level security (RLS) policies
 ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
 
+-- IMPORTANT: Create these policies in order
+
 -- Policy for service_role (full access) - most important one
 CREATE POLICY "Allow service_role full access" ON registrations
   FOR ALL 
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+-- Policy for authenticated users to have full access
+CREATE POLICY "Allow authenticated full access" ON registrations
+  FOR ALL
+  TO authenticated
   USING (true)
   WITH CHECK (true);
 
 -- Policy to allow inserts from anonymous users
 CREATE POLICY "Enable insert for anon" ON registrations 
   FOR INSERT 
-  TO anon, authenticated
+  TO anon
   WITH CHECK (true);
 
 -- Policy to allow select for everyone (public read access for testing)
 CREATE POLICY "Allow public read access" ON registrations 
   FOR SELECT
+  TO anon
   USING (true);
+
+-- Reset ownership and grants
+ALTER TABLE registrations OWNER TO authenticated;
+GRANT ALL ON registrations TO service_role;
+GRANT ALL ON registrations TO authenticated;
+GRANT SELECT, INSERT ON registrations TO anon;
+GRANT USAGE, SELECT ON SEQUENCE registrations_id_seq TO authenticated;
+GRANT USAGE, SELECT ON SEQUENCE registrations_id_seq TO service_role;
+
+-- Make sure RLS is turned OFF when using service_role
+ALTER TABLE registrations FORCE ROW LEVEL SECURITY;
 `;
 
   const handleRefreshRegistrations = async () => {
     setIsRefreshing(true);
     try {
-      // First, attempt to authenticate
-      await supabase.auth.signInAnonymously();
+      // First, ensure we're authenticated
+      const { data: authData } = await supabase.auth.getSession();
+      if (!authData.session) {
+        console.log('No active session, attempting to sign in...');
+        await supabase.auth.signInAnonymously();
+      }
       
       // Directly query the database
       const { data: directData, error: directError } = await supabase
@@ -104,21 +130,11 @@ CREATE POLICY "Allow public read access" ON registrations
       
       if (directError) {
         console.error('Direct query error:', directError);
-        
-        // Try getting registrations through our utility
-        const registrations = await getAllRegistrations();
-        
-        if (registrations && registrations.length > 0) {
-          toast({
-            title: "Success",
-            description: `Found ${registrations.length} registrations in the database.`,
-          });
-        } else {
-          toast({
-            title: "No registrations found",
-            description: "The database connection works, but no registrations were found.",
-          });
-        }
+        toast({
+          title: "Error",
+          description: `Database error: ${directError.message}. Try running the SQL script.`,
+          variant: "destructive",
+        });
       } else if (directData) {
         console.log('Direct query results:', directData);
         toast({
@@ -166,27 +182,45 @@ CREATE POLICY "Allow public read access" ON registrations
   const handleRunScript = async () => {
     setIsRunning(true);
     try {
-      // Execute each SQL statement separately
+      toast({
+        title: "Running SQL Script",
+        description: "This may take a moment...",
+      });
+      
+      // First authenticate if needed
+      const { data: authData } = await supabase.auth.getSession();
+      if (!authData.session) {
+        console.log('No active session, attempting to sign in...');
+        await supabase.auth.signInAnonymously();
+      }
+      
+      // Execute each SQL statement separately, skipping comments and empty lines
       const statements = sqlScript
         .split(';')
         .map(stmt => stmt.trim())
         .filter(stmt => stmt && !stmt.startsWith('--'));
       
+      let successCount = 0;
+      let errorCount = 0;
+      
       for (const stmt of statements) {
         if (!stmt) continue;
         
         console.log('Executing SQL:', stmt);
-        const { error } = await supabase.rpc('execute_sql', { sql: stmt + ';' });
+        const { success, error } = await executeSql(stmt + ';');
         
-        if (error) {
+        if (success) {
+          successCount++;
+        } else {
           console.error('SQL execution error:', error);
+          errorCount++;
           // Continue with other statements even if one fails
         }
       }
       
       toast({
-        title: "SQL Script Run",
-        description: "SQL script executed. Refreshing data...",
+        title: "SQL Script Complete",
+        description: `${successCount} operations succeeded, ${errorCount} failed. Refreshing data...`,
       });
       
       // Refresh data after script execution
