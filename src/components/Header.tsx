@@ -32,27 +32,13 @@ const Header = () => {
     }
   };
 
-  // Function to handle registration link click
+  // Function to handle registration link click - simplified for reliability
   const handleRegisterClick = () => {
-    console.log("Register button clicked, current location:", location.pathname);
+    console.log("Register button clicked - direct navigation");
     setMobileMenuOpen(false);
     
-    if (location.pathname === '/registration') {
-      console.log("Already on registration page, not navigating");
-      return;
-    }
-    
-    // Use React Router for SPA navigation
-    console.log("Navigating to /registration using navigate()");
-    navigate('/registration');
-    
-    // As a fallback, if navigate doesn't work properly
-    setTimeout(() => {
-      if (location.pathname !== '/registration') {
-        console.log("Navigation fallback: using window.location.href");
-        window.location.href = '/registration';
-      }
-    }, 100);
+    // Direct navigation - most reliable method
+    window.location.href = '/registration';
   };
 
   return (
