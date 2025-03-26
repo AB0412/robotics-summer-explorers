@@ -22,7 +22,7 @@ function App() {
   console.log("App component mounted, initial URL:", window.location.href);
   
   return (
-    <Router basename="/">
+    <Router>
       <RouteLogger />
       <Routes>
         <Route path="/" element={<Index />} />

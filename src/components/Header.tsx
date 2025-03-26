@@ -32,13 +32,13 @@ const Header = () => {
     }
   };
 
-  // Function to handle registration link click - simplified for reliability
+  // Function to handle registration link click - direct and reliable method
   const handleRegisterClick = () => {
-    console.log("Register button clicked - direct navigation");
+    console.log("Register button clicked - navigating to registration page");
     setMobileMenuOpen(false);
     
-    // Direct navigation - most reliable method
-    window.location.href = '/registration';
+    // Use React Router navigation
+    navigate('/registration');
   };
 
   return (

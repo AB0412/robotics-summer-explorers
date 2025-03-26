@@ -1,10 +1,14 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/toaster';
 import RegistrationForm from '@/components/registration/RegistrationForm';
 
 const Registration = () => {
+  useEffect(() => {
+    console.log("Registration page component mounted");
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
