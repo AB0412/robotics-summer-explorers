@@ -1,6 +1,7 @@
 
 import { supabase, REGISTRATIONS_TABLE } from '../supabase/client';
 import { Registration, DBStorage, emptyDB } from './types';
+import { toast } from '@/hooks/use-toast';
 
 // Load all registrations from Supabase
 export const loadDatabase = async (): Promise<DBStorage> => {
@@ -11,6 +12,11 @@ export const loadDatabase = async (): Promise<DBStorage> => {
     
     if (error) {
       console.error('Error loading registrations from Supabase:', error);
+      toast({
+        title: "Database Error",
+        description: "Could not load registrations from the cloud database.",
+        variant: "destructive",
+      });
       return emptyDB;
     }
     
@@ -19,6 +25,11 @@ export const loadDatabase = async (): Promise<DBStorage> => {
     };
   } catch (error) {
     console.error('Error accessing Supabase database:', error);
+    toast({
+      title: "Connection Error",
+      description: "Could not connect to the cloud database. Please check your internet connection.",
+      variant: "destructive",
+    });
     return emptyDB;
   }
 };
@@ -35,6 +46,11 @@ export const saveDatabase = async (db: DBStorage): Promise<void> => {
     
     if (deleteError) {
       console.error('Error deleting registrations:', deleteError);
+      toast({
+        title: "Update Error",
+        description: "Failed to update the database. Could not clear existing records.",
+        variant: "destructive",
+      });
       return;
     }
     
@@ -45,6 +61,11 @@ export const saveDatabase = async (db: DBStorage): Promise<void> => {
     
     if (insertError) {
       console.error('Error inserting registrations:', insertError);
+      toast({
+        title: "Update Error",
+        description: "Failed to save your changes to the cloud database.",
+        variant: "destructive",
+      });
     }
     
     // Create downloadable blob for export feature
@@ -56,6 +77,11 @@ export const saveDatabase = async (db: DBStorage): Promise<void> => {
     
   } catch (error) {
     console.error('Error saving database to Supabase:', error);
+    toast({
+      title: "Connection Error",
+      description: "Could not connect to the cloud database. Your changes were not saved.",
+      variant: "destructive",
+    });
   }
 };
 
@@ -68,12 +94,22 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
     
     if (error) {
       console.error('Error getting registrations:', error);
+      toast({
+        title: "Data Fetch Error",
+        description: "Could not retrieve registrations from the cloud database.",
+        variant: "destructive",
+      });
       return [];
     }
     
     return data as Registration[];
   } catch (error) {
     console.error('Error accessing Supabase:', error);
+    toast({
+      title: "Connection Error",
+      description: "Could not connect to the cloud database. Please try again later.",
+      variant: "destructive",
+    });
     return [];
   }
 };
@@ -93,7 +129,16 @@ export const addRegistration = async (registration: Registration): Promise<void>
       localStorageDb.registrations.push(registration);
       localStorage.setItem('roboticsDB', JSON.stringify(localStorageDb));
       
-      alert('Could not save to cloud database. Data saved locally instead.');
+      toast({
+        title: "Cloud Storage Unavailable",
+        description: "Could not save to cloud database. Registration saved locally instead.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Registration Saved",
+        description: "Your registration has been successfully saved to the cloud database.",
+      });
     }
   } catch (error) {
     console.error('Error accessing Supabase:', error);
@@ -103,7 +148,11 @@ export const addRegistration = async (registration: Registration): Promise<void>
     localStorageDb.registrations.push(registration);
     localStorage.setItem('roboticsDB', JSON.stringify(localStorageDb));
     
-    alert('Could not access cloud database. Data saved locally instead.');
+    toast({
+      title: "Connection Error",
+      description: "Could not access cloud database. Registration saved locally instead.",
+      variant: "destructive",
+    });
   }
 };
 
@@ -117,10 +166,20 @@ export const deleteRegistration = async (registrationId: string): Promise<void> 
     
     if (error) {
       console.error('Error deleting registration from Supabase:', error);
+      toast({
+        title: "Delete Failed",
+        description: "Could not delete the registration from the cloud database.",
+        variant: "destructive",
+      });
       throw error;
     }
   } catch (error) {
     console.error('Error accessing Supabase:', error);
+    toast({
+      title: "Connection Error",
+      description: "Could not connect to the cloud database to delete the registration.",
+      variant: "destructive",
+    });
     throw error;
   }
 };
