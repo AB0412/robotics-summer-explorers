@@ -1,4 +1,3 @@
-
 import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '../supabase/client';
 import { Registration } from './types';
 
@@ -72,14 +71,19 @@ export const addRegistration = async (registration: Registration): Promise<{succ
     
     // Try to verify if we can insert with RLS policies
     console.log('Checking if we have insert permissions...');
-    const { error: policyError } = await supabase.rpc('check_table_permissions', { 
-      table_name: REGISTRATIONS_TABLE,
-      permission: 'INSERT' 
-    }).catch(e => {
+    
+    // Fixed approach: Using try/catch instead of .catch() on the RPC call
+    let policyError = null;
+    try {
+      const { error } = await supabase.rpc('check_table_permissions', { 
+        table_name: REGISTRATIONS_TABLE,
+        permission: 'INSERT' 
+      });
+      policyError = error;
+    } catch (e) {
       // If RPC fails (function doesn't exist), we'll proceed anyway
       console.log('RPC check_table_permissions not available, skipping check');
-      return { error: null };
-    });
+    }
     
     if (policyError) {
       console.warn('Permission check failed, but proceeding with insert attempt:', policyError);
