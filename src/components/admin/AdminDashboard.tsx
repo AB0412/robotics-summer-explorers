@@ -18,6 +18,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFilter, setSearchFilter] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   
   const itemsPerPage = 5;
@@ -26,10 +27,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     loadRegistrations();
   }, []);
 
-  const loadRegistrations = () => {
+  const loadRegistrations = async () => {
     try {
-      // Load registrations from our database utility
-      const loadedRegistrations = getAllRegistrations();
+      setIsLoading(true);
+      // Load registrations from our database utility - now properly awaiting the Promise
+      const loadedRegistrations = await getAllRegistrations();
       console.log("Loaded registrations:", loadedRegistrations);
       // Convert Registration[] to EnhancedRegistration[] - they should be compatible now
       setRegistrations(loadedRegistrations as EnhancedRegistration[]);
@@ -42,7 +44,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             const parsedOldRegistrations = JSON.parse(oldRegistrations);
             if (Array.isArray(parsedOldRegistrations) && parsedOldRegistrations.length > 0) {
               console.log("Migrating old registrations to new database format");
-              importDatabase(JSON.stringify({ registrations: parsedOldRegistrations }));
+              await importDatabase(JSON.stringify({ registrations: parsedOldRegistrations }));
               // Need the as EnhancedRegistration[] type assertion to satisfy TypeScript
               setRegistrations(parsedOldRegistrations as EnhancedRegistration[]);
             }
@@ -57,36 +59,46 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         title: "Error",
         description: "Failed to load registrations data.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDeleteRegistration = (registrationId: string) => {
-    // Delete the registration using our database utility
-    deleteRegistration(registrationId);
-    
-    // Update state with the filtered registrations
-    setRegistrations(prevRegistrations => 
-      prevRegistrations.filter(reg => reg.registrationId !== registrationId)
-    );
-    
-    // Show toast notification
-    toast({
-      title: "Registration Deleted",
-      description: `Registration ${registrationId} has been successfully deleted.`,
-    });
-    
-    // If current page is now empty (except for the last page), go to previous page
-    const filteredRegs = getFilteredRegistrations(
-      registrations.filter(reg => reg.registrationId !== registrationId)
-    );
-    const totalPages = Math.ceil(filteredRegs.length / itemsPerPage);
-    if (currentPage > totalPages && currentPage > 1) {
-      setCurrentPage(prevPage => prevPage - 1);
+  const handleDeleteRegistration = async (registrationId: string) => {
+    try {
+      // Delete the registration using our database utility
+      await deleteRegistration(registrationId);
+      
+      // Update state with the filtered registrations
+      setRegistrations(prevRegistrations => 
+        prevRegistrations.filter(reg => reg.registrationId !== registrationId)
+      );
+      
+      // Show toast notification
+      toast({
+        title: "Registration Deleted",
+        description: `Registration ${registrationId} has been successfully deleted.`,
+      });
+      
+      // If current page is now empty (except for the last page), go to previous page
+      const filteredRegs = getFilteredRegistrations(
+        registrations.filter(reg => reg.registrationId !== registrationId)
+      );
+      const totalPages = Math.ceil(filteredRegs.length / itemsPerPage);
+      if (currentPage > totalPages && currentPage > 1) {
+        setCurrentPage(prevPage => prevPage - 1);
+      }
+    } catch (error) {
+      console.error("Error deleting registration:", error);
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete the registration. Please try again.",
+      });
     }
   };
 
   // Handle saving database to local file
-  const handleSaveDatabase = () => {
+  const handleSaveDatabase = async () => {
     try {
       const downloadLink = getDownloadLink();
       if (downloadLink) {
@@ -106,7 +118,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         });
       } else {
         // If no download link is available (e.g., first time), generate one
-        handleExportDatabase();
+        await handleExportDatabase();
         setTimeout(handleSaveDatabase, 100); // Try again after a small delay
       }
     } catch (error) {
@@ -119,9 +131,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   };
 
   // Handle database export
-  const handleExportDatabase = () => {
+  const handleExportDatabase = async () => {
     try {
-      const jsonData = exportDatabase();
+      const jsonData = await exportDatabase();
       const blob = new Blob([jsonData], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       
@@ -150,18 +162,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   };
 
   // Handle database import
-  const handleImportDatabase = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportDatabase = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const jsonData = e.target?.result as string;
-        const success = importDatabase(jsonData);
+        const success = await importDatabase(jsonData);
         
         if (success) {
-          loadRegistrations(); // Reload registrations
+          await loadRegistrations(); // Reload registrations
           toast({
             title: "Import Successful",
             description: "Registration data has been imported successfully.",
@@ -235,6 +247,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           setSearchFilter={setSearchFilter}
         />
         <div className="flex gap-2">
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            accept=".json"
+            onChange={handleImportDatabase}
+          />
           <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
             <Upload className="h-4 w-4 mr-2" />
             Import
@@ -256,15 +275,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           <CardTitle>Registrations ({filteredRegistrations.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <RegistrationsTable 
-            registrations={currentRegistrations} 
-            onDeleteRegistration={handleDeleteRegistration} 
-          />
-          <PaginationControls 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+              <span className="ml-2">Loading registrations...</span>
+            </div>
+          ) : (
+            <>
+              <RegistrationsTable 
+                registrations={currentRegistrations} 
+                onDeleteRegistration={handleDeleteRegistration} 
+              />
+              <PaginationControls 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </>
+          )}
         </CardContent>
       </Card>
     </>
