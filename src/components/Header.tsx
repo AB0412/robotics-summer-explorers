@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot, Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
   
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -17,7 +18,7 @@ const Header = () => {
     // Check if we're on the home page
     if (window.location.pathname !== '/') {
       // Navigate to home page with the hash
-      window.location.href = `/#${sectionId}`;
+      navigate('/#' + sectionId);
       return;
     }
     
@@ -30,23 +31,21 @@ const Header = () => {
     }
   };
 
-  // Use direct URL navigation which is most reliable
+  // Use React Router navigation
   const handleRegisterClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("Register button clicked - using direct window.location");
+    console.log("Register button clicked - using React Router navigation");
     setMobileMenuOpen(false);
-    
-    // Use direct URL navigation
-    window.location.href = '/registration';
+    navigate('/registration');
   };
 
   return (
     <header className="bg-robotics-navy text-white">
-      <div className="container py-4 flex justify-between items-center">
-        <a href="/" className="flex items-center gap-2">
+      <div className="container mx-auto py-4 px-4 flex justify-between items-center">
+        <Link to="/" className="flex items-center gap-2">
           <Bot size={32} className="text-robotics-accent" />
           <span className="font-display font-bold text-lg sm:text-2xl">Robotics Summer Explorers</span>
-        </a>
+        </Link>
         
         <nav className={`${mobileMenuOpen ? 'flex flex-col absolute top-16 right-0 bg-robotics-navy p-4 rounded-bl-lg shadow-lg z-50' : 'hidden md:flex'} items-center gap-8 font-medium`}>
           <a 
@@ -70,13 +69,16 @@ const Header = () => {
           >
             Contact
           </a>
-          <a 
-            href="/registration" 
-            onClick={handleRegisterClick}
+          <Link 
+            to="/registration" 
+            onClick={(e) => {
+              e.preventDefault();
+              handleRegisterClick(e);
+            }}
             className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy px-4 py-2 rounded-md"
           >
             Register
-          </a>
+          </Link>
         </nav>
         
         <div className="md:hidden">

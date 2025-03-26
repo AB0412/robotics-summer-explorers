@@ -9,13 +9,9 @@
     var path = window.location.pathname;
     console.log("404 page loaded, path:", path);
     
-    // Handle specific routes
-    if (path.includes('registration')) {
-      window.location.replace('/registration');
-    } else {
-      // Default to homepage
-      window.location.replace('/');
-    }
+    // Single page app navigation - redirects all routes to index.html
+    // and lets the React Router handle the routing
+    window.location.href = '/' + window.location.search + window.location.hash;
   </script>
 </head>
 <body>

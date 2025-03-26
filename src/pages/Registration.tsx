@@ -13,7 +13,7 @@ const Registration = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <main className="flex-1 container py-10">
+      <main className="flex-1 container mx-auto py-10 px-4 md:px-6">
         <h1 className="font-display font-bold text-3xl md:text-4xl mb-6 text-robotics-navy">
           Summer Robotics Program Registration
         </h1>
@@ -25,7 +25,7 @@ const Registration = () => {
         <RegistrationForm />
       </main>
       <footer className="bg-robotics-navy text-white py-8">
-        <div className="container text-center">
+        <div className="container mx-auto text-center px-4">
           <p>© 2024 Robotics Summer Explorers. All rights reserved.</p>
         </div>
       </footer>
