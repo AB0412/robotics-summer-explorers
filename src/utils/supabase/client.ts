@@ -2,8 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 
-// Replace these with your actual Supabase URL and anon key from your Supabase project settings
-export const supabaseUrl = 'https://placeholder.supabase.co';
+// Update the Supabase URL with the correct project URL
+export const supabaseUrl = 'https://affmifojscdamiybxioe.supabase.co';
 export const supabaseAnonKey = 'placeholder-anon-key';
 
 // Create Supabase client with error handling
