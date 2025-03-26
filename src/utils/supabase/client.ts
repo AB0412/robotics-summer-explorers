@@ -4,12 +4,12 @@ import { toast } from '@/hooks/use-toast';
 
 // Update the Supabase URL with the correct project URL
 export const supabaseUrl = 'https://affmifojscdamiybxioe.supabase.co';
-export const supabaseAnonKey = 'placeholder-anon-key';
+export const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmZm1pZm9qc2NkYW1peWJ4aW9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMwMjI1MDIsImV4cCI6MjA1ODU5ODUwMn0.nK_rXmi303lLdXf8p7je1SInOA5Ej9B18ITQ1ubrmnY';
 
 // Create Supabase client with error handling
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-anon-key'
+  supabaseUrl,
+  supabaseAnonKey
 );
 
 // Table name in Supabase
@@ -17,9 +17,7 @@ export const REGISTRATIONS_TABLE = 'registrations';
 
 // Check if Supabase credentials are valid
 export const hasValidCredentials = (): boolean => {
-  return !(supabaseUrl === 'https://placeholder.supabase.co' || 
-           supabaseAnonKey === 'placeholder-anon-key' ||
-           !supabaseUrl || !supabaseAnonKey);
+  return !(supabaseAnonKey === 'placeholder-anon-key' || !supabaseUrl || !supabaseAnonKey);
 }
 
 // Initialize the database (create tables if they don't exist)
