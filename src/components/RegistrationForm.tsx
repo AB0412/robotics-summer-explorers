@@ -46,6 +46,23 @@ const RegistrationForm = () => {
   const onSubmit = (data: FormValues) => {
     console.log('Form submitted:', data);
     
+    // Save to localStorage
+    const existingRegistrations = localStorage.getItem('registrations');
+    let registrationsArray = [];
+    
+    if (existingRegistrations) {
+      registrationsArray = JSON.parse(existingRegistrations);
+    }
+    
+    // Add timestamp to registration
+    const registrationWithTimestamp = {
+      ...data,
+      submittedAt: new Date().toISOString()
+    };
+    
+    registrationsArray.push(registrationWithTimestamp);
+    localStorage.setItem('registrations', JSON.stringify(registrationsArray));
+    
     // Show success toast with additional information
     toast({
       title: "Registration Submitted",
