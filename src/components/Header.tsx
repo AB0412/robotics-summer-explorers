@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot, Menu, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -31,6 +32,14 @@ const Header = () => {
     }
     
     // Close mobile menu if open
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  };
+
+  // Handle navigation to registration page
+  const handleRegisterClick = () => {
+    navigate('/registration');
     if (mobileMenuOpen) {
       setMobileMenuOpen(false);
     }
@@ -66,6 +75,12 @@ const Header = () => {
           >
             Contact
           </a>
+          <Button
+            onClick={handleRegisterClick}
+            className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy"
+          >
+            Register
+          </Button>
         </nav>
         
         <div className="md:hidden">
