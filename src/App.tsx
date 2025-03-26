@@ -5,6 +5,7 @@ import './App.css';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
 import Registration from './pages/Registration';
+import Admin from './pages/Admin';
 import Layout from './components/Layout';
 
 function ScrollToTop() {
@@ -27,6 +28,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Index />} />
           <Route path="/registration" element={<Registration />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
