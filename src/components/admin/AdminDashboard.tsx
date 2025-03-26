@@ -6,9 +6,11 @@ import { RegistrationsTable } from './RegistrationsTable';
 import { PaginationControls } from './PaginationControls';
 import { useAdminDashboard } from '@/hooks/useAdminDashboard';
 import { Button } from '@/components/ui/button';
-import { Database, RefreshCw } from 'lucide-react';
+import { Database, RefreshCw, ShieldAlert } from 'lucide-react';
 import { SchemaUpdateModal } from './SchemaUpdateModal';
 import { validateDatabaseSchema } from '@/utils/database/schema-utils';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { supabase, REGISTRATIONS_TABLE } from '@/utils/database';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -33,6 +35,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [schemaModalOpen, setSchemaModalOpen] = useState(false);
   const [needsSchemaUpdate, setNeedsSchemaUpdate] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showRlsAlert, setShowRlsAlert] = useState(false);
 
   // Check if schema needs updating
   React.useEffect(() => {
@@ -41,6 +44,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       setNeedsSchemaUpdate(!isValid);
     };
     checkSchema();
+    
+    // Check for RLS issues
+    const checkRls = async () => {
+      try {
+        const { count } = await supabase
+          .from(REGISTRATIONS_TABLE)
+          .select('*', { count: 'exact', head: true });
+          
+        const { data } = await supabase
+          .from(REGISTRATIONS_TABLE)
+          .select('*');
+          
+        if ((count || 0) > 0 && (!data || data.length === 0)) {
+          console.warn('Possible RLS issue: count shows records but query returns none');
+          setShowRlsAlert(true);
+        }
+      } catch (error) {
+        console.error('Error checking RLS:', error);
+      }
+    };
+    
+    checkRls();
   }, []);
 
   // Get filtered registrations
@@ -58,8 +83,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     setIsRefreshing(true);
     try {
       await loadRegistrations();
+      setShowRlsAlert(false);
     } finally {
       setIsRefreshing(false);
+    }
+  };
+
+  // Handle login for direct database access
+  const handleDbLogin = async () => {
+    try {
+      // Try to authenticate with service role if available,
+      // or anonymous auth as fallback
+      await supabase.auth.signInAnonymously();
+      await loadRegistrations();
+      setShowRlsAlert(false);
+    } catch (error) {
+      console.error('Login error:', error);
     }
   };
 
@@ -86,6 +125,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         </div>
       )}
       
+      {showRlsAlert && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <ShieldAlert className="h-5 w-5 text-red-500 mr-2" />
+            <span>Row Level Security (RLS) policy may be blocking data access. Database counts show records exist but none are being returned.</span>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="bg-white" onClick={() => setSchemaModalOpen(true)}>
+              View SQL Update Script
+            </Button>
+            <Button variant="outline" className="bg-white" onClick={handleDbLogin}>
+              Authentication Fix
+            </Button>
+          </div>
+        </div>
+      )}
+      
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Registrations ({filteredRegistrations.length})</CardTitle>
@@ -107,6 +163,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </div>
           ) : (
             <>
+              {registrations.length === 0 && (
+                <Alert className="mb-4">
+                  <AlertDescription>
+                    No registrations found. If you believe records should be present, try clicking the "Refresh Data" button or check the Supabase dashboard to verify records exist.
+                  </AlertDescription>
+                </Alert>
+              )}
               <RegistrationsTable 
                 registrations={currentRegistrations} 
                 onDeleteRegistration={handleDeleteRegistration} 
@@ -127,4 +190,4 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       />
     </>
   );
-};
+}

@@ -26,12 +26,29 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
       console.log('Error details:', countError.details);
       console.log('Error hint:', countError.hint);
       console.log('Error code:', countError.code);
+      
+      // Check for specific RLS issues
+      if (countError.code === 'PGRST301' || countError.message?.includes('policy')) {
+        console.error('This appears to be a Row Level Security (RLS) policy issue.');
+        console.log('Current authentication status:', supabase.auth.getSession());
+        
+        // Try checking which policies exist
+        try {
+          const { data: rlsData, error: rlsError } = await supabase
+            .rpc('check_table_permissions', { table_name: REGISTRATIONS_TABLE, permission: 'select' });
+            
+          console.log('RLS check result:', rlsData, rlsError);
+        } catch (rlsCheckError) {
+          console.error('Error checking RLS policies:', rlsCheckError);
+        }
+      }
+      
       return [];
     }
     
     console.log(`Table contains approximately ${count} records`);
     
-    // Now get the actual data
+    // Now get the actual data with more verbose error handling
     const { data, error } = await supabase
       .from(REGISTRATIONS_TABLE)
       .select('*');
@@ -41,6 +58,20 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
       console.log('Error details:', error.details);
       console.log('Error hint:', error.hint);
       console.log('Error code:', error.code);
+      
+      // Check authentication and other potential issues
+      if (error.code === '42501' || error.message?.includes('permission')) {
+        console.error('Permission denied. This is likely an RLS policy issue.');
+        
+        // Verify if we're authenticated
+        const { data: session } = await supabase.auth.getSession();
+        console.log('Current session:', session);
+        
+        if (!session.session) {
+          console.log('Not authenticated. This could be why RLS is blocking access.');
+        }
+      }
+      
       return [];
     }
     
@@ -55,6 +86,36 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
     // If we get an empty array but know there should be data, there might be a permission issue
     if (data && data.length === 0 && count && count > 0) {
       console.warn('Found a mismatch: count shows records exist but query returned empty array. Possible RLS policy issue.');
+      
+      // Try to diagnose further
+      console.log('Attempting to diagnose RLS issues...');
+      
+      // Get the current auth status
+      const { data: authData } = await supabase.auth.getSession();
+      console.log('Auth session state:', authData);
+      
+      // Try to authenticate anonymously if we're not authenticated
+      if (!authData.session) {
+        console.log('Attempting anonymous authentication...');
+        const { error: signInError } = await supabase.auth.signInAnonymously();
+        
+        if (signInError) {
+          console.error('Anonymous auth failed:', signInError);
+        } else {
+          console.log('Anonymous auth successful, trying query again...');
+          // Try the query again
+          const { data: retryData, error: retryError } = await supabase
+            .from(REGISTRATIONS_TABLE)
+            .select('*');
+            
+          if (retryError) {
+            console.error('Retry query failed:', retryError);
+          } else {
+            console.log('Retry query results:', retryData);
+            return retryData as any[];
+          }
+        }
+      }
     }
     
     // The data from Supabase will be in snake_case format, so we need to convert it

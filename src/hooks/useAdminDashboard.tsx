@@ -7,7 +7,9 @@ import {
   exportDatabase, 
   importDatabase, 
   getDownloadLink,
-  EnhancedRegistration 
+  EnhancedRegistration,
+  supabase,
+  REGISTRATIONS_TABLE
 } from '@/utils/database';
 
 export function useAdminDashboard() {
@@ -27,9 +29,31 @@ export function useAdminDashboard() {
   const loadRegistrations = async () => {
     try {
       setIsLoading(true);
-      // Load registrations from our database utility - now properly awaiting the Promise
+      
+      // First attempt a direct query to get count to verify database access
+      const { count, error: countError } = await supabase
+        .from(REGISTRATIONS_TABLE)
+        .select('*', { count: 'exact', head: true });
+      
+      if (countError) {
+        console.error('Error checking database:', countError);
+        throw new Error(`Database connection error: ${countError.message}`);
+      }
+      
+      console.log(`Database contains ${count || 0} registrations according to count query`);
+      
+      // Load registrations from our database utility
       const loadedRegistrations = await getAllRegistrations();
       console.log("Loaded registrations:", loadedRegistrations);
+      
+      if (loadedRegistrations.length === 0 && count && count > 0) {
+        console.warn("Warning: Count shows records exist but query returned empty array. Possible permission issue.");
+        toast({
+          title: "Permission Issue Detected",
+          description: "Database contains records but couldn't retrieve them. Check RLS policies in Supabase.",
+          variant: "destructive",
+        });
+      }
       
       // Map registrations to normalized format with consistent casing
       // This ensures we handle any case inconsistencies between DB and frontend
@@ -68,6 +92,59 @@ export function useAdminDashboard() {
       // Set the normalized registrations
       setRegistrations(normalizedRegistrations);
       
+      // If we have no registrations but the count shows some exist,
+      // try a direct database query as a final fallback
+      if (normalizedRegistrations.length === 0 && count && count > 0) {
+        console.log("Attempting direct database query as fallback...");
+        try {
+          // Try a direct query without going through getAllRegistrations
+          const { data: directData, error: directError } = await supabase
+            .from(REGISTRATIONS_TABLE)
+            .select('*');
+            
+          if (directError) {
+            console.error("Direct query error:", directError);
+          } else if (directData && directData.length > 0) {
+            console.log("Successfully retrieved data via direct query:", directData);
+            
+            // Normalize the direct data
+            const directNormalized = directData.map(reg => ({
+              registrationId: reg.registrationid || '',
+              parentName: reg.parentname || '',
+              parentEmail: reg.parentemail || '',
+              parentPhone: reg.parentphone || '',
+              emergencyContact: reg.emergencycontact || '',
+              childName: reg.childname || '',
+              childAge: reg.childage || '',
+              childGrade: reg.childgrade || '',
+              schoolName: reg.schoolname || '',
+              medicalInfo: reg.medicalinfo || '',
+              preferredBatch: reg.preferredbatch || '',
+              alternateBatch: reg.alternatebatch || '',
+              hasPriorExperience: (reg.haspriorexperience || 'no') as "yes" | "no",
+              experienceDescription: reg.experiencedescription || '',
+              interestLevel: reg.interestlevel || '',
+              referralSource: reg.referralsource || '',
+              photoConsent: !!reg.photoconsent,
+              waiverAgreement: !!reg.waiveragreement,
+              tShirtSize: reg.tshirtsize || '',
+              specialRequests: reg.specialrequests || '',
+              volunteerInterest: !!reg.volunteerinterest,
+              submittedAt: reg.submittedat || ''
+            }));
+            
+            setRegistrations(directNormalized);
+            
+            toast({
+              title: "Data Retrieval Recovered",
+              description: `Successfully retrieved ${directNormalized.length} registrations via direct database query.`,
+            });
+          }
+        } catch (directQueryError) {
+          console.error("Error in direct database query:", directQueryError);
+        }
+      }
+      
       // If no registrations in new DB but exist in old storage, migrate them
       if (loadedRegistrations.length === 0) {
         const oldRegistrations = localStorage.getItem('registrations');
@@ -88,8 +165,9 @@ export function useAdminDashboard() {
     } catch (error) {
       console.error("Error loading registrations:", error);
       toast({
-        title: "Error",
-        description: "Failed to load registrations data.",
+        title: "Database Error",
+        description: error instanceof Error ? error.message : "Failed to load registrations data.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
