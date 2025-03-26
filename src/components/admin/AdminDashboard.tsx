@@ -1,10 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardToolbar } from './DashboardToolbar';
 import { RegistrationsTable } from './RegistrationsTable';
 import { PaginationControls } from './PaginationControls';
 import { useAdminDashboard } from '@/hooks/useAdminDashboard';
+import { Button } from '@/components/ui/button';
+import { Database } from 'lucide-react';
+import { SchemaUpdateModal } from './SchemaUpdateModal';
+import { validateDatabaseSchema } from '@/utils/database/schema-utils';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -26,6 +30,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     getFilteredRegistrations
   } = useAdminDashboard();
 
+  const [schemaModalOpen, setSchemaModalOpen] = useState(false);
+  const [needsSchemaUpdate, setNeedsSchemaUpdate] = useState(false);
+
+  // Check if schema needs updating
+  React.useEffect(() => {
+    const checkSchema = async () => {
+      const isValid = await validateDatabaseSchema();
+      setNeedsSchemaUpdate(!isValid);
+    };
+    checkSchema();
+  }, []);
+
   // Get filtered registrations
   const filteredRegistrations = getFilteredRegistrations();
 
@@ -46,6 +62,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         onImport={loadRegistrations}
         onLogout={onLogout}
       />
+      
+      {needsSchemaUpdate && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <Database className="h-5 w-5 text-yellow-500 mr-2" />
+            <span>Your database schema needs to be updated to support all features.</span>
+          </div>
+          <Button variant="outline" className="bg-white" onClick={() => setSchemaModalOpen(true)}>
+            View SQL Update Script
+          </Button>
+        </div>
+      )}
       
       <Card>
         <CardHeader>
@@ -72,6 +100,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           )}
         </CardContent>
       </Card>
+      
+      <SchemaUpdateModal 
+        open={schemaModalOpen} 
+        onOpenChange={setSchemaModalOpen} 
+      />
     </>
   );
 };

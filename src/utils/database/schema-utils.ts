@@ -77,6 +77,49 @@ export const getExpectedColumns = (): Record<string, string> => {
   };
 };
 
+// Generate SQL statements for missing columns
+export const generateSchemaUpdateSQL = async (): Promise<string> => {
+  try {
+    // Get all columns from the registration table
+    const { data: columns, error: columnsError } = await supabase
+      .from('information_schema.columns')
+      .select('column_name')
+      .eq('table_name', REGISTRATIONS_TABLE);
+      
+    if (columnsError) {
+      console.error('Error fetching table schema:', columnsError);
+      return '';
+    }
+    
+    // Get all column names in lowercase for case-insensitive comparison
+    const columnNames = columns?.map(col => col.column_name.toLowerCase()) || [];
+    
+    // Get expected columns
+    const expectedColumnsMap = getExpectedColumns();
+    const expectedColumns = Object.keys(expectedColumnsMap).map(key => key.toLowerCase());
+    
+    // Find missing columns
+    const missingColumns = expectedColumns.filter(col => !columnNames.includes(col));
+    
+    if (missingColumns.length === 0) {
+      return '-- No schema updates needed';
+    }
+    
+    // Generate SQL for missing columns
+    let sql = `-- Run this SQL in your Supabase SQL Editor to update the '${REGISTRATIONS_TABLE}' table\n\n`;
+    
+    missingColumns.forEach(colName => {
+      const colDefinition = expectedColumnsMap[colName];
+      sql += `ALTER TABLE ${REGISTRATIONS_TABLE} ADD COLUMN IF NOT EXISTS ${colName} ${colDefinition};\n`;
+    });
+    
+    return sql;
+  } catch (err) {
+    console.error('Error generating schema update SQL:', err);
+    return `-- Error generating schema update SQL: ${err}`;
+  }
+};
+
 // Add missing columns to the table
 export const addMissingColumns = async (): Promise<boolean> => {
   try {
@@ -127,16 +170,7 @@ export const addMissingColumns = async (): Promise<boolean> => {
       
       if (error) {
         console.error(`Error adding column ${colName}:`, error);
-        
-        // Try direct SQL if RPC fails (may depend on permissions)
-        const { error: directError } = await supabase.from('migrations').insert([
-          { name: `add_column_${colName}`, sql: `ALTER TABLE ${REGISTRATIONS_TABLE} ADD COLUMN IF NOT EXISTS ${colName} ${colDefinition}` }
-        ]);
-        
-        if (directError) {
-          console.error(`Error with direct SQL for column ${colName}:`, directError);
-          return false;
-        }
+        return false;
       }
     }
     
@@ -169,17 +203,23 @@ export const enhancedInitializeDatabase = async (): Promise<void> => {
           });
         } else {
           console.error('Schema still invalid after adding columns');
+          const sqlScript = await generateSchemaUpdateSQL();
+          console.log('Generated SQL script:', sqlScript);
+          
           toast({
-            title: "Schema Update Issue",
-            description: "Could not fully update the database schema. Check console for details.",
+            title: "Schema Update Required",
+            description: "Please run the SQL script provided in the admin dashboard to update your database.",
             variant: "destructive",
           });
         }
       } else {
         console.error('Failed to add missing columns');
+        const sqlScript = await generateSchemaUpdateSQL();
+        console.log('Generated SQL script:', sqlScript);
+        
         toast({
-          title: "Schema Update Failed",
-          description: "Could not add missing columns to the database. You may need to run the SQL script manually.",
+          title: "Schema Update Required",
+          description: "Please run the SQL script provided in the admin dashboard to update your database schema.",
           variant: "destructive",
         });
       }
@@ -187,4 +227,25 @@ export const enhancedInitializeDatabase = async (): Promise<void> => {
   } catch (error) {
     console.error('Error in enhanced database initialization:', error);
   }
+};
+
+// Create a view or div element to display the SQL script
+export const createSQLScriptElement = async (): Promise<HTMLElement> => {
+  const sqlScript = await generateSchemaUpdateSQL();
+  
+  const container = document.createElement('div');
+  container.className = 'bg-slate-800 text-white p-4 rounded-md mt-4 overflow-x-auto';
+  
+  const header = document.createElement('div');
+  header.className = 'font-bold text-sm mb-2';
+  header.textContent = 'SQL Script to Update Schema:';
+  
+  const pre = document.createElement('pre');
+  pre.className = 'text-xs';
+  pre.textContent = sqlScript;
+  
+  container.appendChild(header);
+  container.appendChild(pre);
+  
+  return container;
 };

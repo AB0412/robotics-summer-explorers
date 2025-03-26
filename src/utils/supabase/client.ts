@@ -30,8 +30,7 @@ console.log('Credentials valid:', hasValidCredentials());
 // Table name in Supabase
 export const REGISTRATIONS_TABLE = 'registrations';
 
-// Check if the table has the required schema - moved to schema-utils.ts
-// validateTableSchema is now moved to schema-utils.ts and enhanced
+// Import schema validation functions
 import { validateDatabaseSchema, enhancedInitializeDatabase } from '../database/schema-utils';
 
 // Initialize the database (create tables if they don't exist)
