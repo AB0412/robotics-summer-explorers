@@ -39,23 +39,6 @@ const Index = () => {
                         <div className="flex items-start gap-3">
                           <Phone className="text-robotics-blue mt-1" />
                           <div>
-                            <p className="font-medium">Avinash Billore</p>
-                            <p className="text-gray-600">603-866-0275</p>
-                            <a 
-                              href="https://wa.me/16038660275" 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-sm text-robotics-blue hover:text-robotics-navy mt-1"
-                            >
-                              <MessageSquare size={16} />
-                              <span>WhatsApp</span>
-                            </a>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-start gap-3">
-                          <Phone className="text-robotics-blue mt-1" />
-                          <div>
                             <p className="font-medium">Megha Billore</p>
                             <p className="text-gray-600">603-930-6748</p>
                             <a 
@@ -111,7 +94,7 @@ const Index = () => {
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
                           <Phone size={18} />
-                          <span>Call or text us at 603-866-0275</span>
+                          <span>Call or text us at 603-930-6748</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <MessageSquare size={18} />

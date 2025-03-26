@@ -1,3 +1,4 @@
+
 import React, { useRef } from 'react';
 import { Cog, MapPin, Phone, Mail, Bot, Lightbulb, Wrench } from 'lucide-react';
 import { Button } from './ui/button';
@@ -154,14 +155,6 @@ const PrintableFlyer = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <p className="font-bold">Program Instructors</p>
-                  <div className="flex items-start gap-3">
-                    <Phone className="text-robotics-blue mt-1" size={18} />
-                    <div>
-                      <p className="font-medium">Avinash Billore</p>
-                      <p className="text-gray-600">603-866-0275</p>
-                    </div>
-                  </div>
-                  
                   <div className="flex items-start gap-3">
                     <Phone className="text-robotics-blue mt-1" size={18} />
                     <div>
