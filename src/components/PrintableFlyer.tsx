@@ -159,7 +159,7 @@ const PrintableFlyer = () => {
                     <Phone className="text-robotics-blue mt-1" size={18} />
                     <div>
                       <p className="font-medium">Megha Billore</p>
-                      <p className="text-gray-600">603-930-6748</p>
+                      <p className="text-gray-600">603-866-0275</p>
                     </div>
                   </div>
                 </div>
@@ -209,3 +209,4 @@ const PrintableFlyer = () => {
 };
 
 export default PrintableFlyer;
+

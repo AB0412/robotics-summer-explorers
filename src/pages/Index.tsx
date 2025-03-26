@@ -40,9 +40,9 @@ const Index = () => {
                           <Phone className="text-robotics-blue mt-1" />
                           <div>
                             <p className="font-medium">Megha Billore</p>
-                            <p className="text-gray-600">603-930-6748</p>
+                            <p className="text-gray-600">603-866-0275</p>
                             <a 
-                              href="https://wa.me/16039306748" 
+                              href="https://wa.me/16038660275" 
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1 text-sm text-robotics-blue hover:text-robotics-navy mt-1"
@@ -94,7 +94,7 @@ const Index = () => {
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
                           <Phone size={18} />
-                          <span>Call or text us at 603-930-6748</span>
+                          <span>Call or text us at 603-866-0275</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <MessageSquare size={18} />
@@ -123,3 +123,4 @@ const Index = () => {
 };
 
 export default Index;
+
