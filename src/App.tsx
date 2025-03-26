@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import './App.css';
 import Index from './pages/Index';
@@ -7,10 +7,23 @@ import NotFound from './pages/NotFound';
 import Admin from './pages/Admin';
 import Registration from './pages/Registration';
 
+// This component will add logging for route changes
+const RouteLogger = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    console.log("Current route:", location.pathname);
+  }, [location]);
+  
+  return null;
+};
+
 // This component will handle hash-based navigation
 function App() {
   // Effect to handle hash-based navigation when the app first loads
   useEffect(() => {
+    console.log("App component mounted, initial URL:", window.location.href);
+    
     // Handle initial load with hash
     if (window.location.hash) {
       const id = window.location.hash.substring(1);
@@ -48,6 +61,7 @@ function App() {
   
   return (
     <Router>
+      <RouteLogger />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/registration" element={<Registration />} />
