@@ -36,7 +36,9 @@ const Header = () => {
   const handleRegisterClick = () => {
     console.log("Register button clicked, navigating to /registration");
     setMobileMenuOpen(false);
-    navigate('/registration');
+    
+    // Force a hard navigation instead of using react-router
+    window.location.href = '/registration';
   };
 
   return (
