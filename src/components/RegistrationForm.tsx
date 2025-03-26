@@ -11,7 +11,8 @@ import ProgramPreferencesSection from './registration/ProgramPreferencesSection'
 import RoboticsExperienceSection from './registration/RoboticsExperienceSection';
 import LogisticsConsentSection from './registration/LogisticsConsentSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
-import { Mail, Send } from 'lucide-react';
+import { Mail, Send, AlertTriangle } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const generateRegistrationId = () => {
   return 'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -19,6 +20,7 @@ const generateRegistrationId = () => {
 
 const RegistrationForm = () => {
   const { toast } = useToast();
+  const [registrationId, setRegistrationId] = React.useState<string | null>(null);
 
   // Initialize the form
   const form = useForm<FormValues>({
@@ -97,7 +99,8 @@ const RegistrationForm = () => {
     console.log('Form submitted:', data);
     
     // Generate a unique registration ID
-    const registrationId = generateRegistrationId();
+    const newRegistrationId = generateRegistrationId();
+    setRegistrationId(newRegistrationId);
     
     // Save to localStorage with registration ID
     const existingRegistrations = localStorage.getItem('registrations');
@@ -110,7 +113,7 @@ const RegistrationForm = () => {
     // Add registration ID and timestamp to registration
     const registrationWithIdAndTimestamp = {
       ...data,
-      registrationId,
+      registrationId: newRegistrationId,
       submittedAt: new Date().toISOString()
     };
     
@@ -118,12 +121,12 @@ const RegistrationForm = () => {
     localStorage.setItem('registrations', JSON.stringify(registrationsArray));
     
     // Send confirmation email
-    const emailSent = await sendConfirmationEmail(data, registrationId);
+    const emailSent = await sendConfirmationEmail(data, newRegistrationId);
     
     // Show success toast with additional information including registration ID
     toast({
-      title: "Registration Submitted",
-      description: `Your registration ID is: ${registrationId}. ${emailSent ? 'A confirmation email has been sent to your email address.' : ''} Thank you for registering! Please check your email for confirmation. Remember to bring a laptop or tablet if available for take-home assignments.`,
+      title: "Registration Submitted Successfully",
+      description: `Your registration ID is: ${newRegistrationId}. ${emailSent ? 'A confirmation email has been sent to your email address.' : ''} Thank you for registering!`,
       duration: 8000, // Extended duration for longer message
     });
     
@@ -133,6 +136,18 @@ const RegistrationForm = () => {
 
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-lg p-6 shadow-md">
+      {registrationId && (
+        <Alert className="mb-6 bg-blue-50 border-blue-200">
+          <AlertTriangle className="h-4 w-4 text-blue-700" />
+          <AlertTitle className="text-blue-800">Important: Save Your Registration ID</AlertTitle>
+          <AlertDescription className="text-blue-700">
+            Please write down your registration ID: <strong className="font-bold">{registrationId}</strong>
+            <br />
+            You will need this ID for any future inquiries about your registration.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Section 1: Basic Information */}
