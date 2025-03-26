@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -64,7 +63,11 @@ export function useAdminDashboard() {
   const handleDeleteRegistration = async (registrationId: string) => {
     try {
       // Delete the registration using our database utility
-      await deleteRegistration(registrationId);
+      const result = await deleteRegistration(registrationId);
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Unknown error deleting registration');
+      }
       
       // Update state with the filtered registrations
       setRegistrations(prevRegistrations => 
@@ -89,7 +92,7 @@ export function useAdminDashboard() {
       console.error("Error deleting registration:", error);
       toast({
         title: "Delete Failed",
-        description: "Failed to delete the registration. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to delete the registration. Please try again.",
       });
     }
   };

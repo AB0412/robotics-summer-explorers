@@ -1,17 +1,12 @@
+
 import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '../supabase/client';
 import { Registration } from './types';
-import { useToast } from '@/hooks/use-toast';
 
 // Get all registrations
 export const getAllRegistrations = async (): Promise<Registration[]> => {
   // Check if we have valid Supabase credentials
   if (!hasValidCredentials()) {
     console.error('Missing Supabase credentials. Cannot load registrations.');
-    toast({
-      title: "Database Configuration Required",
-      description: "Please configure valid Supabase credentials to use this application.",
-      variant: "destructive",
-    });
     return [];
   }
 
@@ -23,11 +18,6 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
     
     if (error) {
       console.error('Error getting registrations:', error);
-      toast({
-        title: "Data Fetch Error",
-        description: "Could not retrieve registrations from the database. Please check your configuration.",
-        variant: "destructive",
-      });
       return [];
     }
     
@@ -35,17 +25,12 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
     return data as Registration[];
   } catch (error) {
     console.error('Error accessing Supabase:', error);
-    toast({
-      title: "Connection Error",
-      description: "Could not connect to the database. Please check your configuration.",
-      variant: "destructive",
-    });
     return [];
   }
 };
 
 // Add a new registration
-export const addRegistration = async (registration: Registration): Promise<boolean> => {
+export const addRegistration = async (registration: Registration): Promise<{success: boolean; error?: string}> => {
   // If no valid Supabase credentials, don't attempt to save
   if (!hasValidCredentials()) {
     console.error('Missing Supabase credentials. Cannot add registration.');
@@ -53,7 +38,10 @@ export const addRegistration = async (registration: Registration): Promise<boole
       hasCredentials: hasValidCredentials(),
       tableName: REGISTRATIONS_TABLE
     });
-    return false;
+    return {
+      success: false,
+      error: 'Missing Supabase credentials. Cannot add registration.'
+    };
   }
 
   try {
@@ -68,7 +56,10 @@ export const addRegistration = async (registration: Registration): Promise<boole
     if (testError) {
       console.error('Database connection test failed:', testError);
       console.log('Table name being used:', REGISTRATIONS_TABLE);
-      return false;
+      return {
+        success: false,
+        error: `Database connection test failed: ${testError.message}`
+      };
     }
     
     // Proceed with insertion
@@ -90,42 +81,34 @@ export const addRegistration = async (registration: Registration): Promise<boole
         errorMessage = "The registration data doesn't match the database schema.";
       }
       
-      toast({
-        title: "Registration Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      return false;
+      return {
+        success: false,
+        error: errorMessage
+      };
     } else {
       console.log('Registration successfully added to Supabase:', data);
-      toast({
-        title: "Registration Saved",
-        description: "Your registration has been successfully saved to the database.",
-      });
-      return true;
+      return {
+        success: true
+      };
     }
   } catch (error) {
     console.error('Error accessing Supabase:', error);
-    toast({
-      title: "Connection Error",
-      description: "Could not connect to the database. Please check your configuration.",
-      variant: "destructive",
-    });
-    return false;
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown database error'
+    };
   }
 };
 
 // Delete a registration
-export const deleteRegistration = async (registrationId: string): Promise<boolean> => {
+export const deleteRegistration = async (registrationId: string): Promise<{success: boolean; error?: string}> => {
   // If no valid Supabase credentials, don't attempt to delete
   if (!hasValidCredentials()) {
     console.error('Missing Supabase credentials. Cannot delete registration.');
-    toast({
-      title: "Database Configuration Required",
-      description: "Please configure valid Supabase credentials to use this application.",
-      variant: "destructive",
-    });
-    return false;
+    return {
+      success: false,
+      error: 'Missing Supabase credentials. Cannot delete registration.'
+    };
   }
 
   try {
@@ -137,27 +120,21 @@ export const deleteRegistration = async (registrationId: string): Promise<boolea
     
     if (error) {
       console.error('Error deleting registration from Supabase:', error);
-      toast({
-        title: "Delete Failed",
-        description: "Could not delete the registration from the database. Please check your configuration.",
-        variant: "destructive",
-      });
-      return false;
+      return {
+        success: false,
+        error: `Error deleting registration: ${error.message}`
+      };
     } else {
       console.log(`Successfully deleted registration with ID: ${registrationId}`);
-      toast({
-        title: "Registration Deleted",
-        description: "Registration was successfully deleted from the database.",
-      });
-      return true;
+      return {
+        success: true
+      };
     }
   } catch (error) {
     console.error('Error accessing Supabase:', error);
-    toast({
-      title: "Connection Error",
-      description: "Could not connect to the database. Please check your configuration.",
-      variant: "destructive",
-    });
-    return false;
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown database error'
+    };
   }
 };

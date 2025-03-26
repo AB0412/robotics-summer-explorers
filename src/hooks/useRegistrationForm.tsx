@@ -92,11 +92,11 @@ export const useRegistrationForm = () => {
       console.log('Prepared registration data:', registrationWithIdAndTimestamp);
       
       // Submit registration to database using the addRegistration function
-      const success = await addRegistration(registrationWithIdAndTimestamp);
+      const result = await addRegistration(registrationWithIdAndTimestamp);
       
-      if (!success) {
-        console.error('Failed to submit registration to database');
-        throw new Error('Failed to submit registration to database');
+      if (!result.success) {
+        console.error('Failed to submit registration to database:', result.error);
+        throw new Error(result.error || 'Failed to submit registration to database');
       }
       
       // Set registration ID for display
@@ -118,7 +118,7 @@ export const useRegistrationForm = () => {
       console.error('Error during registration submission:', error);
       toast({
         title: "Registration Error",
-        description: "There was a problem submitting your registration. Please try again.",
+        description: error instanceof Error ? error.message : "There was a problem submitting your registration. Please try again.",
         variant: "destructive",
       });
     } finally {
