@@ -1,17 +1,23 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Bot } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Bot, Menu, X } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
   
   const scrollToSection = (sectionId: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     
     // Check if we're on the home page
-    if (window.location.pathname !== '/') {
+    if (location.pathname !== '/') {
       // Navigate to home page with the hash
       navigate(`/#${sectionId}`);
       return;
@@ -34,7 +40,7 @@ const Header = () => {
           <span className="font-display font-bold text-lg sm:text-2xl">Robotics Summer Explorers</span>
         </Link>
         
-        <nav className="hidden md:flex items-center gap-8 font-medium">
+        <nav className={`${mobileMenuOpen ? 'flex flex-col absolute top-16 right-0 bg-robotics-navy p-4 rounded-bl-lg shadow-lg z-50' : 'hidden md:flex'} items-center gap-8 font-medium`}>
           <a 
             href="#about" 
             onClick={scrollToSection('about')} 
@@ -59,6 +65,7 @@ const Header = () => {
           <Link 
             to="/registration" 
             className="hover:text-robotics-accent transition-colors"
+            onClick={() => setMobileMenuOpen(false)}
           >
             Register
           </Link>
@@ -67,24 +74,9 @@ const Header = () => {
         <div className="md:hidden">
           <Button 
             className="bg-robotics-accent text-robotics-navy hover:bg-robotics-lightblue"
-            onClick={() => {
-              const nav = document.querySelector('nav');
-              if (nav) {
-                nav.classList.toggle('hidden');
-                nav.classList.toggle('flex');
-                nav.classList.toggle('flex-col');
-                nav.classList.toggle('absolute');
-                nav.classList.toggle('top-16');
-                nav.classList.toggle('right-0');
-                nav.classList.toggle('bg-robotics-navy');
-                nav.classList.toggle('p-4');
-                nav.classList.toggle('rounded-bl-lg');
-                nav.classList.toggle('shadow-lg');
-                nav.classList.toggle('z-50');
-              }
-            }}
+            onClick={toggleMobileMenu}
           >
-            Menu
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </Button>
         </div>
       </div>
