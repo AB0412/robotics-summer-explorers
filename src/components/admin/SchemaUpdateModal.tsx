@@ -34,9 +34,16 @@ export const SchemaUpdateModal: React.FC<SchemaUpdateModalProps> = ({ open, onOp
     setLoading(true);
     try {
       const sql = await generateSchemaUpdateSQL();
-      setSqlScript(sql);
+      console.log("Generated SQL script:", sql); // Debug log to see what's returned
+      
+      if (!sql || sql.trim() === '' || sql.includes('No schema updates needed')) {
+        setSqlScript('-- No schema updates needed or unable to generate SQL script');
+      } else {
+        setSqlScript(sql);
+      }
     } catch (error) {
       console.error('Error generating SQL script:', error);
+      setSqlScript('-- Error generating SQL script: ' + (error instanceof Error ? error.message : String(error)));
       toast({
         title: 'Error',
         description: 'Failed to generate SQL script',
@@ -81,12 +88,12 @@ export const SchemaUpdateModal: React.FC<SchemaUpdateModalProps> = ({ open, onOp
           </div>
         ) : (
           <div className="bg-slate-800 text-white p-4 rounded-md mt-4 overflow-x-auto max-h-[300px]">
-            <pre className="text-xs whitespace-pre-wrap">{sqlScript}</pre>
+            <pre className="text-xs whitespace-pre-wrap">{sqlScript || '-- No SQL updates required'}</pre>
           </div>
         )}
         
         <DialogFooter>
-          <Button variant="outline" onClick={handleCopyToClipboard}>
+          <Button variant="outline" onClick={handleCopyToClipboard} disabled={!sqlScript || sqlScript.startsWith('--')}>
             Copy SQL to Clipboard
           </Button>
           <Button onClick={() => onOpenChange(false)}>Close</Button>

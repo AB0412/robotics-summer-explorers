@@ -80,6 +80,8 @@ export const getExpectedColumns = (): Record<string, string> => {
 // Generate SQL statements for missing columns
 export const generateSchemaUpdateSQL = async (): Promise<string> => {
   try {
+    console.log('Generating schema update SQL...');
+    
     // Get all columns from the registration table
     const { data: columns, error: columnsError } = await supabase
       .from('information_schema.columns')
@@ -88,11 +90,18 @@ export const generateSchemaUpdateSQL = async (): Promise<string> => {
       
     if (columnsError) {
       console.error('Error fetching table schema:', columnsError);
-      return '';
+      return `-- Error fetching table schema: ${columnsError.message}`;
     }
     
+    if (!columns) {
+      console.error('No columns data returned');
+      return `-- Could not retrieve column information for table: ${REGISTRATIONS_TABLE}`;
+    }
+    
+    console.log('Retrieved columns:', columns);
+    
     // Get all column names in lowercase for case-insensitive comparison
-    const columnNames = columns?.map(col => col.column_name.toLowerCase()) || [];
+    const columnNames = columns.map(col => col.column_name.toLowerCase());
     
     // Get expected columns
     const expectedColumnsMap = getExpectedColumns();
@@ -100,9 +109,10 @@ export const generateSchemaUpdateSQL = async (): Promise<string> => {
     
     // Find missing columns
     const missingColumns = expectedColumns.filter(col => !columnNames.includes(col));
+    console.log('Missing columns:', missingColumns);
     
     if (missingColumns.length === 0) {
-      return '-- No schema updates needed';
+      return '-- No schema updates needed. All required columns exist.';
     }
     
     // Generate SQL for missing columns
