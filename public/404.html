@@ -5,9 +5,17 @@
   <meta charset="utf-8">
   <title>Robotics Summer Explorers - Redirecting</title>
   <script type="text/javascript">
-    // Simple and direct redirect script
-    console.log("404 page loaded, redirecting to homepage");
-    window.location.replace('/');
+    // Get the path from the URL
+    var path = window.location.pathname;
+    console.log("404 page loaded, path:", path);
+    
+    // Handle specific routes
+    if (path.includes('registration')) {
+      window.location.replace('/registration');
+    } else {
+      // Default to homepage
+      window.location.replace('/');
+    }
   </script>
 </head>
 <body>

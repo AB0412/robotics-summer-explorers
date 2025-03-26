@@ -6,21 +6,8 @@ import RegistrationForm from '@/components/registration/RegistrationForm';
 
 const Registration = () => {
   useEffect(() => {
-    console.log("Registration page component mounted");
-    
-    // Log detailed diagnostics
-    console.log("Document title:", document.title);
-    console.log("Current URL:", window.location.href);
-    console.log("Path:", window.location.pathname);
-    
-    // Force page title update to ensure we're really on this page
+    console.log("Registration page mounted");
     document.title = "Registration - Robotics Summer Explorers";
-    
-    // Fix any potential history or URL issues
-    if (!window.location.pathname.includes('registration')) {
-      console.log("URL doesn't contain 'registration', attempting to fix history state");
-      window.history.replaceState(null, "Registration", "/registration");
-    }
   }, []);
 
   return (

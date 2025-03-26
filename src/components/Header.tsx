@@ -2,11 +2,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot, Menu, X } from 'lucide-react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const toggleMobileMenu = () => {
@@ -17,9 +15,9 @@ const Header = () => {
     e.preventDefault();
     
     // Check if we're on the home page
-    if (location.pathname !== '/') {
+    if (window.location.pathname !== '/') {
       // Navigate to home page with the hash
-      navigate(`/#${sectionId}`);
+      window.location.href = `/#${sectionId}`;
       return;
     }
     
@@ -32,23 +30,23 @@ const Header = () => {
     }
   };
 
-  // Completely reliable registration navigation using multiple approaches
+  // Use direct URL navigation which is most reliable
   const handleRegisterClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Stop any default behavior
-    console.log("Register button clicked - using direct navigation");
+    e.preventDefault();
+    console.log("Register button clicked - using direct window.location");
     setMobileMenuOpen(false);
     
-    // Use direct URL navigation which is most reliable for single-page apps
+    // Use direct URL navigation
     window.location.href = '/registration';
   };
 
   return (
     <header className="bg-robotics-navy text-white">
       <div className="container py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2">
           <Bot size={32} className="text-robotics-accent" />
           <span className="font-display font-bold text-lg sm:text-2xl">Robotics Summer Explorers</span>
-        </Link>
+        </a>
         
         <nav className={`${mobileMenuOpen ? 'flex flex-col absolute top-16 right-0 bg-robotics-navy p-4 rounded-bl-lg shadow-lg z-50' : 'hidden md:flex'} items-center gap-8 font-medium`}>
           <a 
