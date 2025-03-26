@@ -28,7 +28,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     // Load registrations from localStorage
     const savedRegistrations = localStorage.getItem('registrations');
     if (savedRegistrations) {
-      setRegistrations(JSON.parse(savedRegistrations));
+      try {
+        const parsedRegistrations = JSON.parse(savedRegistrations);
+        console.log("Loaded registrations:", parsedRegistrations);
+        setRegistrations(parsedRegistrations);
+      } catch (error) {
+        console.error("Error parsing registrations:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load registrations data.",
+        });
+      }
+    } else {
+      console.log("No registrations found in localStorage");
     }
   };
 
@@ -54,7 +66,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     const filteredRegs = getFilteredRegistrations(updatedRegistrations);
     const totalPages = Math.ceil(filteredRegs.length / itemsPerPage);
     if (currentPage > totalPages && currentPage > 1) {
-      setCurrentPage(totalPage => totalPage - 1);
+      setCurrentPage(prevPage => prevPage - 1);
     }
   };
 

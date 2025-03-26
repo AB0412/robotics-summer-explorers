@@ -16,6 +16,8 @@ const Admin = () => {
 
   const handleAuthentication = () => {
     setIsAuthenticated(true);
+    // Store authentication status in session storage
+    sessionStorage.setItem('adminAuthenticated', 'true');
   };
 
   const handleLogout = () => {
