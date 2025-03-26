@@ -31,9 +31,9 @@ const Header = () => {
     }
   };
 
-  // Simplified registration button handler - using direct navigation for reliability
+  // Direct navigation to registration page
   const handleRegisterClick = () => {
-    console.log("Register button clicked - using direct navigation");
+    console.log("Register button clicked, navigating to /registration");
     setMobileMenuOpen(false);
     navigate('/registration');
   };
@@ -68,13 +68,12 @@ const Header = () => {
           >
             Contact
           </a>
-          <Link 
-            to="/registration" 
+          <Button 
             onClick={handleRegisterClick}
             className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy px-4 py-2 rounded-md"
           >
             Register
-          </Link>
+          </Button>
         </nav>
         
         <div className="md:hidden">

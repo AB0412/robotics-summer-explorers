@@ -21,15 +21,16 @@ function App() {
   console.log("App component mounted, initial URL:", window.location.href);
   
   return (
-    <Router basename="/">
+    <Router>
       <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/registration" element={<Registration />} />
-        <Route path="/admin" element={<Admin />} />
-        {/* Fallback for any other route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="app-container">
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/registration" element={<Registration />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
     </Router>
   );
 }

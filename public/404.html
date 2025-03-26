@@ -5,20 +5,12 @@
   <meta charset="utf-8">
   <title>Robotics Summer Explorers - Redirecting</title>
   <script type="text/javascript">
-    // Single page app navigation
-    var pathSegmentsToKeep = 0;
-    var locationPath = window.location.pathname;
-    console.log("404 page loaded, path:", locationPath);
+    // Simple SPA redirect
+    console.log("404 page loaded, path:", window.location.pathname);
     
-    // Redirect to the root allowing React Router to handle routing
-    var newPath = window.location.protocol + '//' + window.location.hostname + 
-                 (window.location.port ? ':' + window.location.port : '') +
-                 '/' +
-                 locationPath.split('/').slice(1 + pathSegmentsToKeep).join('/') +
-                 window.location.search + 
-                 window.location.hash;
-    
-    window.location.replace(newPath);
+    // Redirect to the index.html and preserve the path
+    // This allows React Router to handle routing
+    window.location.href = '/' + window.location.search + window.location.hash;
   </script>
 </head>
 <body>
