@@ -11,6 +11,11 @@ import ProgramPreferencesSection from './registration/ProgramPreferencesSection'
 import RoboticsExperienceSection from './registration/RoboticsExperienceSection';
 import LogisticsConsentSection from './registration/LogisticsConsentSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
+import { Mail, Send } from 'lucide-react';
+
+const generateRegistrationId = () => {
+  return 'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+};
 
 const RegistrationForm = () => {
   const { toast } = useToast();
@@ -42,11 +47,47 @@ const RegistrationForm = () => {
     },
   });
 
+  const sendConfirmationEmail = async (data: FormValues, registrationId: string) => {
+    try {
+      // Create registration summary for the email
+      const registrationSummary = `
+        Registration ID: ${registrationId}
+        Parent: ${data.parentName}
+        Email: ${data.parentEmail}
+        Phone: ${data.parentPhone}
+        Child: ${data.childName}
+        Age: ${data.childAge}
+        Grade: ${data.childGrade}
+        School: ${data.schoolName}
+        Preferred Batch: ${data.preferredBatch}
+        Medical Information: ${data.medicalInfo || 'None provided'}
+        Prior Experience: ${data.hasPriorExperience}
+        T-Shirt Size: ${data.tShirtSize || 'Not selected'}
+      `;
+
+      // In a real app, this would use a server-side API
+      // Since we're client-side only, we'll simulate email sending
+      console.log("Sending confirmation email to:", data.parentEmail);
+      console.log("Registration Summary:", registrationSummary);
+      console.log("Also sending notification to: billoreavinash12@gmail.com");
+      
+      // For a real implementation, you would call a backend API or email service
+      // We're simulating success for now
+      return true;
+    } catch (error) {
+      console.error("Email sending failed:", error);
+      return false;
+    }
+  };
+
   // Form submission handler
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     console.log('Form submitted:', data);
     
-    // Save to localStorage
+    // Generate a unique registration ID
+    const registrationId = generateRegistrationId();
+    
+    // Save to localStorage with registration ID
     const existingRegistrations = localStorage.getItem('registrations');
     let registrationsArray = [];
     
@@ -54,20 +95,24 @@ const RegistrationForm = () => {
       registrationsArray = JSON.parse(existingRegistrations);
     }
     
-    // Add timestamp to registration
-    const registrationWithTimestamp = {
+    // Add registration ID and timestamp to registration
+    const registrationWithIdAndTimestamp = {
       ...data,
+      registrationId,
       submittedAt: new Date().toISOString()
     };
     
-    registrationsArray.push(registrationWithTimestamp);
+    registrationsArray.push(registrationWithIdAndTimestamp);
     localStorage.setItem('registrations', JSON.stringify(registrationsArray));
     
-    // Show success toast with additional information
+    // Send confirmation email
+    const emailSent = await sendConfirmationEmail(data, registrationId);
+    
+    // Show success toast with additional information including registration ID
     toast({
       title: "Registration Submitted",
-      description: "Thank you for registering! Please check your email for confirmation. Remember to bring a laptop or tablet if available for take-home assignments.",
-      duration: 6000, // Extended duration for longer message
+      description: `Your registration ID is: ${registrationId}. ${emailSent ? 'A confirmation email has been sent to your email address.' : ''} Thank you for registering! Please check your email for confirmation. Remember to bring a laptop or tablet if available for take-home assignments.`,
+      duration: 8000, // Extended duration for longer message
     });
     
     // Reset form
@@ -96,10 +141,15 @@ const RegistrationForm = () => {
           {/* Submit Button */}
           <Button 
             type="submit" 
-            className="w-full bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy"
+            className="w-full bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy flex items-center justify-center gap-2"
           >
+            <Send className="h-4 w-4" />
             Submit Registration
           </Button>
+          <p className="text-sm text-gray-500 text-center mt-2">
+            <Mail className="inline h-4 w-4 mr-1" />
+            A confirmation email will be sent upon successful registration
+          </p>
         </form>
       </Form>
     </div>

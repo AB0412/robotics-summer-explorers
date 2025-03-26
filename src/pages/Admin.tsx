@@ -33,10 +33,15 @@ import { FormValues } from '@/components/registration/RegistrationTypes';
 // Hard-coded admin password - in a real app, this would be handled securely
 const ADMIN_PASSWORD = "admin123"; 
 
+interface EnhancedRegistration extends FormValues {
+  registrationId?: string;
+  submittedAt?: string;
+}
+
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [registrations, setRegistrations] = useState<FormValues[]>([]);
+  const [registrations, setRegistrations] = useState<EnhancedRegistration[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFilter, setSearchFilter] = useState('all');
@@ -102,12 +107,15 @@ const Admin = () => {
         return reg.parentName.toLowerCase().includes(searchTermLower);
       case 'email':
         return reg.parentEmail.toLowerCase().includes(searchTermLower);
+      case 'regId':
+        return reg.registrationId?.toLowerCase().includes(searchTermLower);
       case 'all':
       default:
         return (
           reg.parentName.toLowerCase().includes(searchTermLower) ||
           reg.childName.toLowerCase().includes(searchTermLower) ||
-          reg.parentEmail.toLowerCase().includes(searchTermLower)
+          reg.parentEmail.toLowerCase().includes(searchTermLower) ||
+          reg.registrationId?.toLowerCase().includes(searchTermLower)
         );
     }
   });
@@ -171,6 +179,7 @@ const Admin = () => {
                   <SelectItem value="childName">Student Name</SelectItem>
                   <SelectItem value="parentName">Parent Name</SelectItem>
                   <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="regId">Registration ID</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -189,6 +198,7 @@ const Admin = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead>Registration ID</TableHead>
                         <TableHead>Parent Name</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Child Name</TableHead>
@@ -200,6 +210,7 @@ const Admin = () => {
                     <TableBody>
                       {currentRegistrations.map((reg, index) => (
                         <TableRow key={index}>
+                          <TableCell>{reg.registrationId || 'N/A'}</TableCell>
                           <TableCell>{reg.parentName}</TableCell>
                           <TableCell>{reg.parentEmail}</TableCell>
                           <TableCell>{reg.childName}</TableCell>
