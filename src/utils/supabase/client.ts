@@ -17,7 +17,8 @@ export const REGISTRATIONS_TABLE = 'registrations';
 
 // Check if Supabase credentials are valid
 export const hasValidCredentials = (): boolean => {
-  return !(supabaseAnonKey === 'placeholder-anon-key' || !supabaseUrl || !supabaseAnonKey);
+  // Check if keys are empty or contain placeholder text
+  return !(!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder') || supabaseAnonKey.includes('placeholder'));
 }
 
 // Initialize the database (create tables if they don't exist)
