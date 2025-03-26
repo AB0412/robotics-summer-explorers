@@ -6,8 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 import { SearchBar } from './SearchBar';
 import { RegistrationsTable, EnhancedRegistration } from './RegistrationsTable';
 import { PaginationControls } from './PaginationControls';
-import { getAllRegistrations, deleteRegistration, exportDatabase, importDatabase, Registration } from '@/utils/database';
-import { Download, Upload } from 'lucide-react';
+import { getAllRegistrations, deleteRegistration, exportDatabase, importDatabase, Registration, getDownloadLink } from '@/utils/database';
+import { Download, Upload, Save } from 'lucide-react';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -82,6 +82,39 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     const totalPages = Math.ceil(filteredRegs.length / itemsPerPage);
     if (currentPage > totalPages && currentPage > 1) {
       setCurrentPage(prevPage => prevPage - 1);
+    }
+  };
+
+  // Handle saving database to local file
+  const handleSaveDatabase = () => {
+    try {
+      const downloadLink = getDownloadLink();
+      if (downloadLink) {
+        // Create anchor and trigger download
+        const a = document.createElement('a');
+        a.href = downloadLink;
+        a.download = `robotics-registrations-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        document.body.removeChild(a);
+        
+        toast({
+          title: "Save Successful",
+          description: "Registration data file has been saved.",
+        });
+      } else {
+        // If no download link is available (e.g., first time), generate one
+        handleExportDatabase();
+        setTimeout(handleSaveDatabase, 100); // Try again after a small delay
+      }
+    } catch (error) {
+      console.error("Error saving database to file:", error);
+      toast({
+        title: "Save Failed",
+        description: "Failed to save registration data file.",
+      });
     }
   };
 
@@ -206,13 +239,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             <Upload className="h-4 w-4 mr-2" />
             Import
           </Button>
-          <input 
-            type="file" 
-            ref={fileInputRef}
-            accept=".json"
-            className="hidden"
-            onChange={handleImportDatabase}
-          />
+          <Button variant="outline" onClick={handleSaveDatabase}>
+            <Save className="h-4 w-4 mr-2" />
+            Save to File
+          </Button>
           <Button variant="outline" onClick={handleExportDatabase}>
             <Download className="h-4 w-4 mr-2" />
             Export

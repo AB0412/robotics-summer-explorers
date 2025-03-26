@@ -38,6 +38,9 @@ const emptyDB: DBStorage = {
   registrations: []
 };
 
+// File path for local storage (in a real app with Node.js backend, this would be a file path)
+const DB_FILE_PATH = 'registrations-data.json';
+
 // Load the database from localStorage
 export const loadDatabase = (): DBStorage => {
   try {
@@ -57,6 +60,34 @@ export const loadDatabase = (): DBStorage => {
 export const saveDatabase = (db: DBStorage): void => {
   try {
     localStorage.setItem('roboticsDB', JSON.stringify(db));
+    
+    // In a browser-only environment, we can't write directly to the filesystem
+    // Instead, we'll create a downloadable file that can be saved
+    const jsonData = JSON.stringify(db, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    
+    // Store the latest blob in sessionStorage for easy access
+    sessionStorage.setItem('latestRegistrationsBlob', URL.createObjectURL(blob));
+    
+    // Display a small notification (only when running in admin mode)
+    if (window.location.pathname.includes('admin')) {
+      const notificationDiv = document.createElement('div');
+      notificationDiv.style.position = 'fixed';
+      notificationDiv.style.bottom = '20px';
+      notificationDiv.style.right = '20px';
+      notificationDiv.style.backgroundColor = 'rgba(0,0,0,0.7)';
+      notificationDiv.style.color = 'white';
+      notificationDiv.style.padding = '10px 20px';
+      notificationDiv.style.borderRadius = '5px';
+      notificationDiv.style.zIndex = '1000';
+      notificationDiv.textContent = 'Registration data updated. Download available.';
+      
+      document.body.appendChild(notificationDiv);
+      
+      setTimeout(() => {
+        document.body.removeChild(notificationDiv);
+      }, 3000);
+    }
   } catch (error) {
     console.error('Error saving database:', error);
   }
@@ -128,4 +159,9 @@ export const importDatabase = (jsonData: string): boolean => {
     console.error('Error importing database:', error);
     return false;
   }
+};
+
+// Get a download link for the latest database
+export const getDownloadLink = (): string => {
+  return sessionStorage.getItem('latestRegistrationsBlob') || '';
 };
