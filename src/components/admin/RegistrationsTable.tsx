@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Table,
@@ -21,7 +20,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { FormValues } from '@/components/registration/RegistrationTypes';
 import { Registration } from '@/utils/database';
 
 // EnhancedRegistration now extends Registration rather than FormValues

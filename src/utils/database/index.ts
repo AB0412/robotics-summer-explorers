@@ -7,6 +7,9 @@ export * from './registrationOperations';
 export * from './search';
 export * from './import-export';
 
+// Re-export the EnhancedRegistration type from RegistrationsTable
+export type { EnhancedRegistration } from '@/components/admin/RegistrationsTable';
+
 // Initialize the database when this module loads
 import { initializeDatabase } from '../supabase/client';
 
