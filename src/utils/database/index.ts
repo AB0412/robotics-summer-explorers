@@ -2,7 +2,8 @@
 // Re-export all the database functionality from the module files
 export * from './types';
 export * from '../supabase/client';
-export * from './registrations';
+export * from './core';
+export * from './registrationOperations';
 export * from './search';
 export * from './import-export';
 

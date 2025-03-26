@@ -1,12 +1,11 @@
 
 import { DBStorage } from './types';
 import { toast } from '@/hooks/use-toast';
+import { loadDatabase, saveDatabase } from './core';
 
 // Export database as JSON
 export const exportDatabase = async (): Promise<string> => {
   try {
-    // Import the function dynamically to avoid circular dependencies
-    const { loadDatabase } = await import('./registrations');
     const db = await loadDatabase();
     return JSON.stringify(db, null, 2);
   } catch (error) {
@@ -27,8 +26,6 @@ export const importDatabase = async (jsonData: string): Promise<boolean> => {
     
     // Validate the data has the expected structure
     if (parsedData && typeof parsedData === 'object' && Array.isArray(parsedData.registrations)) {
-      // Import the function dynamically to avoid circular dependencies
-      const { saveDatabase } = await import('./registrations');
       await saveDatabase(parsedData);
       return true;
     }
