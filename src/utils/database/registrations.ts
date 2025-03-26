@@ -179,6 +179,7 @@ export const deleteRegistration = async (registrationId: string): Promise<void> 
       title: "Connection Error",
       description: "Could not connect to the cloud database to delete the registration.",
       variant: "destructive",
+      
     });
     throw error;
   }

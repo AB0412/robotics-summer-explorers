@@ -10,6 +10,7 @@ import ChildDetailsSection from './registration/ChildDetailsSection';
 import ProgramPreferencesSection from './registration/ProgramPreferencesSection';
 import RoboticsExperienceSection from './registration/RoboticsExperienceSection';
 import LogisticsConsentSection from './registration/LogisticsConsentSection';
+import PaymentOptionsSection from './registration/PaymentOptionsSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
 import { Send, AlertTriangle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -129,20 +130,29 @@ const RegistrationForm = () => {
       volunteerInterest: data.volunteerInterest
     };
     
-    addRegistration(registrationWithIdAndTimestamp);
-    
-    // Send confirmation email
-    const emailSent = await sendConfirmationEmail(data, newRegistrationId);
-    
-    // Show success toast with the updated message about registration ID
-    toast({
-      title: "Registration Submitted Successfully",
-      description: `Please note your unique registration ID for future reference: ${newRegistrationId}`,
-      duration: 8000, // Extended duration for longer message
-    });
-    
-    // Reset form
-    form.reset();
+    try {
+      await addRegistration(registrationWithIdAndTimestamp);
+      
+      // Send confirmation email
+      const emailSent = await sendConfirmationEmail(data, newRegistrationId);
+      
+      // Show success toast with the updated message about registration ID
+      toast({
+        title: "Registration Submitted Successfully",
+        description: `Please note your unique registration ID for future reference: ${newRegistrationId}`,
+        duration: 8000, // Extended duration for longer message
+      });
+      
+      // Reset form
+      form.reset();
+    } catch (error) {
+      console.error('Error during registration submission:', error);
+      toast({
+        title: "Registration Error",
+        description: "There was a problem submitting your registration. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -175,6 +185,9 @@ const RegistrationForm = () => {
           
           {/* Section 5: Logistics & Consent */}
           <LogisticsConsentSection form={form} />
+          
+          {/* Section 6: Payment Options */}
+          <PaymentOptionsSection form={form} />
           
           {/* Submit Button */}
           <Button 
