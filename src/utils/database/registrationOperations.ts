@@ -1,6 +1,6 @@
 
 import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '../supabase/client';
-import { Registration } from './types';
+import { Registration, SupabaseRegistration } from './types';
 
 // Get all registrations
 export const getAllRegistrations = async (): Promise<Registration[]> => {
@@ -57,7 +57,9 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
       console.warn('Found a mismatch: count shows records exist but query returned empty array. Possible RLS policy issue.');
     }
     
-    return data as Registration[];
+    // The data from Supabase will be in snake_case format, so we need to convert it
+    // We'll perform this transformation in the useAdminDashboard hook for flexibility
+    return data as any[];
   } catch (error) {
     console.error('Error accessing Supabase:', error);
     return [];
@@ -97,42 +99,39 @@ export const addRegistration = async (registration: Registration): Promise<{succ
       };
     }
     
-    // Convert to lowercase keys for Supabase
-    const formattedRegistration = Object.entries(registration).reduce((acc, [key, value]) => {
-      acc[key.toLowerCase()] = value;
-      return acc;
-    }, {} as Record<string, any>);
+    // Convert from camelCase to lowercase/snake_case for Supabase
+    const supabaseRegistration: SupabaseRegistration = {
+      registrationid: registration.registrationId,
+      parentname: registration.parentName,
+      parentemail: registration.parentEmail,
+      parentphone: registration.parentPhone,
+      emergencycontact: registration.emergencyContact,
+      childname: registration.childName,
+      childage: registration.childAge,
+      childgrade: registration.childGrade,
+      schoolname: registration.schoolName,
+      medicalinfo: registration.medicalInfo,
+      preferredbatch: registration.preferredBatch,
+      alternatebatch: registration.alternateBatch,
+      haspriorexperience: registration.hasPriorExperience,
+      experiencedescription: registration.experienceDescription,
+      interestlevel: registration.interestLevel,
+      referralsource: registration.referralSource,
+      photoconsent: registration.photoConsent,
+      waiveragreement: registration.waiverAgreement,
+      tshirtsize: registration.tShirtSize,
+      specialrequests: registration.specialRequests,
+      volunteerinterest: registration.volunteerInterest,
+      submittedat: registration.submittedAt
+    };
     
-    console.log('Formatted registration with lowercase keys:', formattedRegistration);
+    console.log('Formatted registration with snake_case keys:', supabaseRegistration);
     
-    // Try to verify if we can insert with RLS policies
-    console.log('Checking if we have insert permissions...');
-    
-    // Fixed approach: Using try/catch instead of .catch() on the RPC call
-    let policyError = null;
-    try {
-      const { error } = await supabase.rpc('check_table_permissions', { 
-        table_name: REGISTRATIONS_TABLE,
-        permission: 'INSERT' 
-      });
-      policyError = error;
-    } catch (e) {
-      // If RPC fails (function doesn't exist), we'll proceed anyway
-      console.log('RPC check_table_permissions not available, skipping check');
-    }
-    
-    if (policyError) {
-      console.warn('Permission check failed, but proceeding with insert attempt:', policyError);
-    }
-    
-    // Try using service role API key if available
-    let clientToUse = supabase;
-    
-    // Try to insert with explicit role identification
+    // Try to insert with explicit type safety
     console.log(`Inserting into table: ${REGISTRATIONS_TABLE}`);
-    const { data, error } = await clientToUse
+    const { data, error } = await supabase
       .from(REGISTRATIONS_TABLE)
-      .insert([formattedRegistration])
+      .insert([supabaseRegistration])
       .select();
     
     if (error) {

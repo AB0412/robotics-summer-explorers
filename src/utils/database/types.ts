@@ -30,6 +30,33 @@ export interface Registration {
   submittedAt: string;
 }
 
+// Supabase database format (snake_case columns)
+export interface SupabaseRegistration {
+  id?: number;
+  registrationid: string;
+  parentname: string;
+  parentemail: string;
+  parentphone: string;
+  emergencycontact: string;
+  childname: string;
+  childage: string;
+  childgrade: string;
+  schoolname: string;
+  medicalinfo?: string;
+  preferredbatch: string;
+  alternatebatch?: string;
+  haspriorexperience: "yes" | "no";
+  experiencedescription?: string;
+  interestlevel?: string;
+  referralsource: string;
+  photoconsent: boolean;
+  waiveragreement: boolean;
+  tshirtsize?: string;
+  specialrequests?: string;
+  volunteerinterest: boolean;
+  submittedat: string;
+}
+
 // Initialize empty database structure
 export const emptyDB: DBStorage = {
   registrations: []

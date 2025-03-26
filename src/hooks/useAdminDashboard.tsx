@@ -36,28 +36,29 @@ export function useAdminDashboard() {
       const normalizedRegistrations = loadedRegistrations.map(reg => {
         // Create a properly cased registration object
         const normalized: EnhancedRegistration = {
-          registrationId: reg.registrationid || reg.registrationId || '',
-          parentName: reg.parentname || reg.parentName || '',
-          parentEmail: reg.parentemail || reg.parentEmail || '',
-          parentPhone: reg.parentphone || reg.parentPhone || '',
-          emergencyContact: reg.emergencycontact || reg.emergencyContact || '',
-          childName: reg.childname || reg.childName || '',
-          childAge: reg.childage || reg.childAge || '',
-          childGrade: reg.childgrade || reg.childGrade || '',
-          schoolName: reg.schoolname || reg.schoolName || '',
-          medicalInfo: reg.medicalinfo || reg.medicalInfo || '',
-          preferredBatch: reg.preferredbatch || reg.preferredBatch || '',
-          alternateBatch: reg.alternatebatch || reg.alternateBatch || '',
-          hasPriorExperience: (reg.haspriorexperience || reg.hasPriorExperience || 'no') as "yes" | "no",
-          experienceDescription: reg.experiencedescription || reg.experienceDescription || '',
-          interestLevel: reg.interestlevel || reg.interestLevel || '',
-          referralSource: reg.referralsource || reg.referralSource || '',
-          photoConsent: !!reg.photoconsent || !!reg.photoConsent,
-          waiverAgreement: !!reg.waiveragreement || !!reg.waiverAgreement,
-          tShirtSize: reg.tshirtsize || reg.tShirtSize || '',
-          specialRequests: reg.specialrequests || reg.specialRequests || '',
-          volunteerInterest: !!reg.volunteerinterest || !!reg.volunteerInterest,
-          submittedAt: reg.submittedat || reg.submittedAt || ''
+          // Use optional chaining and provide defaults for all fields
+          registrationId: reg.registrationId || (reg as any).registrationid || '',
+          parentName: reg.parentName || (reg as any).parentname || '',
+          parentEmail: reg.parentEmail || (reg as any).parentemail || '',
+          parentPhone: reg.parentPhone || (reg as any).parentphone || '',
+          emergencyContact: reg.emergencyContact || (reg as any).emergencycontact || '',
+          childName: reg.childName || (reg as any).childname || '',
+          childAge: reg.childAge || (reg as any).childage || '',
+          childGrade: reg.childGrade || (reg as any).childgrade || '',
+          schoolName: reg.schoolName || (reg as any).schoolname || '',
+          medicalInfo: reg.medicalInfo || (reg as any).medicalinfo || '',
+          preferredBatch: reg.preferredBatch || (reg as any).preferredbatch || '',
+          alternateBatch: reg.alternateBatch || (reg as any).alternatebatch || '',
+          hasPriorExperience: (reg.hasPriorExperience || (reg as any).haspriorexperience || 'no') as "yes" | "no",
+          experienceDescription: reg.experienceDescription || (reg as any).experiencedescription || '',
+          interestLevel: reg.interestLevel || (reg as any).interestlevel || '',
+          referralSource: reg.referralSource || (reg as any).referralsource || '',
+          photoConsent: !!reg.photoConsent || !!(reg as any).photoconsent,
+          waiverAgreement: !!reg.waiverAgreement || !!(reg as any).waiveragreement,
+          tShirtSize: reg.tShirtSize || (reg as any).tshirtsize || '',
+          specialRequests: reg.specialRequests || (reg as any).specialrequests || '',
+          volunteerInterest: !!reg.volunteerInterest || !!(reg as any).volunteerinterest,
+          submittedAt: reg.submittedAt || (reg as any).submittedat || ''
         };
         return normalized;
       });
