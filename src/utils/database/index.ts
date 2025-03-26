@@ -9,6 +9,11 @@ export * from './import-export';
 // Initialize the database when this module loads
 import { initializeDatabase } from '../supabase/client';
 
-initializeDatabase().catch(error => {
-  console.error('Failed to initialize database:', error);
-});
+// Use a try/catch to prevent initialization errors from crashing the app
+try {
+  initializeDatabase().catch(error => {
+    console.error('Failed to initialize database:', error);
+  });
+} catch (error) {
+  console.error('Error during database initialization:', error);
+}

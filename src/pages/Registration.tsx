@@ -1,7 +1,6 @@
 
 import React from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
-import { Toaster } from '@/components/ui/toaster';
 
 const Registration = () => {
   return (
@@ -12,7 +11,6 @@ const Registration = () => {
         All fields marked as required must be filled in to complete the registration.
       </p>
       <RegistrationForm />
-      <Toaster />
     </div>
   );
 };

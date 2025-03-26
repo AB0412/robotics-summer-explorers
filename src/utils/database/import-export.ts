@@ -1,12 +1,23 @@
 
 import { DBStorage } from './types';
+import { toast } from '@/hooks/use-toast';
 
 // Export database as JSON
 export const exportDatabase = async (): Promise<string> => {
-  // Import the function dynamically to avoid circular dependencies
-  const { loadDatabase } = await import('./registrations');
-  const db = await loadDatabase();
-  return JSON.stringify(db, null, 2);
+  try {
+    // Import the function dynamically to avoid circular dependencies
+    const { loadDatabase } = await import('./registrations');
+    const db = await loadDatabase();
+    return JSON.stringify(db, null, 2);
+  } catch (error) {
+    console.error('Error exporting database:', error);
+    toast({
+      title: "Export Error",
+      description: "Could not export the database.",
+      variant: "destructive",
+    });
+    return "{}";
+  }
 };
 
 // Import database from JSON string
@@ -21,9 +32,19 @@ export const importDatabase = async (jsonData: string): Promise<boolean> => {
       await saveDatabase(parsedData);
       return true;
     }
+    toast({
+      title: "Import Error",
+      description: "Invalid data format.",
+      variant: "destructive",
+    });
     return false;
   } catch (error) {
     console.error('Error importing database:', error);
+    toast({
+      title: "Import Error",
+      description: "Could not import the database.",
+      variant: "destructive",
+    });
     return false;
   }
 };
