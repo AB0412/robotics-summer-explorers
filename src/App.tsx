@@ -5,6 +5,7 @@ import './App.css';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
 import Registration from './pages/Registration';
+import Layout from './components/Layout';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -22,13 +23,13 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="app-container">
-        <Routes>
+      <Routes>
+        <Route element={<Layout />}>
           <Route path="/" element={<Index />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
+        </Route>
+      </Routes>
     </Router>
   );
 }

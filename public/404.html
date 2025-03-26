@@ -8,9 +8,17 @@
     // Simple SPA redirect
     console.log("404 page loaded, path:", window.location.pathname);
     
-    // Redirect to the index.html and preserve the path
-    // This allows React Router to handle routing
-    window.location.href = '/' + window.location.search + window.location.hash;
+    // Get the current path excluding the leading slash
+    var pathSegments = window.location.pathname.split('/');
+    var targetPath = '';
+    
+    // Handle different path structures
+    if (pathSegments.length > 1 && pathSegments[1] !== '') {
+      targetPath = '/';
+    }
+    
+    // Redirect to the index.html with the proper path
+    window.location.href = targetPath + window.location.search + window.location.hash;
   </script>
 </head>
 <body>

@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot, Menu, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -16,7 +17,7 @@ const Header = () => {
     e.preventDefault();
     
     // Check if we're on the home page
-    if (window.location.pathname !== '/') {
+    if (location.pathname !== '/') {
       // Navigate to home page with the hash
       navigate('/#' + sectionId);
       return;
@@ -28,6 +29,11 @@ const Header = () => {
       
       // Also update the URL hash for better navigation and sharing
       window.history.pushState(null, '', `#${sectionId}`);
+    }
+    
+    // Close mobile menu if open
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
     }
   };
 
@@ -80,6 +86,7 @@ const Header = () => {
           <Button 
             className="bg-robotics-accent text-robotics-navy hover:bg-robotics-lightblue"
             onClick={toggleMobileMenu}
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </Button>
