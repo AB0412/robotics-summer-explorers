@@ -2,11 +2,21 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const navigate = useNavigate();
+  
   const scrollToSection = (sectionId: string) => (e: React.MouseEvent) => {
     e.preventDefault();
+    
+    // Check if we're on the home page
+    if (window.location.pathname !== '/') {
+      // Navigate to home page with the hash
+      navigate(`/#${sectionId}`);
+      return;
+    }
+    
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });

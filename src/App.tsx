@@ -44,6 +44,8 @@ function App() {
     };
   }, []);
   
+  console.log("App component rendering with routes");
+  
   return (
     <Router>
       <Routes>
