@@ -5,6 +5,7 @@ import './App.css';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
 import Admin from './pages/Admin';
+import Registration from './pages/Registration';
 
 // This component will handle hash-based navigation
 function App() {
@@ -47,6 +48,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/register" element={<Registration />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -46,6 +46,12 @@ const Header = () => {
           >
             Contact
           </a>
+          <Link 
+            to="/register" 
+            className="hover:text-robotics-accent transition-colors"
+          >
+            Register
+          </Link>
         </nav>
         
         <div className="md:hidden">
