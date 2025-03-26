@@ -3,20 +3,24 @@ import React, { useState, useEffect } from 'react';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info, Database } from 'lucide-react';
-import { initializeDatabase } from '@/utils/database';
+import { Info, Database, AlertTriangle } from 'lucide-react';
+import { initializeDatabase, hasValidCredentials } from '@/utils/supabase/client';
+import { Button } from '@/components/ui/button';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [useLocalStorage, setUseLocalStorage] = useState(false);
   
   useEffect(() => {
     // Initialize the Supabase connection
     const init = async () => {
       try {
         await initializeDatabase();
+        setUseLocalStorage(!hasValidCredentials());
       } catch (error) {
         console.error("Failed to initialize database:", error);
+        setUseLocalStorage(true);
       } finally {
         setIsInitializing(false);
       }
@@ -58,20 +62,30 @@ const Admin = () => {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
         <Database className="h-6 w-6" />
-        Admin Dashboard (Supabase)
+        Admin Dashboard {useLocalStorage ? "(Local Storage)" : "(Supabase)"}
       </h1>
       
       {!isAuthenticated ? (
         <AdminLogin onLogin={handleAuthentication} />
       ) : (
         <>
-          <Alert className="mb-4 bg-blue-50">
-            <Info className="h-4 w-4 text-blue-700" />
-            <AlertDescription className="text-blue-700">
-              Your registration data is now stored in Supabase. All administrators can access the same data from anywhere.
-              You can still export/import data using the buttons above the table.
-            </AlertDescription>
-          </Alert>
+          {useLocalStorage ? (
+            <Alert className="mb-4 bg-yellow-50">
+              <AlertTriangle className="h-4 w-4 text-yellow-700" />
+              <AlertDescription className="text-yellow-700">
+                Using local storage mode. Your data is only stored in this browser and not accessible from other devices.
+                To use cloud storage, please configure your Supabase credentials.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Alert className="mb-4 bg-blue-50">
+              <Info className="h-4 w-4 text-blue-700" />
+              <AlertDescription className="text-blue-700">
+                Your registration data is stored in Supabase. All administrators can access the same data from anywhere.
+                You can still export/import data using the buttons above the table.
+              </AlertDescription>
+            </Alert>
+          )}
           <AdminDashboard onLogout={handleLogout} />
         </>
       )}
