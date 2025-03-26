@@ -6,6 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 import { SearchBar } from './SearchBar';
 import { RegistrationsTable, EnhancedRegistration } from './RegistrationsTable';
 import { PaginationControls } from './PaginationControls';
+import { getAllRegistrations, deleteRegistration, exportDatabase, importDatabase } from '@/utils/database';
+import { Download, Upload } from 'lucide-react';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -25,36 +27,45 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   }, []);
 
   const loadRegistrations = () => {
-    // Load registrations from localStorage
-    const savedRegistrations = localStorage.getItem('registrations');
-    if (savedRegistrations) {
-      try {
-        const parsedRegistrations = JSON.parse(savedRegistrations);
-        console.log("Loaded registrations:", parsedRegistrations);
-        setRegistrations(parsedRegistrations);
-      } catch (error) {
-        console.error("Error parsing registrations:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load registrations data.",
-        });
+    try {
+      // Load registrations from our database utility
+      const loadedRegistrations = getAllRegistrations();
+      console.log("Loaded registrations:", loadedRegistrations);
+      setRegistrations(loadedRegistrations);
+      
+      // If no registrations in new DB but exist in old storage, migrate them
+      if (loadedRegistrations.length === 0) {
+        const oldRegistrations = localStorage.getItem('registrations');
+        if (oldRegistrations) {
+          try {
+            const parsedOldRegistrations = JSON.parse(oldRegistrations);
+            if (Array.isArray(parsedOldRegistrations) && parsedOldRegistrations.length > 0) {
+              console.log("Migrating old registrations to new database format");
+              importDatabase(JSON.stringify({ registrations: parsedOldRegistrations }));
+              setRegistrations(parsedOldRegistrations);
+            }
+          } catch (error) {
+            console.error("Error parsing old registrations:", error);
+          }
+        }
       }
-    } else {
-      console.log("No registrations found in localStorage");
+    } catch (error) {
+      console.error("Error loading registrations:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load registrations data.",
+      });
     }
   };
 
   const handleDeleteRegistration = (registrationId: string) => {
-    // Find and remove the registration with the given ID
-    const updatedRegistrations = registrations.filter(
-      reg => reg.registrationId !== registrationId
+    // Delete the registration using our database utility
+    deleteRegistration(registrationId);
+    
+    // Update state with the filtered registrations
+    setRegistrations(prevRegistrations => 
+      prevRegistrations.filter(reg => reg.registrationId !== registrationId)
     );
-    
-    // Update state
-    setRegistrations(updatedRegistrations);
-    
-    // Update localStorage
-    localStorage.setItem('registrations', JSON.stringify(updatedRegistrations));
     
     // Show toast notification
     toast({
@@ -63,11 +74,81 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     });
     
     // If current page is now empty (except for the last page), go to previous page
-    const filteredRegs = getFilteredRegistrations(updatedRegistrations);
+    const filteredRegs = getFilteredRegistrations(
+      registrations.filter(reg => reg.registrationId !== registrationId)
+    );
     const totalPages = Math.ceil(filteredRegs.length / itemsPerPage);
     if (currentPage > totalPages && currentPage > 1) {
       setCurrentPage(prevPage => prevPage - 1);
     }
+  };
+
+  // Handle database export
+  const handleExportDatabase = () => {
+    try {
+      const jsonData = exportDatabase();
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create download link and trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `robotics-registrations-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Export Successful",
+        description: "Registration data has been exported successfully.",
+      });
+    } catch (error) {
+      console.error("Error exporting database:", error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to export registration data.",
+      });
+    }
+  };
+
+  // Handle database import
+  const handleImportDatabase = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const jsonData = e.target?.result as string;
+        const success = importDatabase(jsonData);
+        
+        if (success) {
+          loadRegistrations(); // Reload registrations
+          toast({
+            title: "Import Successful",
+            description: "Registration data has been imported successfully.",
+          });
+        } else {
+          toast({
+            title: "Import Failed",
+            description: "Invalid data format. Please check your JSON file.",
+          });
+        }
+      } catch (error) {
+        console.error("Error importing database:", error);
+        toast({
+          title: "Import Failed",
+          description: "Failed to import registration data.",
+        });
+      }
+    };
+    
+    reader.readAsText(file);
+    // Reset the input
+    event.target.value = '';
   };
 
   // Filter registrations based on search term and selected filter
@@ -106,6 +187,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     currentPage * itemsPerPage
   );
 
+  // Hidden file input for import
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -115,7 +199,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           searchFilter={searchFilter}
           setSearchFilter={setSearchFilter}
         />
-        <Button variant="outline" onClick={onLogout}>Logout</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Upload className="h-4 w-4 mr-2" />
+            Import
+          </Button>
+          <input 
+            type="file" 
+            ref={fileInputRef}
+            accept=".json"
+            className="hidden"
+            onChange={handleImportDatabase}
+          />
+          <Button variant="outline" onClick={handleExportDatabase}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button variant="outline" onClick={onLogout}>Logout</Button>
+        </div>
       </div>
       
       <Card>
