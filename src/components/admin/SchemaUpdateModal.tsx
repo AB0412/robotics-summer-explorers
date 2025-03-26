@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Database } from 'lucide-react';
-import { generateSchemaUpdateSQL } from '@/utils/database/schema-utils';
+import { generateSchemaUpdateSQL } from '@/utils/database/schema/sql-generator';
 import { useToast } from '@/hooks/use-toast';
 
 interface SchemaUpdateModalProps {
