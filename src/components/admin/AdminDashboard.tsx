@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 import { SearchBar } from './SearchBar';
 import { RegistrationsTable, EnhancedRegistration } from './RegistrationsTable';
 import { PaginationControls } from './PaginationControls';
@@ -15,6 +16,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFilter, setSearchFilter] = useState('all');
+  const { toast } = useToast();
   
   const itemsPerPage = 5;
 
@@ -30,29 +32,60 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     }
   };
 
+  const handleDeleteRegistration = (registrationId: string) => {
+    // Find and remove the registration with the given ID
+    const updatedRegistrations = registrations.filter(
+      reg => reg.registrationId !== registrationId
+    );
+    
+    // Update state
+    setRegistrations(updatedRegistrations);
+    
+    // Update localStorage
+    localStorage.setItem('registrations', JSON.stringify(updatedRegistrations));
+    
+    // Show toast notification
+    toast({
+      title: "Registration Deleted",
+      description: `Registration ${registrationId} has been successfully deleted.`,
+    });
+    
+    // If current page is now empty (except for the last page), go to previous page
+    const filteredRegs = getFilteredRegistrations(updatedRegistrations);
+    const totalPages = Math.ceil(filteredRegs.length / itemsPerPage);
+    if (currentPage > totalPages && currentPage > 1) {
+      setCurrentPage(totalPage => totalPage - 1);
+    }
+  };
+
   // Filter registrations based on search term and selected filter
-  const filteredRegistrations = registrations.filter(reg => {
+  const getFilteredRegistrations = (regs = registrations) => {
     const searchTermLower = searchTerm.toLowerCase();
     
-    switch(searchFilter) {
-      case 'childName':
-        return reg.childName.toLowerCase().includes(searchTermLower);
-      case 'parentName':
-        return reg.parentName.toLowerCase().includes(searchTermLower);
-      case 'email':
-        return reg.parentEmail.toLowerCase().includes(searchTermLower);
-      case 'regId':
-        return reg.registrationId?.toLowerCase().includes(searchTermLower);
-      case 'all':
-      default:
-        return (
-          reg.parentName.toLowerCase().includes(searchTermLower) ||
-          reg.childName.toLowerCase().includes(searchTermLower) ||
-          reg.parentEmail.toLowerCase().includes(searchTermLower) ||
-          reg.registrationId?.toLowerCase().includes(searchTermLower)
-        );
-    }
-  });
+    return regs.filter(reg => {
+      switch(searchFilter) {
+        case 'childName':
+          return reg.childName.toLowerCase().includes(searchTermLower);
+        case 'parentName':
+          return reg.parentName.toLowerCase().includes(searchTermLower);
+        case 'email':
+          return reg.parentEmail.toLowerCase().includes(searchTermLower);
+        case 'regId':
+          return reg.registrationId?.toLowerCase().includes(searchTermLower);
+        case 'all':
+        default:
+          return (
+            reg.parentName.toLowerCase().includes(searchTermLower) ||
+            reg.childName.toLowerCase().includes(searchTermLower) ||
+            reg.parentEmail.toLowerCase().includes(searchTermLower) ||
+            reg.registrationId?.toLowerCase().includes(searchTermLower)
+          );
+      }
+    });
+  };
+
+  // Get filtered registrations
+  const filteredRegistrations = getFilteredRegistrations();
 
   // Pagination logic
   const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
@@ -78,7 +111,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           <CardTitle>Registrations ({filteredRegistrations.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <RegistrationsTable registrations={currentRegistrations} />
+          <RegistrationsTable 
+            registrations={currentRegistrations} 
+            onDeleteRegistration={handleDeleteRegistration} 
+          />
           <PaginationControls 
             currentPage={currentPage}
             totalPages={totalPages}

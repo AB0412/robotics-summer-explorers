@@ -1,13 +1,26 @@
 
 import React from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { FormValues } from '@/components/registration/RegistrationTypes';
 
 export interface EnhancedRegistration extends FormValues {
@@ -17,9 +30,13 @@ export interface EnhancedRegistration extends FormValues {
 
 interface RegistrationsTableProps {
   registrations: EnhancedRegistration[];
+  onDeleteRegistration: (registrationId: string) => void;
 }
 
-export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({ registrations }) => {
+export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({ 
+  registrations,
+  onDeleteRegistration
+}) => {
   if (registrations.length === 0) {
     return <p>No registrations found.</p>;
   }
@@ -35,6 +52,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({ registra
           <TableHead>Child Age</TableHead>
           <TableHead>Preferred Batch</TableHead>
           <TableHead>Experience</TableHead>
+          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -47,6 +65,32 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({ registra
             <TableCell>{reg.childAge}</TableCell>
             <TableCell>{reg.preferredBatch}</TableCell>
             <TableCell>{reg.hasPriorExperience}</TableCell>
+            <TableCell>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-red-500 hover:bg-red-50">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Registration</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete this registration? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={() => reg.registrationId && onDeleteRegistration(reg.registrationId)}
+                      className="bg-red-500 hover:bg-red-600"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -60,9 +60,15 @@ const RegistrationForm = () => {
         Grade: ${data.childGrade}
         School: ${data.schoolName}
         Preferred Batch: ${data.preferredBatch}
+        Alternate Batch: ${data.alternateBatch || 'None'}
         Medical Information: ${data.medicalInfo || 'None provided'}
         Prior Experience: ${data.hasPriorExperience}
+        Experience Description: ${data.experienceDescription || 'N/A'}
+        Interest Level: ${data.interestLevel}
         T-Shirt Size: ${data.tShirtSize || 'Not selected'}
+        Special Requests: ${data.specialRequests || 'None'}
+        Volunteer Interest: ${data.volunteerInterest ? 'Yes' : 'No'}
+        Photo Consent: ${data.photoConsent ? 'Yes' : 'No'}
       `;
 
       // In a real app, this would use a server-side API
@@ -73,6 +79,12 @@ const RegistrationForm = () => {
       
       // For a real implementation, you would call a backend API or email service
       // We're simulating success for now
+      toast({
+        title: "Email Notification",
+        description: "In a production environment, emails would be sent to " + data.parentEmail + " and billoreavinash12@gmail.com",
+        duration: 5000,
+      });
+      
       return true;
     } catch (error) {
       console.error("Email sending failed:", error);
