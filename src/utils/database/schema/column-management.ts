@@ -37,8 +37,10 @@ export const addMissingColumns = async (): Promise<boolean> => {
     
     // Get all columns from the registration table
     const { data: columns, error: columnsError } = await supabase
-      .rpc('get_table_columns', { table_name: REGISTRATIONS_TABLE })
-      .select('column_name');
+      .from('information_schema.columns')
+      .select('column_name')
+      .eq('table_name', REGISTRATIONS_TABLE)
+      .eq('table_schema', 'public');
       
     if (columnsError) {
       console.error('Error fetching table schema:', columnsError);

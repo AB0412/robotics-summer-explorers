@@ -62,10 +62,18 @@ export const addRegistration = async (registration: Registration): Promise<{succ
       };
     }
     
+    // Convert to lowercase keys for Supabase
+    const formattedRegistration = Object.entries(registration).reduce((acc, [key, value]) => {
+      acc[key.toLowerCase()] = value;
+      return acc;
+    }, {} as Record<string, any>);
+    
+    console.log('Formatted registration with lowercase keys:', formattedRegistration);
+    
     // Proceed with insertion
     const { data, error } = await supabase
       .from(REGISTRATIONS_TABLE)
-      .insert([registration])
+      .insert([formattedRegistration])
       .select();
     
     if (error) {
@@ -77,6 +85,8 @@ export const addRegistration = async (registration: Registration): Promise<{succ
         errorMessage = "A registration with this ID already exists.";
       } else if (error.code === "42P01") {
         errorMessage = "The registrations table doesn't exist in your database.";
+      } else if (error.code === "42703") {
+        errorMessage = `Column not found in database schema: ${error.message}`;
       } else if (error.code?.startsWith("23")) {
         errorMessage = "The registration data doesn't match the database schema.";
       }
@@ -116,7 +126,7 @@ export const deleteRegistration = async (registrationId: string): Promise<{succe
     const { error } = await supabase
       .from(REGISTRATIONS_TABLE)
       .delete()
-      .eq('registrationId', registrationId);
+      .eq('registrationid', registrationId.toLowerCase());  // Use lowercase column name
     
     if (error) {
       console.error('Error deleting registration from Supabase:', error);
