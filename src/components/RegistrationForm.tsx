@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +14,8 @@ import PaymentOptionsSection from './registration/PaymentOptionsSection';
 import { formSchema, FormValues } from './registration/RegistrationTypes';
 import { Send, AlertTriangle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { addRegistration, Registration, hasValidCredentials } from '@/utils/database';
+import { addRegistration, Registration } from '@/utils/database';
+import { hasValidCredentials, initializeDatabase, supabase, REGISTRATIONS_TABLE } from '@/utils/supabase/client';
 
 const generateRegistrationId = () => {
   return 'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -23,6 +25,41 @@ const RegistrationForm = () => {
   const { toast } = useToast();
   const [registrationId, setRegistrationId] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [databaseReady, setDatabaseReady] = React.useState<boolean | null>(null);
+
+  // Initialize database connection
+  React.useEffect(() => {
+    const checkDatabase = async () => {
+      try {
+        // Initialize the database
+        await initializeDatabase();
+        
+        // Test if table exists and is accessible
+        const { error } = await supabase
+          .from(REGISTRATIONS_TABLE)
+          .select('count')
+          .limit(1);
+          
+        if (error) {
+          console.error('Database check failed:', error);
+          setDatabaseReady(false);
+          toast({
+            title: "Database Issue",
+            description: `Please ensure the ${REGISTRATIONS_TABLE} table exists in your Supabase project.`,
+            variant: "destructive",
+          });
+        } else {
+          console.log('Database connection successful');
+          setDatabaseReady(true);
+        }
+      } catch (error) {
+        console.error('Failed to initialize database:', error);
+        setDatabaseReady(false);
+      }
+    };
+    
+    checkDatabase();
+  }, [toast]);
 
   // Initialize the form
   const form = useForm<FormValues>({
@@ -111,8 +148,8 @@ const RegistrationForm = () => {
     
     // Generate a unique registration ID
     const newRegistrationId = generateRegistrationId();
+    console.log('Generated registration ID:', newRegistrationId);
     
-    // Add registration to database with registration ID and timestamp
     // Create a Registration object with required fields explicitly typed
     const registrationWithIdAndTimestamp: Registration = {
       registrationId: newRegistrationId,
@@ -140,30 +177,34 @@ const RegistrationForm = () => {
     };
     
     try {
-      const success = await addRegistration(registrationWithIdAndTimestamp);
+      console.log('Submitting registration to database:', registrationWithIdAndTimestamp);
       
-      if (success) {
-        setRegistrationId(newRegistrationId);
+      // Direct approach using supabase client for better error handling
+      const { error: directError } = await supabase
+        .from(REGISTRATIONS_TABLE)
+        .insert(registrationWithIdAndTimestamp);
         
-        // Send confirmation email
-        const emailSent = await sendConfirmationEmail(data, newRegistrationId);
-        
-        // Show success toast with the updated message about registration ID
-        toast({
-          title: "Registration Submitted Successfully",
-          description: `Please note your unique registration ID for future reference: ${newRegistrationId}`,
-          duration: 8000, // Extended duration for longer message
-        });
-        
-        // Reset form
-        form.reset();
-      } else {
-        toast({
-          title: "Registration Failed",
-          description: "Could not submit your registration. Please check database configuration.",
-          variant: "destructive",
-        });
+      if (directError) {
+        console.error('Direct submission error:', directError);
+        throw new Error(`Database error: ${directError.message}`);
       }
+      
+      // If direct approach succeeded, we proceed with the rest
+      console.log('Registration successfully saved to database');
+      setRegistrationId(newRegistrationId);
+      
+      // Show success toast with the updated message about registration ID
+      toast({
+        title: "Registration Submitted Successfully",
+        description: `Please note your unique registration ID for future reference: ${newRegistrationId}`,
+        duration: 8000, // Extended duration for longer message
+      });
+      
+      // Send confirmation email
+      await sendConfirmationEmail(data, newRegistrationId);
+      
+      // Reset form
+      form.reset();
     } catch (error) {
       console.error('Error during registration submission:', error);
       toast({
@@ -184,6 +225,16 @@ const RegistrationForm = () => {
           <AlertTitle className="text-red-800">Database Configuration Required</AlertTitle>
           <AlertDescription className="text-red-700">
             Please configure Supabase credentials to enable registration submissions.
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {databaseReady === false && (
+        <Alert className="mb-6 bg-red-50 border-red-200">
+          <AlertTriangle className="h-4 w-4 text-red-700" />
+          <AlertTitle className="text-red-800">Database Setup Required</AlertTitle>
+          <AlertDescription className="text-red-700">
+            Please make sure you have created a '{REGISTRATIONS_TABLE}' table in your Supabase project.
           </AlertDescription>
         </Alert>
       )}
@@ -224,7 +275,7 @@ const RegistrationForm = () => {
           <Button 
             type="submit" 
             className="w-full bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy flex items-center justify-center gap-2"
-            disabled={isSubmitting || !hasValidCredentials()}
+            disabled={isSubmitting || !hasValidCredentials() || databaseReady === false}
           >
             <Send className="h-4 w-4" />
             {isSubmitting ? 'Submitting...' : 'Submit Registration'}

@@ -9,8 +9,17 @@ export const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ
 // Create Supabase client with error handling
 export const supabase = createClient(
   supabaseUrl,
-  supabaseAnonKey
+  supabaseAnonKey,
+  {
+    auth: {
+      persistSession: true
+    }
+  }
 );
+
+// Log Supabase initialization
+console.log('Supabase client initialized with URL:', supabaseUrl);
+console.log('Credentials valid:', hasValidCredentials());
 
 // Table name in Supabase
 export const REGISTRATIONS_TABLE = 'registrations';
@@ -48,6 +57,8 @@ export const initializeDatabase = async (): Promise<void> => {
         description: `Please create a table named '${REGISTRATIONS_TABLE}' in your Supabase dashboard with the appropriate columns.`,
         variant: "destructive",
       });
+    } else {
+      console.log(`Successfully connected to ${REGISTRATIONS_TABLE} table in Supabase`);
     }
   } catch (error) {
     console.error('Error initializing database:', error);

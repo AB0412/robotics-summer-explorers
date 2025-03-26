@@ -17,6 +17,7 @@ export const loadDatabase = async (): Promise<DBStorage> => {
   }
 
   try {
+    console.log('Attempting to load registrations from Supabase...');
     const { data, error } = await supabase
       .from(REGISTRATIONS_TABLE)
       .select('*');
@@ -31,6 +32,7 @@ export const loadDatabase = async (): Promise<DBStorage> => {
       return emptyDB;
     }
     
+    console.log(`Successfully loaded ${data?.length || 0} registrations from Supabase`);
     return {
       registrations: data as Registration[]
     };
@@ -119,6 +121,7 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
   }
 
   try {
+    console.log('Attempting to get all registrations from Supabase...');
     const { data, error } = await supabase
       .from(REGISTRATIONS_TABLE)
       .select('*');
@@ -133,6 +136,7 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
       return [];
     }
     
+    console.log(`Successfully retrieved ${data?.length || 0} registrations from Supabase`);
     return data as Registration[];
   } catch (error) {
     console.error('Error accessing Supabase:', error);
@@ -159,19 +163,51 @@ export const addRegistration = async (registration: Registration): Promise<boole
   }
 
   try {
-    const { error } = await supabase
+    console.log('Attempting to add registration to Supabase:', registration);
+    
+    // Test database connection before trying to insert
+    const { error: testError } = await supabase
       .from(REGISTRATIONS_TABLE)
-      .insert(registration);
+      .select('count')
+      .limit(1);
+      
+    if (testError) {
+      console.error('Database connection test failed:', testError);
+      toast({
+        title: "Database Connection Failed",
+        description: "Could not connect to the database. Please check if the 'registrations' table exists.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    // Proceed with insertion
+    const { error, data } = await supabase
+      .from(REGISTRATIONS_TABLE)
+      .insert(registration)
+      .select();
     
     if (error) {
       console.error('Error adding registration to Supabase:', error);
+      let errorMessage = "Could not save your registration to the database.";
+      
+      // Provide more specific error messages based on error code
+      if (error.code === "23505") {
+        errorMessage = "A registration with this ID already exists.";
+      } else if (error.code === "42P01") {
+        errorMessage = "The registrations table doesn't exist in your database.";
+      } else if (error.code?.startsWith("23")) {
+        errorMessage = "The registration data doesn't match the database schema.";
+      }
+      
       toast({
         title: "Registration Failed",
-        description: "Could not save your registration to the database. Please check your configuration.",
+        description: errorMessage,
         variant: "destructive",
       });
       return false;
     } else {
+      console.log('Registration successfully added to Supabase:', data);
       toast({
         title: "Registration Saved",
         description: "Your registration has been successfully saved to the database.",
@@ -203,6 +239,7 @@ export const deleteRegistration = async (registrationId: string): Promise<boolea
   }
 
   try {
+    console.log(`Attempting to delete registration with ID: ${registrationId}`);
     const { error } = await supabase
       .from(REGISTRATIONS_TABLE)
       .delete()
@@ -217,6 +254,7 @@ export const deleteRegistration = async (registrationId: string): Promise<boolea
       });
       return false;
     } else {
+      console.log(`Successfully deleted registration with ID: ${registrationId}`);
       toast({
         title: "Registration Deleted",
         description: "Registration was successfully deleted from the database.",
