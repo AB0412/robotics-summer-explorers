@@ -10,6 +10,25 @@ export const checkRLSPolicies = async (): Promise<{
   details?: any;
 }> => {
   try {
+    // First try to sign in anonymously if not already signed in
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
+      console.log('No active session, attempting to sign in anonymously...');
+      const { error: signInError } = await supabase.auth.signInAnonymously();
+      if (signInError) {
+        console.error('Anonymous sign-in failed:', signInError);
+        return {
+          success: false,
+          message: `Authentication error: ${signInError.message}`,
+          details: signInError
+        };
+      }
+      console.log('Anonymous sign-in successful');
+      
+      // Wait a moment for auth to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
     // First check if we can get a count of registrations
     const { count, error: countError } = await supabase
       .from(REGISTRATIONS_TABLE)
@@ -71,9 +90,22 @@ export const fixRLSPolicies = async (): Promise<{
   details?: any;
 }> => {
   try {
+    // Check if we already have a session
+    const { data: sessionData } = await supabase.auth.getSession();
+    
+    // Clear existing session if there's an issue
+    if (sessionData.session && sessionData.session.expires_at) {
+      const expiryTimestamp = new Date(sessionData.session.expires_at * 1000);
+      if (expiryTimestamp < new Date()) {
+        // Session has expired, sign out first
+        await supabase.auth.signOut();
+        console.log('Expired session cleared');
+      }
+    }
+    
     // Attempt to sign in anonymously if not already signed in
-    const { data: session } = await supabase.auth.getSession();
-    if (!session.session) {
+    if (!sessionData.session) {
+      console.log('No active session, attempting to sign in anonymously...');
       const { error: signInError } = await supabase.auth.signInAnonymously();
       if (signInError) {
         return {
@@ -82,10 +114,33 @@ export const fixRLSPolicies = async (): Promise<{
           details: signInError
         };
       }
+      console.log('Anonymous sign-in successful');
+      
+      // Wait a moment for auth to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
     
     // Try the database access again
     const { success, message } = await checkRLSPolicies();
+    
+    if (!success) {
+      // Try a more aggressive approach - add a retry with a bit more delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const retryResult = await checkRLSPolicies();
+      
+      if (retryResult.success) {
+        return {
+          success: true,
+          message: 'RLS issues fixed successfully after retry'
+        };
+      }
+      
+      // If still failing, return the original error
+      return {
+        success: false,
+        message: `RLS issues still exist after fix attempt: ${message}`
+      };
+    }
     
     return {
       success,

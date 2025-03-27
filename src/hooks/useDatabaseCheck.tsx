@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { validateDatabaseSchema } from '@/utils/database/schema/validation';
 import { executeSql, checkDatabaseConnection } from '@/utils/database/schema/db-connection';
 import { hasValidCredentials, supabase, REGISTRATIONS_TABLE } from '@/utils/supabase/client';
@@ -12,13 +12,31 @@ export const useDatabaseCheck = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isRunningPermissionCheck, setIsRunningPermissionCheck] = useState(false);
   const [connectionDetails, setConnectionDetails] = useState<any>(null);
+  
+  // Add refs to track initialization and prevent duplicate checks
+  const isInitialized = useRef(false);
+  const checkInProgress = useRef(false);
 
   useEffect(() => {
-    // Check database schema when component loads
-    checkDatabaseSchema();
+    // Only run once on mount
+    if (!isInitialized.current) {
+      isInitialized.current = true;
+      checkDatabaseSchema();
+    }
+    
+    // Cleanup function
+    return () => {
+      checkInProgress.current = false;
+    };
   }, []);
 
   const checkDatabaseSchema = async () => {
+    // Prevent concurrent checks
+    if (checkInProgress.current) {
+      console.log('Database check already in progress, skipping duplicate check');
+      return;
+    }
+    
     if (!hasValidCredentials()) {
       setDatabaseStatus('invalid');
       setErrorMessage('No valid Supabase credentials found for database schema validation');
@@ -29,6 +47,7 @@ export const useDatabaseCheck = () => {
     try {
       console.log('Validating database schema...');
       setDatabaseStatus('checking');
+      checkInProgress.current = true;
       
       // Try to sign in anonymously if needed
       const { data: session } = await supabase.auth.getSession();
@@ -39,8 +58,12 @@ export const useDatabaseCheck = () => {
           console.error('Anonymous sign-in failed:', signInError);
           setErrorMessage(`Authentication error: ${signInError.message}`);
           setDatabaseStatus('invalid');
+          checkInProgress.current = false;
           return;
         }
+        
+        // Wait a moment for auth to complete
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
       
       // Test connection first
@@ -51,6 +74,7 @@ export const useDatabaseCheck = () => {
       if (!connectionResult.connected) {
         setDatabaseStatus('invalid');
         setErrorMessage(`Database connection failed: ${connectionResult.error}. ${connectionResult.permissions?.read === false ? 'Read permission denied.' : ''}`);
+        checkInProgress.current = false;
         return;
       }
       
@@ -59,6 +83,7 @@ export const useDatabaseCheck = () => {
       if (!rlsCheck.success) {
         setErrorMessage(`RLS policy issue: ${rlsCheck.message}`);
         setDatabaseStatus('invalid');
+        checkInProgress.current = false;
         return;
       }
       
@@ -72,6 +97,7 @@ export const useDatabaseCheck = () => {
         console.error('Database table access error:', tableError);
         setErrorMessage(`Database permission error: ${tableError.message}`);
         setDatabaseStatus('invalid');
+        checkInProgress.current = false;
         return;
       }
       
@@ -88,10 +114,17 @@ export const useDatabaseCheck = () => {
       console.error('Error checking database schema:', error);
       setDatabaseStatus('invalid');
       setErrorMessage(`Error checking database: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      checkInProgress.current = false;
     }
   };
 
   const handleFixPermissions = async () => {
+    // Prevent multiple concurrent fix attempts
+    if (isRunningPermissionCheck) {
+      return;
+    }
+    
     setIsRunningPermissionCheck(true);
     try {
       // Try to fix RLS policies first
@@ -112,6 +145,11 @@ export const useDatabaseCheck = () => {
           // Recheck connection details
           const connectionResult = await checkDatabaseConnection();
           setConnectionDetails(connectionResult);
+          
+          toast({
+            title: "Success",
+            description: "Database permissions fixed successfully!",
+          });
         } else {
           setErrorMessage(`Fixed RLS but still having issues: ${retryError.message}`);
         }
@@ -122,6 +160,9 @@ export const useDatabaseCheck = () => {
       // If RLS fix didn't work, try SQL execution
       const sqlScript = `
         -- Fix Row Level Security (RLS) policies
+        ALTER TABLE IF EXISTS registrations ENABLE ROW LEVEL SECURITY;
+        
+        -- Drop existing policies to recreate them
         DROP POLICY IF EXISTS "Allow anonymous to view all registrations" ON registrations;
         DROP POLICY IF EXISTS "Allow anonymous to insert registrations" ON registrations;
         DROP POLICY IF EXISTS "Allow anonymous to update registrations" ON registrations;
@@ -130,27 +171,39 @@ export const useDatabaseCheck = () => {
         DROP POLICY IF EXISTS "Allow anyone to insert registrations" ON registrations;
         DROP POLICY IF EXISTS "Allow anyone to update registrations" ON registrations;
         DROP POLICY IF EXISTS "Allow anyone to delete registrations" ON registrations;
+        DROP POLICY IF EXISTS "Allow service_role full access" ON registrations;
+        DROP POLICY IF EXISTS "Allow authenticated full access" ON registrations;
+        DROP POLICY IF EXISTS "Enable insert for anon" ON registrations;
+        DROP POLICY IF EXISTS "Allow public read access" ON registrations;
         
-        -- Create public access policies
-        CREATE POLICY "Allow anyone to view all registrations" 
+        -- Create service role policy (highest priority)
+        CREATE POLICY "Allow service_role full access" 
         ON registrations 
-        FOR SELECT 
-        USING (true);
-        
-        CREATE POLICY "Allow anyone to insert registrations" 
-        ON registrations 
-        FOR INSERT 
+        FOR ALL 
+        TO service_role
+        USING (true)
         WITH CHECK (true);
         
-        CREATE POLICY "Allow anyone to update registrations" 
+        -- Create authenticated role policy
+        CREATE POLICY "Allow authenticated full access" 
         ON registrations 
-        FOR UPDATE 
+        FOR ALL 
+        TO authenticated
+        USING (true)
+        WITH CHECK (true);
+        
+        -- Create anonymous role policies
+        CREATE POLICY "Allow public read access" 
+        ON registrations 
+        FOR SELECT 
+        TO anon
         USING (true);
         
-        CREATE POLICY "Allow anyone to delete registrations" 
+        CREATE POLICY "Enable insert for anon" 
         ON registrations 
-        FOR DELETE 
-        USING (true);
+        FOR INSERT 
+        TO anon
+        WITH CHECK (true);
       `;
       
       const { success, error, details } = await executeSql(sqlScript);
@@ -165,18 +218,36 @@ export const useDatabaseCheck = () => {
           
         if (!retryError) {
           setDatabaseStatus('valid');
+          setErrorMessage(null);
           
           // Recheck connection details
           const connectionResult = await checkDatabaseConnection();
           setConnectionDetails(connectionResult);
+          
+          toast({
+            title: "Success",
+            description: "Database permissions fixed successfully!",
+          });
         }
       } else {
         console.error('SQL execution details:', details);
         setErrorMessage(`Failed to fix permissions: ${error}`);
+        
+        toast({
+          title: "Error",
+          description: `Failed to fix permissions: ${error}`,
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error('Error fixing permissions:', error);
       setErrorMessage(`Error fixing permissions: ${error instanceof Error ? error.message : String(error)}`);
+      
+      toast({
+        title: "Error",
+        description: `Error fixing permissions: ${error instanceof Error ? error.message : String(error)}`,
+        variant: "destructive",
+      });
     } finally {
       setIsRunningPermissionCheck(false);
     }
