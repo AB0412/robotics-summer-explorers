@@ -2,7 +2,7 @@
 import React from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { hasValidCredentials, initializeDatabase, supabase, REGISTRATIONS_TABLE } from '@/utils/supabase/client';
-import { checkDatabaseConnection } from '@/utils/database/schema/db-connection';
+import { checkDatabaseConnection } from '@/utils/database/schema/connection/check-connection';
 
 export const useDatabaseConnection = () => {
   const { toast } = useToast();

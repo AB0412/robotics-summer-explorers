@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { RefreshCcw, Database, Copy, Play } from 'lucide-react';
 import { getAllRegistrations, supabase, REGISTRATIONS_TABLE } from '@/utils/database';
-import { executeSql } from '@/utils/database/schema/db-connection';
+import { executeSql } from '@/utils/database/schema/connection/execute-sql';
 
 interface SchemaUpdateModalProps {
   open: boolean;

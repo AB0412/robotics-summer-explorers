@@ -7,7 +7,8 @@ export * from './schema/db-connection';
 export * from './schema/index';
 
 // Re-export commonly used functions directly for convenience 
-import { checkDatabaseConnection, executeSql } from './schema/db-connection';
+import { checkDatabaseConnection } from './schema/connection/check-connection';
+import { executeSql } from './schema/connection/execute-sql';
 import { validateDatabaseSchema, enhancedInitializeDatabase } from './schema/validation';
 
 export { 

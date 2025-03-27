@@ -1,7 +1,7 @@
 
 import { supabase, REGISTRATIONS_TABLE } from '@/utils/supabase/client';
 import { checkRLSPolicies, fixRLSPolicies } from '@/utils/supabase/rls-helpers';
-import { executeSql } from '../schema/db-connection';
+import { executeSql } from '@/utils/database/schema/connection/execute-sql';
 import { useToast } from '@/hooks/use-toast';
 
 /**
