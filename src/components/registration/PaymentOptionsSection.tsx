@@ -24,8 +24,7 @@ const PaymentOptionsSection: React.FC<PaymentOptionsSectionProps> = ({ form }) =
           <li><span className="font-medium">Cash</span></li>
         </ul>
         <div className="mt-4 text-robotics-navy font-medium">
-          <p>Full payment is required to confirm registration</p>
-          <p className="mt-2 text-sm italic">Please include your child's name in the payment reference/memo</p>
+          <p className="text-sm italic">Please include your child's name in the payment reference/memo</p>
         </div>
       </div>
     </div>
