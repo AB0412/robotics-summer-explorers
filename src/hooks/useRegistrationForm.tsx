@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,7 +9,7 @@ import {
 } from '@/utils/registration/registrationHelpers';
 import { Registration } from '@/utils/database/types';
 import { hasValidCredentials } from '@/utils/supabase/client';
-import { addRegistration } from '@/utils/database/registrationOperations';
+import { addRegistration } from '@/utils/database/operations/addRegistration';
 
 export const useRegistrationForm = () => {
   const { toast } = useToast();
