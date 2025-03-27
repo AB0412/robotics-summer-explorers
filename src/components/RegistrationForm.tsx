@@ -24,11 +24,15 @@ const RegistrationForm = () => {
   const [isCheckingDatabase, setIsCheckingDatabase] = React.useState(false);
   const [connectionDetails, setConnectionDetails] = React.useState<any>(null);
   const { form, registrationId, isSubmitting, onSubmit } = useRegistrationForm();
+  // Add state to track if initial check has been done
+  const [initialCheckDone, setInitialCheckDone] = React.useState(false);
 
   // Initialize database connection
   React.useEffect(() => {
-    checkDatabase();
-  }, []);
+    if (!initialCheckDone) {
+      checkDatabase();
+    }
+  }, [initialCheckDone]);
 
   const checkDatabase = async () => {
     setIsCheckingDatabase(true);
@@ -55,11 +59,17 @@ const RegistrationForm = () => {
         console.error('Database connection failed:', connectionResult.error);
         setDatabaseReady(false);
         setDatabaseError(`Database connection error: ${connectionResult.error || 'Unknown error'}. ${connectionResult.permissions?.read === false ? 'Read permission denied. Please check your Row Level Security (RLS) policies.' : ''}`);
-        toast({
-          title: "Database Connection Issue",
-          description: `Unable to connect to the database. Please check your Supabase project settings.`,
-          variant: "destructive",
-        });
+        
+        // Only show toast during initial load
+        if (!initialCheckDone) {
+          toast({
+            title: "Database Connection Issue",
+            description: `Unable to connect to the database. Please check your Supabase project settings.`,
+            variant: "destructive",
+          });
+        }
+        
+        setInitialCheckDone(true);
         return;
       }
       
@@ -73,24 +83,35 @@ const RegistrationForm = () => {
         console.error('Database check failed:', error);
         setDatabaseReady(false);
         setDatabaseError(`Database permission error: ${error.message || 'Unknown error'}. Please check your Row Level Security (RLS) policies.`);
-        toast({
-          title: "Database Permission Issue",
-          description: `Please ensure the ${REGISTRATIONS_TABLE} table has proper RLS policies in your Supabase project.`,
-          variant: "destructive",
-        });
+        
+        // Only show toast during initial load
+        if (!initialCheckDone) {
+          toast({
+            title: "Database Permission Issue",
+            description: `Please ensure the ${REGISTRATIONS_TABLE} table has proper RLS policies in your Supabase project.`,
+            variant: "destructive",
+          });
+        }
       } else {
         console.log('Database connection successful');
         setDatabaseReady(true);
         setDatabaseError(null);
-        toast({
-          title: "Database Connection Successful",
-          description: "Successfully connected to the Supabase database.",
-        });
+        
+        // Only show toast during initial load
+        if (!initialCheckDone) {
+          toast({
+            title: "Database Connection Successful",
+            description: "Successfully connected to the Supabase database.",
+          });
+        }
       }
+      
+      setInitialCheckDone(true);
     } catch (error) {
       console.error('Failed to initialize database:', error);
       setDatabaseReady(false);
       setDatabaseError(error instanceof Error ? error.message : 'Unknown database error');
+      setInitialCheckDone(true);
     } finally {
       setIsCheckingDatabase(false);
     }

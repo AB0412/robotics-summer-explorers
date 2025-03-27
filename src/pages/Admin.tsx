@@ -10,30 +10,35 @@ const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasValidDb, setHasValidDb] = useState(false);
+  // Add state to track if we've already initialized to prevent double toasts
+  const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    // Initialize the Supabase connection
-    const init = async () => {
-      try {
-        await initializeDatabase();
-        const valid = hasValidCredentials();
-        setHasValidDb(valid);
-      } catch (error) {
-        console.error("Failed to initialize database:", error);
-        setHasValidDb(false);
-      } finally {
-        setIsInitializing(false);
-      }
-    };
-    
-    init();
+    // Only run initialization once
+    if (!hasInitialized) {
+      const init = async () => {
+        try {
+          await initializeDatabase();
+          const valid = hasValidCredentials();
+          setHasValidDb(valid);
+        } catch (error) {
+          console.error("Failed to initialize database:", error);
+          setHasValidDb(false);
+        } finally {
+          setIsInitializing(false);
+          setHasInitialized(true);
+        }
+      };
+      
+      init();
+    }
     
     // Check if user is already authenticated in this session
     const authStatus = sessionStorage.getItem('adminAuthenticated');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
     }
-  }, []);
+  }, [hasInitialized]);
 
   const handleAuthentication = () => {
     setIsAuthenticated(true);

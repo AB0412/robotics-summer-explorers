@@ -42,6 +42,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [rlsStatus, setRlsStatus] = useState<{success: boolean; message: string} | null>(null);
   const [authStatus, setAuthStatus] = useState<string | null>(null);
   const [isFixingRLS, setIsFixingRLS] = useState(false);
+  // Add a flag to track initial setup status
+  const [initialSetupDone, setInitialSetupDone] = useState(false);
 
   // Check if schema needs updating, auth status, and RLS policies
   useEffect(() => {
@@ -81,30 +83,39 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         setRlsStatus(rlsCheck);
         setShowRlsAlert(!rlsCheck.success);
         
-        if (rlsCheck.success) {
-          toast({
-            title: "Database Connection Successful",
-            description: rlsCheck.message,
-          });
-        } else {
-          toast({
-            title: "Database Access Issues",
-            description: rlsCheck.message,
-            variant: "destructive",
-          });
+        // Only show toast on initial load, not on every render
+        if (!initialSetupDone) {
+          if (rlsCheck.success) {
+            toast({
+              title: "Database Connection Successful",
+              description: rlsCheck.message,
+            });
+          } else {
+            toast({
+              title: "Database Access Issues",
+              description: rlsCheck.message,
+              variant: "destructive",
+            });
+          }
+          // Mark initial setup as done
+          setInitialSetupDone(true);
         }
       } catch (error) {
         console.error('Initialization error:', error);
-        toast({
-          title: "Initialization Error",
-          description: error instanceof Error ? error.message : "Unknown error during initialization",
-          variant: "destructive",
-        });
+        // Only show error toast on initial load
+        if (!initialSetupDone) {
+          toast({
+            title: "Initialization Error",
+            description: error instanceof Error ? error.message : "Unknown error during initialization",
+            variant: "destructive",
+          });
+          setInitialSetupDone(true);
+        }
       }
     };
     
     initialize();
-  }, [loadRegistrations, toast]);
+  }, [loadRegistrations, toast, initialSetupDone]);
 
   // Get filtered registrations
   const filteredRegistrations = getFilteredRegistrations();
