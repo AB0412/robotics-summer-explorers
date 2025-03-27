@@ -7,6 +7,7 @@ import { executeSql, checkDatabaseConnection } from '@/utils/database/schema-uti
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, Database, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { checkRLSPolicies, fixRLSPolicies } from '@/utils/supabase/rls-helpers';
 
 const Registration = () => {
   const [databaseStatus, setDatabaseStatus] = useState<'checking' | 'valid' | 'invalid'>('checking');
@@ -31,6 +32,19 @@ const Registration = () => {
       console.log('Validating database schema...');
       setDatabaseStatus('checking');
       
+      // Try to sign in anonymously if needed
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        console.log('No active session, attempting to sign in anonymously...');
+        const { error: signInError } = await supabase.auth.signInAnonymously();
+        if (signInError) {
+          console.error('Anonymous sign-in failed:', signInError);
+          setErrorMessage(`Authentication error: ${signInError.message}`);
+          setDatabaseStatus('invalid');
+          return;
+        }
+      }
+      
       // Test connection first
       const connectionResult = await checkDatabaseConnection();
       setConnectionDetails(connectionResult);
@@ -42,11 +56,12 @@ const Registration = () => {
         return;
       }
       
-      // Try to get auth session and sign in if needed
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        console.log('No active session, attempting to sign in anonymously...');
-        await supabase.auth.signInAnonymously();
+      // Check RLS policies
+      const rlsCheck = await checkRLSPolicies();
+      if (!rlsCheck.success) {
+        setErrorMessage(`RLS policy issue: ${rlsCheck.message}`);
+        setDatabaseStatus('invalid');
+        return;
       }
       
       // Try a direct table access
@@ -81,46 +96,63 @@ const Registration = () => {
   const handleFixPermissions = async () => {
     setIsRunningPermissionCheck(true);
     try {
-      // Execute SQL to fix permissions
+      // Try to fix RLS policies first
+      const rlsResult = await fixRLSPolicies();
+      if (rlsResult.success) {
+        setErrorMessage('RLS policies fixed successfully! Checking database access...');
+        
+        // Recheck database access
+        const { error: retryError } = await supabase
+          .from(REGISTRATIONS_TABLE)
+          .select('count')
+          .limit(1);
+          
+        if (!retryError) {
+          setDatabaseStatus('valid');
+          setErrorMessage(null);
+          
+          // Recheck connection details
+          const connectionResult = await checkDatabaseConnection();
+          setConnectionDetails(connectionResult);
+        } else {
+          setErrorMessage(`Fixed RLS but still having issues: ${retryError.message}`);
+        }
+        
+        return;
+      }
+      
+      // If RLS fix didn't work, try SQL execution
       const sqlScript = `
         -- Fix Row Level Security (RLS) policies
-        DROP POLICY IF EXISTS "Allow anonymous insert" ON registrations;
-        DROP POLICY IF EXISTS "Allow authenticated read access" ON registrations;
-        DROP POLICY IF EXISTS "Enable insert for anon" ON registrations;
-        DROP POLICY IF EXISTS "Allow service_role full access" ON registrations;
-        DROP POLICY IF EXISTS "Allow public read access" ON registrations;
+        DROP POLICY IF EXISTS "Allow anonymous to view all registrations" ON registrations;
+        DROP POLICY IF EXISTS "Allow anonymous to insert registrations" ON registrations;
+        DROP POLICY IF EXISTS "Allow anonymous to update registrations" ON registrations;
+        DROP POLICY IF EXISTS "Allow anonymous to delete registrations" ON registrations;
+        DROP POLICY IF EXISTS "Allow anyone to view all registrations" ON registrations;
+        DROP POLICY IF EXISTS "Allow anyone to insert registrations" ON registrations;
+        DROP POLICY IF EXISTS "Allow anyone to update registrations" ON registrations;
+        DROP POLICY IF EXISTS "Allow anyone to delete registrations" ON registrations;
         
-        -- Make sure RLS is enabled
-        ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
+        -- Create public access policies
+        CREATE POLICY "Allow anyone to view all registrations" 
+        ON registrations 
+        FOR SELECT 
+        USING (true);
         
-        -- Add new policies in the correct order
-        CREATE POLICY "Allow service_role full access" ON registrations
-          FOR ALL 
-          TO service_role
-          USING (true)
-          WITH CHECK (true);
+        CREATE POLICY "Allow anyone to insert registrations" 
+        ON registrations 
+        FOR INSERT 
+        WITH CHECK (true);
         
-        CREATE POLICY "Allow authenticated full access" ON registrations
-          FOR ALL
-          TO authenticated
-          USING (true)
-          WITH CHECK (true);
+        CREATE POLICY "Allow anyone to update registrations" 
+        ON registrations 
+        FOR UPDATE 
+        USING (true);
         
-        CREATE POLICY "Enable insert for anon" ON registrations 
-          FOR INSERT 
-          TO anon
-          WITH CHECK (true);
-        
-        CREATE POLICY "Allow public read access" ON registrations 
-          FOR SELECT
-          TO anon
-          USING (true);
-          
-        -- Set correct owner and grants
-        ALTER TABLE registrations OWNER TO authenticated;
-        GRANT ALL ON registrations TO service_role;
-        GRANT ALL ON registrations TO authenticated;
-        GRANT SELECT, INSERT ON registrations TO anon;
+        CREATE POLICY "Allow anyone to delete registrations" 
+        ON registrations 
+        FOR DELETE 
+        USING (true);
       `;
       
       const { success, error, details } = await executeSql(sqlScript);
