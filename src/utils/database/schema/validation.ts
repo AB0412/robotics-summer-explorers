@@ -1,4 +1,5 @@
 
+// Update the imports to use the new file structure
 import { supabase, REGISTRATIONS_TABLE } from '../../supabase/client';
 import { getExpectedColumns } from './column-management';
 
@@ -92,7 +93,7 @@ export const enhancedInitializeDatabase = async (): Promise<boolean> => {
       return true;
     }
     
-    // TODO: In a future update, we could improve this to actually create
+    // In a future update, we could improve this to actually create
     // or alter the table as needed based on the missing columns
     
     return false;

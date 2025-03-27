@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,7 @@ import { hasValidCredentials, initializeDatabase, supabase, REGISTRATIONS_TABLE 
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { checkDatabaseConnection } from '@/utils/database/schema-utils';
+import { checkDatabaseConnection } from '@/utils/database/schema/db-connection';
 
 const RegistrationForm = () => {
   const { toast } = useToast();

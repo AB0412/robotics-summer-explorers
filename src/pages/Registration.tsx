@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
 import { validateDatabaseSchema } from '@/utils/database/schema/validation';
 import { hasValidCredentials, supabase, REGISTRATIONS_TABLE } from '@/utils/supabase/client';
-import { executeSql, checkDatabaseConnection } from '@/utils/database/schema-utils'; 
+import { executeSql, checkDatabaseConnection } from '@/utils/database/schema/db-connection'; 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, Database, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
