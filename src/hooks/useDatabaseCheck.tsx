@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { validateDatabaseSchema } from '@/utils/database/schema/validation';
 import { executeSql, checkDatabaseConnection } from '@/utils/database/schema/db-connection';

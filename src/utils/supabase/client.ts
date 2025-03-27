@@ -72,6 +72,8 @@ export const initializeDatabase = async (): Promise<void> => {
     
     console.log(`Successfully connected to ${REGISTRATIONS_TABLE} table in Supabase`);
     
+    // Removed the success toast message
+    
   } catch (error) {
     console.error('Error initializing database:', error);
     toast({

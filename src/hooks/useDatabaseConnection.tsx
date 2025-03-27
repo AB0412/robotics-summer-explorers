@@ -45,7 +45,7 @@ export const useDatabaseConnection = () => {
         setDatabaseReady(false);
         setDatabaseError(`Database connection error: ${connectionResult.error || 'Unknown error'}. ${connectionResult.permissions?.read === false ? 'Read permission denied. Please check your Row Level Security (RLS) policies.' : ''}`);
         
-        // Only show toast during initial load
+        // Only show toast during initial load for errors
         if (!initialCheckDone) {
           toast({
             title: "Database Connection Issue",
@@ -69,7 +69,7 @@ export const useDatabaseConnection = () => {
         setDatabaseReady(false);
         setDatabaseError(`Database permission error: ${error.message || 'Unknown error'}. Please check your Row Level Security (RLS) policies.`);
         
-        // Only show toast during initial load
+        // Only show toast during initial load for errors
         if (!initialCheckDone) {
           toast({
             title: "Database Permission Issue",
@@ -82,13 +82,7 @@ export const useDatabaseConnection = () => {
         setDatabaseReady(true);
         setDatabaseError(null);
         
-        // Only show toast during initial load
-        if (!initialCheckDone) {
-          toast({
-            title: "Database Connection Successful",
-            description: "Successfully connected to the Supabase database.",
-          });
-        }
+        // Removed the success toast message
       }
       
       setInitialCheckDone(true);
