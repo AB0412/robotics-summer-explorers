@@ -19,13 +19,12 @@ const PaymentOptionsSection: React.FC<PaymentOptionsSectionProps> = ({ form }) =
       <div className="p-4 bg-white rounded-md text-sm">
         <p className="font-medium mb-2">Payment Options:</p>
         <ul className="list-disc list-inside mt-2 space-y-2 text-gray-700">
-          <li><span className="font-medium">Zelle:</span> Payments should be sent to robotics@example.com</li>
+          <li><span className="font-medium">Zelle:</span> robotics@example.com</li>
           <li><span className="font-medium">Cheque:</span> Made payable to "Summer Robotics Program"</li>
           <li><span className="font-medium">Cash:</span> Can be made on the first day of the program</li>
         </ul>
         <div className="mt-4 text-robotics-navy font-medium">
-          <p>Full payment is required to confirm registration</p>
-          <p className="mt-2 text-sm italic">Please include your child's name in the payment reference/memo</p>
+          <p className="text-sm italic">Please include your child's name in the payment reference/memo</p>
         </div>
       </div>
     </div>
