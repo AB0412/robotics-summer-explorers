@@ -47,16 +47,25 @@ export const initializeDatabase = async (): Promise<void> => {
       console.log('Session exists:', session.session.user?.id);
     }
     
-    // Test database connection
-    const { error } = await supabase
-      .from(REGISTRATIONS_TABLE)
-      .select('count')
-      .limit(1);
+    // Test database connection using the heartbeat function we just created
+    const { data: connected, error: heartbeatError } = await supabase.rpc('heartbeat');
       
-    if (error) {
-      console.error('Database connection error:', error);
+    if (heartbeatError) {
+      console.error('Database connection error:', heartbeatError);
     } else {
-      console.log('Successfully connected to Supabase database');
+      console.log('Successfully connected to Supabase database, heartbeat successful');
+      
+      // Test table access
+      const { error: tableError } = await supabase
+        .from(REGISTRATIONS_TABLE)
+        .select('count')
+        .limit(1);
+        
+      if (tableError) {
+        console.error('Table access error:', tableError);
+      } else {
+        console.log(`Successfully connected to ${REGISTRATIONS_TABLE} table`);
+      }
     }
   } catch (error) {
     console.error('Error initializing database:', error);

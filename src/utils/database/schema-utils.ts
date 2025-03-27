@@ -160,7 +160,7 @@ export const checkDatabaseConnection = async (): Promise<{
       }
     }
     
-    // Check if we can connect to Supabase at all
+    // Check if we can connect to Supabase at all using our new heartbeat function
     const { data: healthData, error: healthError } = await supabase.rpc('heartbeat');
     
     if (healthError) {
@@ -199,14 +199,14 @@ export const checkDatabaseConnection = async (): Promise<{
       permissions.read = true;
     }
     
-    // Check write permissions (with transaction to avoid actual writes)
-    const { error: writeError } = await supabase.rpc('check_write_permission');
+    // Check write permissions using our new check_write_permission function
+    const { data: writeData, error: writeError } = await supabase.rpc('check_write_permission');
     
     if (writeError) {
       console.error('Write test failed:', writeError);
     } else {
       console.log('Write test successful');
-      permissions.write = true;
+      permissions.write = !!writeData;
     }
     
     // Check SQL execution permissions

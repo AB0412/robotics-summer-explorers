@@ -99,6 +99,10 @@ export type Database = {
         }
         Returns: Json
       }
+      check_write_permission: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       execute_sql: {
         Args: {
           sql: string
@@ -113,6 +117,10 @@ export type Database = {
           column_name: string
           data_type: string
         }[]
+      }
+      heartbeat: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
     }
     Enums: {
