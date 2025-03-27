@@ -1,17 +1,10 @@
-
 import React from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
-import DatabaseConnectionStatus from '@/components/registration/DatabaseConnectionStatus';
 import useDatabaseCheck from '@/hooks/useDatabaseCheck';
 
 const Registration = () => {
-  const {
-    databaseStatus,
-    errorMessage,
-    isRunningPermissionCheck,
-    connectionDetails,
-    handleFixPermissions
-  } = useDatabaseCheck();
+  // We'll keep this hook for its functionality, but we won't display its UI elements
+  useDatabaseCheck();
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -20,14 +13,6 @@ const Registration = () => {
         Please complete this form to register your child for our Summer Robotics Program. 
         All fields marked as required must be filled in to complete the registration.
       </p>
-      
-      {/* Database Connection Status */}
-      <DatabaseConnectionStatus
-        connectionDetails={connectionDetails}
-        errorMessage={errorMessage}
-        isRunningPermissionCheck={isRunningPermissionCheck}
-        handleFixPermissions={handleFixPermissions}
-      />
       
       <RegistrationForm />
     </div>

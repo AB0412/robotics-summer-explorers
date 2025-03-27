@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Form } from '@/components/ui/form';
-import { Send } from 'lucide-react';
 import BasicInfoSection from './registration/BasicInfoSection';
 import ChildDetailsSection from './registration/ChildDetailsSection';
 import ProgramPreferencesSection from './registration/ProgramPreferencesSection';

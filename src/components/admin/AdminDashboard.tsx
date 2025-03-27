@@ -6,11 +6,10 @@ import { RegistrationsTable } from './RegistrationsTable';
 import { PaginationControls } from './PaginationControls';
 import { useAdminDashboard } from '@/hooks/useAdminDashboard';
 import { Button } from '@/components/ui/button';
-import { Database, RefreshCw, ShieldAlert, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Database, RefreshCw } from 'lucide-react';
 import { SchemaUpdateModal } from './SchemaUpdateModal';
 import { validateDatabaseSchema } from '@/utils/database/schema-utils';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { supabase, REGISTRATIONS_TABLE } from '@/utils/supabase/client';
+import { supabase } from '@/utils/supabase/client';
 import { checkRLSPolicies, fixRLSPolicies } from '@/utils/supabase/rls-helpers';
 import { useToast } from '@/hooks/use-toast';
 
@@ -38,9 +37,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [schemaModalOpen, setSchemaModalOpen] = useState(false);
   const [needsSchemaUpdate, setNeedsSchemaUpdate] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showRlsAlert, setShowRlsAlert] = useState(false);
-  const [rlsStatus, setRlsStatus] = useState<{success: boolean; message: string} | null>(null);
-  const [authStatus, setAuthStatus] = useState<string | null>(null);
   const [isFixingRLS, setIsFixingRLS] = useState(false);
   // Add a flag to track initial setup status
   const [initialSetupDone, setInitialSetupDone] = useState(false);
@@ -55,7 +51,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         
         // Check authentication status
         const { data } = await supabase.auth.getSession();
-        setAuthStatus(data.session ? 'authenticated' : 'unauthenticated');
         
         if (!data.session) {
           console.log('User is not authenticated, attempting anonymous sign-in');
@@ -63,13 +58,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             const { error } = await supabase.auth.signInAnonymously();
             if (error) {
               console.error('Anonymous sign-in failed:', error);
-              toast({
-                title: "Authentication Error",
-                description: `Failed to sign in anonymously: ${error.message}`,
-                variant: "destructive",
-              });
             } else {
-              setAuthStatus('authenticated (anon)');
               // Reload registrations after authentication
               loadRegistrations();
             }
@@ -78,44 +67,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           }
         }
         
-        // Check RLS policies
-        const rlsCheck = await checkRLSPolicies();
-        setRlsStatus(rlsCheck);
-        setShowRlsAlert(!rlsCheck.success);
+        // Check RLS policies silently
+        await checkRLSPolicies();
         
-        // Only show toast on initial load, not on every render
-        if (!initialSetupDone) {
-          if (rlsCheck.success) {
-            toast({
-              title: "Database Connection Successful",
-              description: rlsCheck.message,
-            });
-          } else {
-            toast({
-              title: "Database Access Issues",
-              description: rlsCheck.message,
-              variant: "destructive",
-            });
-          }
-          // Mark initial setup as done
-          setInitialSetupDone(true);
-        }
+        // Mark initial setup as done
+        setInitialSetupDone(true);
       } catch (error) {
         console.error('Initialization error:', error);
-        // Only show error toast on initial load
-        if (!initialSetupDone) {
-          toast({
-            title: "Initialization Error",
-            description: error instanceof Error ? error.message : "Unknown error during initialization",
-            variant: "destructive",
-          });
-          setInitialSetupDone(true);
-        }
+        setInitialSetupDone(true);
       }
     };
     
     initialize();
-  }, [loadRegistrations, toast, initialSetupDone]);
+  }, [loadRegistrations]);
 
   // Get filtered registrations
   const filteredRegistrations = getFilteredRegistrations();
@@ -137,23 +101,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         const { error: signInError } = await supabase.auth.signInAnonymously();
         if (signInError) {
           console.error('Sign in error:', signInError);
-          toast({
-            title: "Authentication Error",
-            description: `Could not authenticate: ${signInError.message}`,
-            variant: "destructive",
-          });
-        } else {
-          setAuthStatus('authenticated (anon)');
         }
       }
       
       // Now try to load registrations
       await loadRegistrations();
       
-      // Check RLS status again
-      const rlsCheck = await checkRLSPolicies();
-      setRlsStatus(rlsCheck);
-      setShowRlsAlert(!rlsCheck.success);
+      // Check RLS status again silently
+      await checkRLSPolicies();
       
       toast({
         title: "Data Refreshed",
@@ -178,12 +133,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       const result = await fixRLSPolicies();
       
       if (result.success) {
-        setShowRlsAlert(false);
-        setRlsStatus({
-          success: true,
-          message: result.message
-        });
-        
         // Reload registrations after fixing RLS
         await loadRegistrations();
         
@@ -192,11 +141,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           description: result.message,
         });
       } else {
-        setRlsStatus({
-          success: false,
-          message: result.message
-        });
-        
         toast({
           title: "RLS Fix Failed",
           description: result.message,
@@ -236,51 +180,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         onLogout={onLogout}
       />
       
-      {authStatus && (
-        <Alert className={`mb-4 ${authStatus.includes('authenticated') ? 'bg-blue-50' : 'bg-yellow-50'}`}>
-          <Database className={`h-4 w-4 ${authStatus.includes('authenticated') ? 'text-blue-500' : 'text-yellow-500'} mr-2`} />
-          <AlertDescription className={authStatus.includes('authenticated') ? 'text-blue-700' : 'text-yellow-700'}>
-            Authentication status: {authStatus}. {authStatus === 'unauthenticated' && 
-              "You may need to refresh the page to access data."}
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      {rlsStatus && (
-        <Alert className={`mb-4 ${rlsStatus.success ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
-          {rlsStatus.success ? 
-            <CheckCircle className="h-4 w-4 text-green-500 mr-2" /> : 
-            <ShieldAlert className="h-4 w-4 text-yellow-500 mr-2" />
-          }
-          <AlertDescription className={`flex justify-between items-center ${rlsStatus.success ? 'text-green-700' : 'text-yellow-700'}`}>
-            <span>{rlsStatus.message}</span>
-            {!rlsStatus.success && (
-              <Button 
-                variant="outline" 
-                className="ml-4 bg-white" 
-                onClick={handleFixRLS}
-                disabled={isFixingRLS}
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${isFixingRLS ? 'animate-spin' : ''}`} />
-                {isFixingRLS ? 'Fixing...' : 'Fix RLS Issues'}
-              </Button>
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      {needsSchemaUpdate && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <Database className="h-5 w-5 text-yellow-500 mr-2" />
-            <span>Your database schema needs to be updated to support all features.</span>
-          </div>
-          <Button variant="outline" className="bg-white" onClick={handleRunSqlScript}>
-            Run SQL Update Script
-          </Button>
-        </div>
-      )}
-      
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Registrations ({filteredRegistrations.length})</CardTitle>
@@ -312,14 +211,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </div>
           ) : (
             <>
-              {registrations.length === 0 && (
-                <Alert className="mb-4">
-                  <AlertTriangle className="h-4 w-4 mr-2" />
-                  <AlertDescription>
-                    No registrations found. If you believe records should be present, try clicking the "Refresh Data" button or run the Database Setup script.
-                  </AlertDescription>
-                </Alert>
-              )}
               <RegistrationsTable 
                 registrations={currentRegistrations} 
                 onDeleteRegistration={handleDeleteRegistration} 

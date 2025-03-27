@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -114,15 +115,8 @@ export const useRegistrationForm = () => {
         duration: 8000,
       });
       
-      // Send confirmation email
-      const emailResult = await sendConfirmationEmail(data, newRegistrationId);
-      if (emailResult) {
-        toast({
-          title: "Email Notification Sent",
-          description: "A confirmation email has been sent with your registration details.",
-          duration: 5000,
-        });
-      }
+      // Send confirmation email (but don't show a toast about it)
+      await sendConfirmationEmail(data, newRegistrationId);
       
       // Reset form
       form.reset();
