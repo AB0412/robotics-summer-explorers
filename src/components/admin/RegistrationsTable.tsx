@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Table,
@@ -21,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Registration } from '@/utils/database';
+import { useToast } from "@/hooks/use-toast";
 
 // EnhancedRegistration now extends Registration rather than FormValues
 // to ensure compatibility with the database model
@@ -35,9 +37,25 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
   registrations,
   onDeleteRegistration
 }) => {
+  const { toast } = useToast();
+
   if (registrations.length === 0) {
     return <p>No registrations found.</p>;
   }
+
+  const handleDelete = (registrationId: string | undefined) => {
+    if (!registrationId) {
+      toast({
+        title: "Error",
+        description: "Cannot delete: Missing registration ID",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    console.log(`Deleting registration ID: ${registrationId}`);
+    onDeleteRegistration(registrationId);
+  };
 
   return (
     <Table>
@@ -80,7 +98,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction 
-                      onClick={() => reg.registrationId && onDeleteRegistration(reg.registrationId)}
+                      onClick={() => handleDelete(reg.registrationId)}
                       className="bg-red-500 hover:bg-red-600"
                     >
                       Delete
