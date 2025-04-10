@@ -207,6 +207,7 @@ export function useAdminDashboard() {
       toast({
         title: "Delete Failed",
         description: error instanceof Error ? error.message : "Failed to delete the registration. Please try again.",
+        variant: "destructive",
       });
     }
   };
