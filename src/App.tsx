@@ -7,6 +7,7 @@ import NotFound from './pages/NotFound';
 import Registration from './pages/Registration';
 import Admin from './pages/Admin';
 import Layout from './components/Layout';
+import PrintableFlyer from './components/PrintableFlyer';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -29,6 +30,7 @@ function App() {
           <Route path="/" element={<Index />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/flyer" element={<PrintableFlyer />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

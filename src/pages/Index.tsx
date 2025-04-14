@@ -1,10 +1,11 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Hero from '@/components/Hero';
 import AboutSection from '@/components/AboutSection';
 import ProgramDetails from '@/components/ProgramDetails';
 import { Card, CardContent } from '@/components/ui/card';
-import { Phone, Mail, MessageSquare, MapPin } from 'lucide-react';
+import { Phone, Mail, MessageSquare, MapPin, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
@@ -110,6 +111,15 @@ const Index = () => {
                         </div>
                         <p className="mt-2">Limited spots available!</p>
                       </div>
+                      
+                      <div className="mt-6">
+                        <Link to="/flyer">
+                          <Button variant="outline" className="bg-white text-robotics-navy hover:bg-gray-100 w-full">
+                            <Download size={18} className="mr-2" />
+                            Download Program Flyer
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -123,4 +133,3 @@ const Index = () => {
 };
 
 export default Index;
-
