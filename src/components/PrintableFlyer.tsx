@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import { Cog, MapPin, Phone, Mail, Bot, Lightbulb, Wrench } from 'lucide-react';
 import { Button } from './ui/button';
@@ -183,6 +182,7 @@ const PrintableFlyer = () => {
           {/* Footer */}
           <div className="bg-robotics-navy text-white p-4 text-center">
             <p>© 2025 Robotics Summer Explorers. All rights reserved.</p>
+            <p className="text-sm mt-2">Explore or register at: https://bot-venture.com/</p>
           </div>
         </div>
       </div>
@@ -209,4 +209,3 @@ const PrintableFlyer = () => {
 };
 
 export default PrintableFlyer;
-
