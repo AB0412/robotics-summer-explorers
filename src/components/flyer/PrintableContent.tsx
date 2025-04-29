@@ -16,12 +16,13 @@ const PrintableContent: React.FC<PrintableContentProps> = ({ flyerRef }) => {
   return (
     <div 
       ref={flyerRef}
-      className="bg-white shadow-lg rounded-lg overflow-hidden print:shadow-none"
+      className="bg-white shadow-lg rounded-lg overflow-hidden print:shadow-none print:rounded-none print:m-0"
+      style={{ maxWidth: "8.5in", minHeight: "11in" }}
     >
       <FlyerHeader />
       <FlyerHero />
       
-      <div className="p-8">
+      <div className="p-6 print:p-4">
         <ProgramDetails />
         <ImageGrid />
         <LearningOutcomes />
