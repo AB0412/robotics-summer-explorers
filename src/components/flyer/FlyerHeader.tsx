@@ -12,6 +12,10 @@ const FlyerHeader: React.FC = () => {
         <Cog size={80} className="text-white" />
       </div>
       
+      <div className="text-center text-robotics-accent text-sm mb-2 print:text-xs">
+        https://bot-venture.com/
+      </div>
+      
       <h1 className="font-display font-bold text-2xl md:text-3xl print:text-2xl mb-2 relative z-10">
         <span className="text-robotics-accent">S.T.E.A.M</span> Fun with Robotics
       </h1>
