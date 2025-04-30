@@ -8,7 +8,7 @@ const PrintStyles: React.FC = () => {
         @media print {
           @page {
             size: letter portrait;
-            margin: 0.5cm;
+            margin: 0.4cm;
           }
           body {
             -webkit-print-color-adjust: exact !important;
