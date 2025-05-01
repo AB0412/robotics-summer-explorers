@@ -2,7 +2,6 @@
 import React from 'react';
 
 const FlyerHero: React.FC = () => {
-  // Remove the hero image component entirely for printing
   return (
     <div className="relative bg-robotics-blue text-white p-3 print:p-2">
       <div className="text-center">
