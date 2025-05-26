@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      program_time_slots: {
+        Row: {
+          created_at: string | null
+          days: Database["public"]["Enums"]["day_of_week"][]
+          description: string | null
+          end_time: string
+          id: string
+          max_capacity: number
+          name: string
+          start_time: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          days: Database["public"]["Enums"]["day_of_week"][]
+          description?: string | null
+          end_time: string
+          id?: string
+          max_capacity?: number
+          name: string
+          start_time: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          days?: Database["public"]["Enums"]["day_of_week"][]
+          description?: string | null
+          end_time?: string
+          id?: string
+          max_capacity?: number
+          name?: string
+          start_time?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       registrations: {
         Row: {
           alternatebatch: string | null
@@ -87,6 +123,45 @@ export type Database = {
         }
         Relationships: []
       }
+      student_schedules: {
+        Row: {
+          assigned_at: string | null
+          id: string
+          notes: string | null
+          registration_id: string
+          time_slot_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          id?: string
+          notes?: string | null
+          registration_id: string
+          time_slot_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          id?: string
+          notes?: string | null
+          registration_id?: string
+          time_slot_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_schedules_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["registrationid"]
+          },
+          {
+            foreignKeyName: "student_schedules_time_slot_id_fkey"
+            columns: ["time_slot_id"]
+            isOneToOne: false
+            referencedRelation: "program_time_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -117,7 +192,14 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      day_of_week:
+        | "monday"
+        | "tuesday"
+        | "wednesday"
+        | "thursday"
+        | "friday"
+        | "saturday"
+        | "sunday"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -232,6 +314,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      day_of_week: [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+      ],
+    },
   },
 } as const

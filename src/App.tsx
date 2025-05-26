@@ -1,36 +1,21 @@
-
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout';
 import Index from './pages/Index';
-import NotFound from './pages/NotFound';
 import Registration from './pages/Registration';
 import Admin from './pages/Admin';
-import Layout from './components/Layout';
-import PrintableFlyer from './components/PrintableFlyer';
-
-function ScrollToTop() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  return null;
-}
+import NotFound from './pages/NotFound';
+import ScheduleManagement from './pages/ScheduleManagement';
 
 function App() {
-  console.log("App component mounted, initial URL:", window.location.href);
-  
   return (
     <Router>
-      <ScrollToTop />
       <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Index />} />
-          <Route path="/registration" element={<Registration />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/flyer" element={<PrintableFlyer />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Index />} />
+          <Route path="registration" element={<Registration />} />
+          <Route path="admin" element={<Admin />} />
+          <Route path="schedule-management" element={<ScheduleManagement />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
