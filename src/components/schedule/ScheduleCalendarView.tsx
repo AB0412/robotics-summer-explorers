@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Users } from 'lucide-react';
-import type { TimeSlot, StudentSchedule } from '@/pages/ScheduleManagement';
+import type { TimeSlot, StudentSchedule } from '@/types/schedule';
 
 interface ScheduleCalendarViewProps {
   timeSlots: TimeSlot[];

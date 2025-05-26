@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,21 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { UserPlus, Search, Trash2, Clock, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/utils/supabase/client';
-import type { TimeSlot, StudentSchedule } from '@/pages/ScheduleManagement';
+import type { TimeSlot, StudentSchedule, Registration } from '@/types/schedule';
 
 interface StudentScheduleAssignmentProps {
   timeSlots: TimeSlot[];
   studentSchedules: StudentSchedule[];
   onUpdate: () => void;
-}
-
-interface Registration {
-  registrationid: string;
-  childname: string;
-  parentname: string;
-  childage: string;
-  childgrade: string;
-  preferredbatch: string;
 }
 
 export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps> = ({

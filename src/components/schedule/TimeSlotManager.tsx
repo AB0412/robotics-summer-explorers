@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/utils/supabase/client';
-import type { TimeSlot } from '@/pages/ScheduleManagement';
+import type { TimeSlot } from '@/types/schedule';
 
 interface TimeSlotManagerProps {
   timeSlots: TimeSlot[];
