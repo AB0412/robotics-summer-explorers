@@ -13,6 +13,7 @@ export interface StudentSchedule {
   id: string;
   registration_id: string;
   time_slot_id: string;
+  day_of_week?: string;
   assigned_at: string;
   notes?: string;
   registrations?: {

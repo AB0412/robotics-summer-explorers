@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { UserPlus, Search, Trash2, Clock, User } from 'lucide-react';
+import { UserPlus, Search, Trash2, Clock, User, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/utils/supabase/client';
 import type { TimeSlot, StudentSchedule, Registration } from '@/types/schedule';
@@ -16,6 +17,14 @@ interface StudentScheduleAssignmentProps {
   studentSchedules: StudentSchedule[];
   onUpdate: () => void;
 }
+
+const daysOfWeek = [
+  { value: 'monday', label: 'Monday' },
+  { value: 'tuesday', label: 'Tuesday' },
+  { value: 'wednesday', label: 'Wednesday' },
+  { value: 'thursday', label: 'Thursday' },
+  { value: 'friday', label: 'Friday' },
+];
 
 export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps> = ({
   timeSlots,
@@ -28,6 +37,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<string>('');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
+  const [selectedDay, setSelectedDay] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -63,10 +73,10 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
   };
 
   const handleAssignStudent = async () => {
-    if (!selectedStudent || !selectedTimeSlot) {
+    if (!selectedStudent || !selectedTimeSlot || !selectedDay) {
       toast({
         title: "Validation Error",
-        description: "Please select both a student and time slot",
+        description: "Please select a student, time slot, and day of the week",
         variant: "destructive",
       });
       return;
@@ -78,6 +88,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
         .insert([{
           registration_id: selectedStudent,
           time_slot_id: selectedTimeSlot,
+          day_of_week: selectedDay,
           notes: notes || null,
         }]);
 
@@ -91,6 +102,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
       // Reset form
       setSelectedStudent('');
       setSelectedTimeSlot('');
+      setSelectedDay('');
       setNotes('');
       onUpdate();
     } catch (error) {
@@ -175,7 +187,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="student">Select Student</Label>
               <Select value={selectedStudent} onValueChange={setSelectedStudent}>
@@ -211,6 +223,21 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
                       </SelectItem>
                     );
                   })}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="day">Select Day</Label>
+              <Select value={selectedDay} onValueChange={setSelectedDay}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a day..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {daysOfWeek.map(day => (
+                    <SelectItem key={day.value} value={day.value}>
+                      {day.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -264,7 +291,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
                   </Badge>
                 </CardTitle>
                 <p className="text-sm text-gray-600">
-                  {slot.start_time} - {slot.end_time} • {slot.days.join(', ')}
+                  {slot.start_time} - {slot.end_time}
                 </p>
               </CardHeader>
               <CardContent>
@@ -285,6 +312,10 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
                               Grade {assignment.registrations?.childgrade} • 
                               Parent: {assignment.registrations?.parentname}
                             </p>
+                            <div className="flex items-center gap-2 text-sm text-blue-600">
+                              <Calendar className="h-3 w-3" />
+                              <span>{assignment.day_of_week ? daysOfWeek.find(d => d.value === assignment.day_of_week)?.label : 'Day not specified'}</span>
+                            </div>
                             {assignment.notes && (
                               <p className="text-sm text-blue-600 italic">{assignment.notes}</p>
                             )}
