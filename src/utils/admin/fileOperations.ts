@@ -6,6 +6,33 @@ import {
   getDownloadLink 
 } from '@/utils/database';
 
+// Helper function to convert registrations to CSV format
+const convertToCSV = (registrations: any[]): string => {
+  if (registrations.length === 0) return '';
+  
+  // Get all unique keys from all registrations
+  const allKeys = new Set<string>();
+  registrations.forEach(reg => {
+    Object.keys(reg).forEach(key => allKeys.add(key));
+  });
+  
+  const headers = Array.from(allKeys);
+  
+  // Create CSV header row
+  const csvHeaders = headers.map(header => `"${header}"`).join(',');
+  
+  // Create CSV data rows
+  const csvRows = registrations.map(reg => {
+    return headers.map(header => {
+      const value = reg[header] || '';
+      // Escape quotes in values and wrap in quotes
+      return `"${String(value).replace(/"/g, '""')}"`;
+    }).join(',');
+  });
+  
+  return [csvHeaders, ...csvRows].join('\n');
+};
+
 // Handle saving database to local file
 export const handleSaveDatabase = async (toast: ReturnType<typeof useToast>['toast']) => {
   try {
@@ -14,7 +41,7 @@ export const handleSaveDatabase = async (toast: ReturnType<typeof useToast>['toa
       // Create anchor and trigger download
       const a = document.createElement('a');
       a.href = downloadLink;
-      a.download = `robotics-registrations-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `robotics-registrations-${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(a);
       a.click();
       
@@ -23,7 +50,7 @@ export const handleSaveDatabase = async (toast: ReturnType<typeof useToast>['toa
       
       toast({
         title: "Save Successful",
-        description: "Registration data file has been saved.",
+        description: "Registration data CSV file has been saved.",
       });
     } else {
       // If no download link is available (e.g., first time), generate one
@@ -34,7 +61,7 @@ export const handleSaveDatabase = async (toast: ReturnType<typeof useToast>['toa
     console.error("Error saving database to file:", error);
     toast({
       title: "Save Failed",
-      description: "Failed to save registration data file.",
+      description: "Failed to save registration data CSV file.",
     });
   }
 };
@@ -43,13 +70,18 @@ export const handleSaveDatabase = async (toast: ReturnType<typeof useToast>['toa
 export const handleExportDatabase = async (toast: ReturnType<typeof useToast>['toast']) => {
   try {
     const jsonData = await exportDatabase();
-    const blob = new Blob([jsonData], { type: 'application/json' });
+    const parsedData = JSON.parse(jsonData);
+    
+    // Convert to CSV format
+    const csvData = convertToCSV(parsedData.registrations || []);
+    
+    const blob = new Blob([csvData], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     
     // Create download link and trigger download
     const a = document.createElement('a');
     a.href = url;
-    a.download = `robotics-registrations-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `robotics-registrations-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     
@@ -57,9 +89,13 @@ export const handleExportDatabase = async (toast: ReturnType<typeof useToast>['t
     URL.revokeObjectURL(url);
     document.body.removeChild(a);
     
+    // Store CSV blob for save functionality
+    const csvBlob = new Blob([csvData], { type: 'text/csv' });
+    sessionStorage.setItem('latestRegistrationsBlob', URL.createObjectURL(csvBlob));
+    
     toast({
       title: "Export Successful",
-      description: "Registration data has been exported successfully.",
+      description: "Registration data has been exported as CSV successfully.",
     });
   } catch (error) {
     console.error("Error exporting database:", error);

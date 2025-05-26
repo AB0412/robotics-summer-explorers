@@ -3,6 +3,33 @@ import { DBStorage } from './types';
 import { toast } from '@/hooks/use-toast';
 import { loadDatabase, saveDatabase } from './core';
 
+// Helper function to convert registrations to CSV format
+const convertToCSV = (registrations: any[]): string => {
+  if (registrations.length === 0) return '';
+  
+  // Get all unique keys from all registrations
+  const allKeys = new Set<string>();
+  registrations.forEach(reg => {
+    Object.keys(reg).forEach(key => allKeys.add(key));
+  });
+  
+  const headers = Array.from(allKeys);
+  
+  // Create CSV header row
+  const csvHeaders = headers.map(header => `"${header}"`).join(',');
+  
+  // Create CSV data rows
+  const csvRows = registrations.map(reg => {
+    return headers.map(header => {
+      const value = reg[header] || '';
+      // Escape quotes in values and wrap in quotes
+      return `"${String(value).replace(/"/g, '""')}"`;
+    }).join(',');
+  });
+  
+  return [csvHeaders, ...csvRows].join('\n');
+};
+
 // Export database as JSON
 export const exportDatabase = async (): Promise<string> => {
   try {
