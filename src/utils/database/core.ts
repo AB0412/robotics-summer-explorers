@@ -151,29 +151,3 @@ export const saveDatabase = async (db: DBStorage): Promise<{success: boolean; er
     };
   }
 };
-
-// Export database to JSON
-export const exportDatabase = async (): Promise<string> => {
-  const result = await loadDatabase();
-  if (!result.success || !result.data) {
-    throw new Error(result.error || 'Failed to load database');
-  }
-  return JSON.stringify(result.data, null, 2);
-};
-
-// Import database from JSON
-export const importDatabase = async (jsonData: string): Promise<boolean> => {
-  try {
-    const data = JSON.parse(jsonData);
-    const result = await saveDatabase(data);
-    return result.success;
-  } catch (error) {
-    console.error('Error importing database:', error);
-    return false;
-  }
-};
-
-// Get download link for the latest export
-export const getDownloadLink = (): string | null => {
-  return sessionStorage.getItem('latestRegistrationsBlob');
-};
