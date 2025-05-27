@@ -5,7 +5,8 @@ import { StudentScheduleFilters } from './StudentScheduleFilters';
 import { StudentScheduleForm } from './StudentScheduleForm';
 import { StudentScheduleList } from './StudentScheduleList';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { AlertCircle, Users } from 'lucide-react';
 import type { TimeSlot, StudentSchedule } from '@/types/schedule';
 
 interface StudentScheduleAssignmentProps {
@@ -19,6 +20,11 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
   studentSchedules,
   onUpdate,
 }) => {
+  console.log('StudentScheduleAssignment: Rendering with props:', {
+    timeSlotsCount: timeSlots?.length || 0,
+    studentSchedulesCount: studentSchedules?.length || 0
+  });
+
   const {
     searchTerm,
     setSearchTerm,
@@ -31,9 +37,10 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
     assignStudent,
     removeAssignment,
     getTimeSlotCapacity,
-  } = useStudentScheduleData(studentSchedules, onUpdate);
+  } = useStudentScheduleData(studentSchedules || [], onUpdate);
 
   if (error) {
+    console.error('StudentScheduleAssignment: Error state:', error);
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
@@ -44,18 +51,41 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        <span className="ml-2">Loading assignments...</span>
-      </div>
+      <Card>
+        <CardContent className="p-8">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <span className="ml-2">Loading assignments...</span>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
+
+  // Check if we have the required data
+  if (!timeSlots || timeSlots.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-8">
+          <div className="text-center space-y-4">
+            <Users className="h-12 w-12 text-gray-400 mx-auto" />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">No Time Slots Available</h3>
+              <p className="text-gray-500">Please create time slots first before assigning students.</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  console.log('StudentScheduleAssignment: Rendering main content');
 
   return (
     <div className="space-y-6">
       <StudentScheduleForm
         timeSlots={timeSlots}
-        unassignedStudents={unassignedStudents}
+        unassignedStudents={unassignedStudents || []}
         onAssign={assignStudent}
         getTimeSlotCapacity={getTimeSlotCapacity}
       />
@@ -69,7 +99,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
 
       <StudentScheduleList
         timeSlots={timeSlots}
-        filteredSchedules={filteredSchedules}
+        filteredSchedules={filteredSchedules || []}
         onRemoveAssignment={removeAssignment}
         getTimeSlotCapacity={getTimeSlotCapacity}
       />

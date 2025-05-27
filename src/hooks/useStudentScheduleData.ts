@@ -14,13 +14,15 @@ export const useStudentScheduleData = (studentSchedules: StudentSchedule[], onUp
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('useStudentScheduleData: Effect triggered, loading registrations...');
     loadRegistrations();
   }, [studentSchedules]);
 
   const loadRegistrations = async () => {
     try {
       setError(null);
-      console.log('Loading registrations for student schedule...');
+      setIsLoading(true);
+      console.log('useStudentScheduleData: Starting registration load...');
       
       const { data, error: regError } = await supabase
         .from('registrations')
@@ -28,25 +30,28 @@ export const useStudentScheduleData = (studentSchedules: StudentSchedule[], onUp
         .order('childname');
 
       if (regError) {
-        console.error('Error loading registrations:', regError);
+        console.error('useStudentScheduleData: Error loading registrations:', regError);
         throw new Error(`Failed to load registrations: ${regError.message}`);
       }
 
-      console.log('Loaded registrations:', data);
-      setRegistrations(data || []);
+      console.log('useStudentScheduleData: Registrations loaded:', data?.length || 0);
+      const registrationsData = data || [];
+      setRegistrations(registrationsData);
       
       // Find unassigned students
-      const assignedStudentIds = studentSchedules.map(s => s.registration_id);
-      const unassigned = (data || []).filter(reg => !assignedStudentIds.includes(reg.registrationid));
+      const assignedStudentIds = (studentSchedules || []).map(s => s.registration_id);
+      const unassigned = registrationsData.filter(reg => !assignedStudentIds.includes(reg.registrationid));
       setUnassignedStudents(unassigned);
-      console.log('Unassigned students:', unassigned);
+      
+      console.log('useStudentScheduleData: Unassigned students:', unassigned.length);
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error loading registrations';
-      console.error('Error in loadRegistrations:', err);
+      console.error('useStudentScheduleData: Error in loadRegistrations:', err);
       setError(errorMessage);
     } finally {
       setIsLoading(false);
+      console.log('useStudentScheduleData: Registration loading finished');
     }
   };
 
@@ -61,7 +66,7 @@ export const useStudentScheduleData = (studentSchedules: StudentSchedule[], onUp
     }
 
     // Check if student is already assigned to this time slot on this day
-    const existingAssignment = studentSchedules.find(
+    const existingAssignment = (studentSchedules || []).find(
       s => s.registration_id === selectedStudent && 
            s.time_slot_id === selectedTimeSlot && 
            s.day_of_week === selectedDay
@@ -77,7 +82,7 @@ export const useStudentScheduleData = (studentSchedules: StudentSchedule[], onUp
     }
 
     try {
-      console.log('Assigning student:', {
+      console.log('useStudentScheduleData: Assigning student:', {
         registration_id: selectedStudent,
         time_slot_id: selectedTimeSlot,
         day_of_week: selectedDay,
@@ -94,7 +99,7 @@ export const useStudentScheduleData = (studentSchedules: StudentSchedule[], onUp
         }]);
 
       if (error) {
-        console.error('Database error:', error);
+        console.error('useStudentScheduleData: Database error:', error);
         throw error;
       }
 
@@ -106,7 +111,7 @@ export const useStudentScheduleData = (studentSchedules: StudentSchedule[], onUp
       onUpdate();
       return true;
     } catch (error) {
-      console.error('Error assigning student:', error);
+      console.error('useStudentScheduleData: Error assigning student:', error);
       toast({
         title: "Error",
         description: `Failed to assign student to time slot: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -135,7 +140,7 @@ export const useStudentScheduleData = (studentSchedules: StudentSchedule[], onUp
       });
       onUpdate();
     } catch (error) {
-      console.error('Error removing assignment:', error);
+      console.error('useStudentScheduleData: Error removing assignment:', error);
       toast({
         title: "Error",
         description: "Failed to remove student assignment",
@@ -145,7 +150,7 @@ export const useStudentScheduleData = (studentSchedules: StudentSchedule[], onUp
   };
 
   const getTimeSlotCapacity = (timeSlotId: string) => {
-    const assignedCount = studentSchedules.filter(s => s.time_slot_id === timeSlotId).length;
+    const assignedCount = (studentSchedules || []).filter(s => s.time_slot_id === timeSlotId).length;
     return {
       assigned: assignedCount,
       total: 20, // Default capacity
@@ -154,14 +159,14 @@ export const useStudentScheduleData = (studentSchedules: StudentSchedule[], onUp
   };
 
   // Apply filters
-  const filteredSchedules = studentSchedules.filter(schedule => {
+  const filteredSchedules = (studentSchedules || []).filter(schedule => {
     // Apply search filter
     let matchesSearch = true;
     if (searchTerm) {
       const student = schedule.registrations;
       matchesSearch = (
-        student?.childname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student?.parentname.toLowerCase().includes(searchTerm.toLowerCase())
+        student?.childname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student?.parentname?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
