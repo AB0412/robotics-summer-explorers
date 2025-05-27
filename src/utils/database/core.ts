@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import type { Registration } from '@/types/schedule';
+import type { Registration, SupabaseRegistration } from './types';
 
 const REGISTRATIONS_TABLE = 'registrations';
 
@@ -9,26 +9,58 @@ const REGISTRATIONS_TABLE = 'registrations';
  */
 const convertDbToRegistration = (dbRow: any): Registration => {
   return {
-    registrationid: dbRow.registrationid,
-    childname: dbRow.childname,
-    parentname: dbRow.parentname,
-    childage: dbRow.childage,
-    childgrade: dbRow.childgrade,
-    preferredbatch: dbRow.preferredbatch,
+    registrationId: dbRow.registrationid,
+    parentName: dbRow.parentname,
+    parentEmail: dbRow.parentemail,
+    parentPhone: dbRow.parentphone,
+    emergencyContact: dbRow.emergencycontact,
+    childName: dbRow.childname,
+    childAge: dbRow.childage,
+    childGrade: dbRow.childgrade,
+    schoolName: dbRow.schoolname,
+    medicalInfo: dbRow.medicalinfo || '',
+    preferredBatch: dbRow.preferredbatch,
+    alternateBatch: dbRow.alternatebatch || '',
+    hasPriorExperience: dbRow.haspriorexperience,
+    experienceDescription: dbRow.experiencedescription || '',
+    interestLevel: dbRow.interestlevel || '',
+    referralSource: dbRow.referralsource,
+    photoConsent: dbRow.photoconsent,
+    waiverAgreement: dbRow.waiveragreement,
+    tShirtSize: dbRow.tshirtsize || '',
+    specialRequests: dbRow.specialrequests || '',
+    volunteerInterest: dbRow.volunteerinterest,
+    submittedAt: dbRow.submittedat,
   };
 };
 
 /**
  * Converts Registration type to database format
  */
-const convertRegistrationToDb = (registration: Registration) => {
+const convertRegistrationToDb = (registration: Registration): SupabaseRegistration => {
   return {
-    registrationid: registration.registrationid,
-    childname: registration.childname,
-    parentname: registration.parentname,
-    childage: registration.childage,
-    childgrade: registration.childgrade,
-    preferredbatch: registration.preferredbatch || '',
+    registrationid: registration.registrationId,
+    parentname: registration.parentName,
+    parentemail: registration.parentEmail,
+    parentphone: registration.parentPhone,
+    emergencycontact: registration.emergencyContact,
+    childname: registration.childName,
+    childage: registration.childAge,
+    childgrade: registration.childGrade,
+    schoolname: registration.schoolName,
+    medicalinfo: registration.medicalInfo,
+    preferredbatch: registration.preferredBatch,
+    alternatebatch: registration.alternateBatch,
+    haspriorexperience: registration.hasPriorExperience,
+    experiencedescription: registration.experienceDescription,
+    interestlevel: registration.interestLevel,
+    referralsource: registration.referralSource,
+    photoconsent: registration.photoConsent,
+    waiveragreement: registration.waiverAgreement,
+    tshirtsize: registration.tShirtSize,
+    specialrequests: registration.specialRequests,
+    volunteerinterest: registration.volunteerInterest,
+    submittedat: registration.submittedAt,
   };
 };
 
@@ -42,7 +74,7 @@ export const getRegistrations = async (): Promise<Registration[]> => {
     
     const { data, error } = await supabase
       .from(REGISTRATIONS_TABLE)
-      .select('registrationid, childname, parentname, childage, childgrade, preferredbatch')
+      .select('*')
       .order('childname');
 
     if (error) {
@@ -127,7 +159,7 @@ export const deleteRegistration = async (registrationId: string): Promise<boolea
 /**
  * Formats registration data to match the database schema
  */
-export const formatRegistrationData = (registration: Registration) => {
+export const formatRegistrationData = (registration: Registration): SupabaseRegistration => {
   return convertRegistrationToDb(registration);
 };
 
