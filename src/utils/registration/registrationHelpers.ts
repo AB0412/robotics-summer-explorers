@@ -1,7 +1,21 @@
+
 import { Registration } from '@/types/schedule';
-import { formatRegistrationData } from '@/utils/database/core';
 import { addRegistration } from '@/utils/database/operations/addRegistration';
 import { supabase } from '@/integrations/supabase/client';
+
+/**
+ * Formats registration data to match the database schema
+ */
+export const formatRegistrationData = (registration: Registration) => {
+  return {
+    registrationid: registration.registrationid,
+    childname: registration.childname,
+    parentname: registration.parentname,
+    childage: registration.childage,
+    childgrade: registration.childgrade,
+    preferredbatch: registration.preferredbatch || '',
+  };
+};
 
 /**
  * Processes a registration form submission.
@@ -27,6 +41,15 @@ export const submitRegistration = async (registration: Registration): Promise<bo
     console.error('Error submitting registration:', error);
     return false;
   }
+};
+
+/**
+ * Sends a confirmation email (placeholder function)
+ */
+export const sendConfirmationEmail = async (email: string, data: any): Promise<boolean> => {
+  // This is a placeholder function for sending confirmation emails
+  console.log('Sending confirmation email to:', email, 'with data:', data);
+  return true;
 };
 
 /**

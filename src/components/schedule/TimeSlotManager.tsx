@@ -16,14 +16,16 @@ interface TimeSlotManagerProps {
   onUpdate: () => void;
 }
 
+type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+
 const daysOfWeek = [
-  { value: 'monday', label: 'Monday' },
-  { value: 'tuesday', label: 'Tuesday' },
-  { value: 'wednesday', label: 'Wednesday' },
-  { value: 'thursday', label: 'Thursday' },
-  { value: 'friday', label: 'Friday' },
-  { value: 'saturday', label: 'Saturday' },
-  { value: 'sunday', label: 'Sunday' },
+  { value: 'monday' as DayOfWeek, label: 'Monday' },
+  { value: 'tuesday' as DayOfWeek, label: 'Tuesday' },
+  { value: 'wednesday' as DayOfWeek, label: 'Wednesday' },
+  { value: 'thursday' as DayOfWeek, label: 'Thursday' },
+  { value: 'friday' as DayOfWeek, label: 'Friday' },
+  { value: 'saturday' as DayOfWeek, label: 'Saturday' },
+  { value: 'sunday' as DayOfWeek, label: 'Sunday' },
 ];
 
 export const TimeSlotManager: React.FC<TimeSlotManagerProps> = ({ timeSlots, onUpdate }) => {
@@ -34,7 +36,7 @@ export const TimeSlotManager: React.FC<TimeSlotManagerProps> = ({ timeSlots, onU
     name: '',
     start_time: '',
     end_time: '',
-    days: [] as string[],
+    days: [] as DayOfWeek[],
     max_capacity: 20,
     description: '',
   });
@@ -110,7 +112,7 @@ export const TimeSlotManager: React.FC<TimeSlotManagerProps> = ({ timeSlots, onU
       name: slot.name,
       start_time: slot.start_time,
       end_time: slot.end_time,
-      days: slot.days,
+      days: slot.days as DayOfWeek[],
       max_capacity: slot.max_capacity,
       description: slot.description || '',
     });
@@ -146,7 +148,7 @@ export const TimeSlotManager: React.FC<TimeSlotManagerProps> = ({ timeSlots, onU
     }
   };
 
-  const handleDayToggle = (day: string) => {
+  const handleDayToggle = (day: DayOfWeek) => {
     setFormData(prev => ({
       ...prev,
       days: prev.days.includes(day)
