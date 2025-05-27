@@ -47,19 +47,25 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
 
   const loadRegistrations = async () => {
     try {
+      console.log('Loading registrations...');
       const { data, error } = await supabase
         .from('registrations')
         .select('registrationid, childname, parentname, childage, childgrade, preferredbatch')
         .order('childname');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading registrations:', error);
+        throw error;
+      }
 
+      console.log('Loaded registrations:', data);
       setRegistrations(data || []);
       
       // Find unassigned students
       const assignedStudentIds = studentSchedules.map(s => s.registration_id);
       const unassigned = (data || []).filter(reg => !assignedStudentIds.includes(reg.registrationid));
       setUnassignedStudents(unassigned);
+      console.log('Unassigned students:', unassigned);
     } catch (error) {
       console.error('Error loading registrations:', error);
       toast({
@@ -190,14 +196,19 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
       );
     }
 
-    // Apply day filter
+    // Apply day filter - fix the logic to handle missing day_of_week values
     let matchesDay = true;
     if (dayFilter) {
+      // Only filter if dayFilter is set and schedule has a day_of_week value
       matchesDay = schedule.day_of_week === dayFilter;
     }
 
     return matchesSearch && matchesDay;
   });
+
+  console.log('Filtered schedules:', filteredSchedules);
+  console.log('All schedules:', studentSchedules);
+  console.log('Day filter:', dayFilter);
 
   const groupedSchedules = timeSlots.map(slot => ({
     ...slot,
@@ -212,6 +223,11 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
       </div>
     );
   }
+
+  // Add debug info for troubleshooting
+  console.log('Time slots:', timeSlots);
+  console.log('Student schedules:', studentSchedules);
+  console.log('Registrations:', registrations);
 
   return (
     <div className="space-y-6">
@@ -331,66 +347,74 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
       {/* Assignments by Time Slot */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Current Assignments</h3>
-        {groupedSchedules.map(slot => {
-          const capacity = getTimeSlotCapacity(slot.id);
-          return (
-            <Card key={slot.id}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    {slot.name}
-                  </div>
-                  <Badge variant={capacity.available > 0 ? 'default' : 'destructive'}>
-                    {capacity.assigned}/{capacity.total} students
-                  </Badge>
-                </CardTitle>
-                <p className="text-sm text-gray-600">
-                  {slot.start_time} - {slot.end_time}
-                </p>
-              </CardHeader>
-              <CardContent>
-                {slot.assignments.length === 0 ? (
-                  <p className="text-gray-500 italic">No students assigned yet</p>
-                ) : (
-                  <div className="space-y-2">
-                    {slot.assignments.map(assignment => (
-                      <div
-                        key={assignment.id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                      >
-                        <div className="flex items-center gap-3">
-                          <User className="h-4 w-4 text-gray-500" />
-                          <div>
-                            <p className="font-medium">{assignment.registrations?.childname}</p>
-                            <p className="text-sm text-gray-600">
-                              Age {assignment.registrations?.childage} • Grade {assignment.registrations?.childgrade} • 
-                              Parent: {assignment.registrations?.parentname}
-                            </p>
-                            <div className="flex items-center gap-2 text-sm text-blue-600">
-                              <Calendar className="h-3 w-3" />
-                              <span>{assignment.day_of_week ? daysOfWeek.find(d => d.value === assignment.day_of_week)?.label : 'Day not specified'}</span>
-                            </div>
-                            {assignment.notes && (
-                              <p className="text-sm text-blue-600 italic">{assignment.notes}</p>
-                            )}
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleRemoveAssignment(assignment.id)}
+        {timeSlots.length === 0 ? (
+          <Card>
+            <CardContent className="p-6">
+              <p className="text-gray-500 text-center">No time slots configured yet. Please add time slots first.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          groupedSchedules.map(slot => {
+            const capacity = getTimeSlotCapacity(slot.id);
+            return (
+              <Card key={slot.id}>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-5 w-5" />
+                      {slot.name}
+                    </div>
+                    <Badge variant={capacity.available > 0 ? 'default' : 'destructive'}>
+                      {capacity.assigned}/{capacity.total} students
+                    </Badge>
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    {slot.start_time} - {slot.end_time}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {slot.assignments.length === 0 ? (
+                    <p className="text-gray-500 italic">No students assigned yet</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {slot.assignments.map(assignment => (
+                        <div
+                          key={assignment.id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                         >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+                          <div className="flex items-center gap-3">
+                            <User className="h-4 w-4 text-gray-500" />
+                            <div>
+                              <p className="font-medium">{assignment.registrations?.childname}</p>
+                              <p className="text-sm text-gray-600">
+                                Age {assignment.registrations?.childage} • Grade {assignment.registrations?.childgrade} • 
+                                Parent: {assignment.registrations?.parentname}
+                              </p>
+                              <div className="flex items-center gap-2 text-sm text-blue-600">
+                                <Calendar className="h-3 w-3" />
+                                <span>{assignment.day_of_week ? daysOfWeek.find(d => d.value === assignment.day_of_week)?.label : 'Day not specified'}</span>
+                              </div>
+                              {assignment.notes && (
+                                <p className="text-sm text-blue-600 italic">{assignment.notes}</p>
+                              )}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleRemoveAssignment(assignment.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })
+        )}
       </div>
     </div>
   );
