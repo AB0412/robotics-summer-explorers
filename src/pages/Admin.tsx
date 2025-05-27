@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
-import { initializeDatabase, hasValidCredentials } from '@/integrations/supabase/client';
+import { initializeDatabase, hasValidCredentials } from '@/utils/supabase/client';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

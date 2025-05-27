@@ -1,34 +1,6 @@
 
-import { supabase, REGISTRATIONS_TABLE } from '@/integrations/supabase/client';
+import { supabase, REGISTRATIONS_TABLE } from '../supabase/client';
 import { Registration } from './types';
-
-// Helper function to convert snake_case to camelCase
-const convertSupabaseToRegistration = (supabaseReg: any): Registration => {
-  return {
-    registrationId: supabaseReg.registrationid,
-    parentName: supabaseReg.parentname,
-    parentEmail: supabaseReg.parentemail,
-    parentPhone: supabaseReg.parentphone,
-    emergencyContact: supabaseReg.emergencycontact,
-    childName: supabaseReg.childname,
-    childAge: supabaseReg.childage,
-    childGrade: supabaseReg.childgrade,
-    schoolName: supabaseReg.schoolname,
-    medicalInfo: supabaseReg.medicalinfo,
-    preferredBatch: supabaseReg.preferredbatch,
-    alternateBatch: supabaseReg.alternatebatch,
-    hasPriorExperience: supabaseReg.haspriorexperience,
-    experienceDescription: supabaseReg.experiencedescription,
-    interestLevel: supabaseReg.interestlevel,
-    referralSource: supabaseReg.referralsource,
-    photoConsent: supabaseReg.photoconsent,
-    waiverAgreement: supabaseReg.waiveragreement,
-    tShirtSize: supabaseReg.tshirtsize,
-    specialRequests: supabaseReg.specialrequests,
-    volunteerInterest: supabaseReg.volunteerinterest,
-    submittedAt: supabaseReg.submittedat
-  };
-};
 
 // Search registrations by field and term
 export const searchRegistrations = async (
@@ -43,12 +15,12 @@ export const searchRegistrations = async (
     }
     
     if (field === 'all') {
-      // For 'all' we need to make multiple queries and combine results using snake_case column names
+      // For 'all' we need to make multiple queries and combine results
       const [nameResults, emailResults, idResults, childNameResults] = await Promise.all([
-        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('parentname', `%${term}%`),
-        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('parentemail', `%${term}%`),
-        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('registrationid', `%${term}%`),
-        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('childname', `%${term}%`)
+        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('parentName', `%${term}%`),
+        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('parentEmail', `%${term}%`),
+        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('registrationId', `%${term}%`),
+        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('childName', `%${term}%`)
       ]);
       
       // Combine results, removing duplicates
@@ -59,37 +31,25 @@ export const searchRegistrations = async (
         ...(childNameResults.data || [])
       ];
       
-      // Remove duplicates by registrationid (snake_case)
+      // Remove duplicates by registrationId
       const uniqueResults = Array.from(
-        new Map(combinedResults.map(item => [item.registrationid, item])).values()
+        new Map(combinedResults.map(item => [item.registrationId, item])).values()
       );
       
-      // Convert to camelCase
-      return uniqueResults.map(convertSupabaseToRegistration);
+      return uniqueResults as Registration[];
     } else {
-      // Map camelCase field names to snake_case column names
-      const fieldMapping: Record<string, string> = {
-        parentName: 'parentname',
-        childName: 'childname', 
-        parentEmail: 'parentemail',
-        registrationId: 'registrationid'
-      };
-      
-      const dbField = fieldMapping[field] || field;
-      
       // For specific fields, we can do a single query
       const { data, error } = await supabase
         .from(REGISTRATIONS_TABLE)
         .select('*')
-        .ilike(dbField, `%${term}%`);
+        .ilike(field, `%${term}%`);
       
       if (error) {
         console.error(`Error searching registrations by ${field}:`, error);
         return [];
       }
       
-      // Convert to camelCase
-      return (data || []).map(convertSupabaseToRegistration);
+      return data as Registration[];
     }
   } catch (error) {
     console.error('Error searching registrations:', error);

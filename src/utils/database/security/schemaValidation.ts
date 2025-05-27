@@ -1,6 +1,6 @@
 
 import { validateDatabaseSchema } from '@/utils/database/schema/validation';
-import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '@/integrations/supabase/client';
+import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '@/utils/supabase/client';
 import { checkDatabaseConnection } from '@/utils/database/schema/db-connection';
 
 /**

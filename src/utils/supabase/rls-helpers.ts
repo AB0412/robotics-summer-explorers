@@ -1,5 +1,5 @@
 
-import { supabase, REGISTRATIONS_TABLE } from '@/integrations/supabase/client';
+import { supabase, REGISTRATIONS_TABLE } from './client';
 
 /**
  * Function to verify RLS policies are correctly set up

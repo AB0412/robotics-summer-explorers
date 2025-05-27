@@ -8,7 +8,7 @@ import RoboticsExperienceSection from './registration/RoboticsExperienceSection'
 import LogisticsConsentSection from './registration/LogisticsConsentSection';
 import PaymentOptionsSection from './registration/PaymentOptionsSection';
 import { useRegistrationForm } from '@/hooks/useRegistrationForm';
-import { hasValidCredentials } from '@/integrations/supabase/client';
+import { hasValidCredentials } from '@/utils/supabase/client';
 import DatabaseFeedback from './registration/DatabaseFeedback';
 import SubmitButton from './registration/SubmitButton';
 import { useDatabaseConnection } from '@/hooks/useDatabaseConnection';

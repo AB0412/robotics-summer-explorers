@@ -9,7 +9,7 @@ import {
   sendConfirmationEmail
 } from '@/utils/registration/registrationHelpers';
 import { Registration } from '@/utils/database/types';
-import { hasValidCredentials } from '@/integrations/supabase/client';
+import { hasValidCredentials } from '@/utils/supabase/client';
 import { addRegistration } from '@/utils/database/operations/addRegistration';
 
 export const useRegistrationForm = () => {
@@ -115,8 +115,8 @@ export const useRegistrationForm = () => {
         duration: 8000,
       });
       
-      // Send confirmation email with correct parameters
-      await sendConfirmationEmail(data.parentEmail, registrationWithIdAndTimestamp);
+      // Send confirmation email (but don't show a toast about it)
+      await sendConfirmationEmail(data, newRegistrationId);
       
       // Reset form
       form.reset();

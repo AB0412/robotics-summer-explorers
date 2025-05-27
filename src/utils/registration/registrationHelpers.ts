@@ -1,96 +1,62 @@
 
-import { Registration } from '@/types/schedule';
-import { addRegistration } from '@/utils/database/operations/addRegistration';
-import { supabase } from '@/integrations/supabase/client';
+import { FormValues } from '@/components/registration/RegistrationTypes';
+import { Registration } from '@/utils/database';
+import { supabase } from '@/utils/supabase/client';
 
-/**
- * Formats registration data to match the database schema
- */
-export const formatRegistrationData = (registration: Registration) => {
-  return {
-    registrationid: registration.registrationid,
-    childname: registration.childname,
-    parentname: registration.parentname,
-    childage: registration.childage,
-    childgrade: registration.childgrade,
-    preferredbatch: registration.preferredbatch || '',
-  };
+// Generate a unique registration ID
+export const generateRegistrationId = () => {
+  return 'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
-/**
- * Processes a registration form submission.
- * @param {Registration} registration - The registration data to be submitted.
- * @returns {Promise<boolean>} - A promise that resolves to true if the submission was successful, false otherwise.
- */
-export const submitRegistration = async (registration: Registration): Promise<boolean> => {
+// Send confirmation email using our Supabase Edge Function
+export const sendConfirmationEmail = async (data: FormValues, registrationId: string) => {
   try {
-    // Format the registration data to match the database schema
-    const formattedRegistration = formatRegistrationData(registration);
+    // Create registration summary for the email
+    const registrationSummary = `
+      Registration ID: ${registrationId}
+      Parent: ${data.parentName}
+      Email: ${data.parentEmail}
+      Phone: ${data.parentPhone}
+      Child: ${data.childName}
+      Age: ${data.childAge}
+      Grade: ${data.childGrade}
+      School: ${data.schoolName}
+      Preferred Batch: ${data.preferredBatch}
+      Alternate Batch: ${data.alternateBatch || 'None'}
+      Medical Information: ${data.medicalInfo || 'None provided'}
+      Prior Experience: ${data.hasPriorExperience}
+      Experience Description: ${data.experienceDescription || 'N/A'}
+      Interest Level: ${data.interestLevel}
+      T-Shirt Size: ${data.tShirtSize || 'Not selected'}
+      Special Requests: ${data.specialRequests || 'None'}
+      Volunteer Interest: ${data.volunteerInterest ? 'Yes' : 'No'}
+      Photo Consent: ${data.photoConsent ? 'Yes' : 'No'}
+    `;
 
-    // Add the registration to the database
-    const success = await addRegistration(formattedRegistration);
-
-    if (success) {
-      console.log('Registration submitted successfully!');
-      return true;
-    } else {
-      console.error('Failed to submit registration.');
-      return false;
-    }
-  } catch (error) {
-    console.error('Error submitting registration:', error);
-    return false;
-  }
-};
-
-/**
- * Sends a confirmation email (placeholder function)
- */
-export const sendConfirmationEmail = async (email: string, data: any): Promise<boolean> => {
-  // This is a placeholder function for sending confirmation emails
-  console.log('Sending confirmation email to:', email, 'with data:', data);
-  return true;
-};
-
-/**
- * Generates a unique registration ID.
- * @returns {string} - A unique registration ID.
- */
-export const generateRegistrationId = (): string => {
-  const timestamp = Date.now().toString(36); // Convert timestamp to base36
-  const randomString = Math.random().toString(36).substring(2, 8); // Get a random string
-
-  return `${timestamp}-${randomString}`.toUpperCase(); // Combine and format the ID
-};
-
-/**
- * Uploads a file to Supabase storage.
- * @param {File} file - The file to upload.
- * @param {string} filePath - The path in Supabase storage where the file should be stored.
- * @returns {Promise<string | null>} - A promise that resolves to the public URL of the uploaded file, or null if the upload failed.
- */
-export const uploadFile = async (file: File, filePath: string): Promise<string | null> => {
-  try {
-    const { data, error } = await supabase.storage
-      .from('uploads') // Replace 'uploads' with your storage bucket name
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
+    console.log("Sending confirmation email to:", data.parentEmail);
+    
+    // Call our Supabase Edge Function to send emails
+    const { data: emailResponse, error } = await supabase.functions.invoke('send-registration-email', {
+      body: JSON.stringify({
+        parentEmail: data.parentEmail,
+        parentName: data.parentName,
+        childName: data.childName,
+        registrationId: registrationId,
+        preferredBatch: data.preferredBatch,
+        registrationSummary: registrationSummary
+      })
+    });
 
     if (error) {
-      console.error('Error uploading file:', error);
-      return null;
+      console.error("Error calling email function:", error);
+      return false;
     }
-
-    // Get the public URL for the uploaded file
-    const { data: publicUrlData } = supabase.storage
-      .from('uploads') // Replace 'uploads' with your storage bucket name
-      .getPublicUrl(data.path);
-
-    return publicUrlData.publicUrl;
+    
+    console.log("Email function response:", emailResponse);
+    return emailResponse.success;
+    
   } catch (error) {
-    console.error('Error uploading file:', error);
-    return null;
+    console.error("Email sending failed:", error);
+    return false;
   }
 };

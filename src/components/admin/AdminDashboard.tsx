@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardToolbar } from './DashboardToolbar';
@@ -9,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Database, RefreshCw } from 'lucide-react';
 import { SchemaUpdateModal } from './SchemaUpdateModal';
 import { validateDatabaseSchema } from '@/utils/database/schema-utils';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/utils/supabase/client';
 import { checkRLSPolicies, fixRLSPolicies } from '@/utils/supabase/rls-helpers';
 import { useToast } from '@/hooks/use-toast';
 

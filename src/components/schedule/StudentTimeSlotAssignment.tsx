@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { UserPlus, Search, Trash2, Clock, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/utils/supabase/client';
 import { Input } from '@/components/ui/input';
 
 interface TimeSlot {

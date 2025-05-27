@@ -10,9 +10,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { RefreshCcw, Database, Copy, Play } from 'lucide-react';
-import { getAllRegistrations } from '@/utils/database';
-import { supabase, REGISTRATIONS_TABLE } from '@/integrations/supabase/client';
-import { executeSQL } from '@/utils/database/schema/connection/execute-sql';
+import { getAllRegistrations, supabase, REGISTRATIONS_TABLE } from '@/utils/database';
+import { executeSql } from '@/utils/database/schema/connection/execute-sql';
 
 interface SchemaUpdateModalProps {
   open: boolean;
@@ -208,12 +207,12 @@ ALTER TABLE registrations FORCE ROW LEVEL SECURITY;
         if (!stmt) continue;
         
         console.log('Executing SQL:', stmt);
-        const { data: sqlData, error: sqlError } = await executeSQL(stmt + ';');
+        const { success, error } = await executeSql(stmt + ';');
         
-        if (!sqlError) {
+        if (success) {
           successCount++;
         } else {
-          console.error('SQL execution error:', sqlError);
+          console.error('SQL execution error:', error);
           errorCount++;
           // Continue with other statements even if one fails
         }

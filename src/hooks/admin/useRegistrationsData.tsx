@@ -4,9 +4,10 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   getAllRegistrations,
   importDatabase,
+  supabase,
+  REGISTRATIONS_TABLE,
   EnhancedRegistration
 } from '@/utils/database';
-import { supabase, REGISTRATIONS_TABLE } from '@/integrations/supabase/client';
 
 export function useRegistrationsData() {
   const [registrations, setRegistrations] = useState<EnhancedRegistration[]>([]);
