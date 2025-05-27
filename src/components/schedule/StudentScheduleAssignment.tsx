@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { UserPlus, Search, Trash2, Clock, User, Calendar } from 'lucide-react';
+import { UserPlus, Search, Trash2, Clock, User, Calendar, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/utils/supabase/client';
 import type { TimeSlot, StudentSchedule, Registration } from '@/types/schedule';
@@ -39,6 +39,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
   const [selectedDay, setSelectedDay] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [dayFilter, setDayFilter] = useState<string>('all');
 
   useEffect(() => {
     loadRegistrations();
@@ -179,12 +180,22 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
   };
 
   const filteredSchedules = studentSchedules.filter(schedule => {
-    if (!searchTerm) return true;
-    const student = schedule.registrations;
-    return (
-      student?.childname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student?.parentname.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // First filter by search term
+    if (searchTerm) {
+      const student = schedule.registrations;
+      const matchesSearch = (
+        student?.childname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student?.parentname.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      if (!matchesSearch) return false;
+    }
+
+    // Then filter by day
+    if (dayFilter !== 'all') {
+      return schedule.day_of_week === dayFilter;
+    }
+
+    return true;
   });
 
   const groupedSchedules = timeSlots.map(slot => ({
@@ -283,7 +294,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
         </CardContent>
       </Card>
 
-      {/* Search */}
+      {/* Search and Filter */}
       <div className="flex items-center gap-4">
         <div className="flex-1">
           <div className="relative">
@@ -294,6 +305,24 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
+          </div>
+        </div>
+        <div className="w-48">
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Select value={dayFilter} onValueChange={setDayFilter}>
+              <SelectTrigger className="pl-10">
+                <SelectValue placeholder="Filter by day..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Days</SelectItem>
+                {daysOfWeek.map(day => (
+                  <SelectItem key={day.value} value={day.value}>
+                    {day.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -321,7 +350,9 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
               </CardHeader>
               <CardContent>
                 {slot.assignments.length === 0 ? (
-                  <p className="text-gray-500 italic">No students assigned yet</p>
+                  <p className="text-gray-500 italic">
+                    {dayFilter === 'all' ? 'No students assigned yet' : `No students assigned for ${daysOfWeek.find(d => d.value === dayFilter)?.label || dayFilter}`}
+                  </p>
                 ) : (
                   <div className="space-y-2">
                     {slot.assignments.map(assignment => (
