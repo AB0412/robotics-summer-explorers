@@ -6,7 +6,7 @@ import { StudentScheduleAssignment } from '@/components/schedule/StudentSchedule
 import { ScheduleCalendarView } from '@/components/schedule/ScheduleCalendarView';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
-import { supabase } from '@/utils/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import type { TimeSlot, StudentSchedule } from '@/types/schedule';
 

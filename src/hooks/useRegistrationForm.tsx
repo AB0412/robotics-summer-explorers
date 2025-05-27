@@ -9,7 +9,7 @@ import {
   sendConfirmationEmail
 } from '@/utils/registration/registrationHelpers';
 import { Registration } from '@/utils/database/types';
-import { hasValidCredentials } from '@/utils/supabase/client';
+import { hasValidCredentials } from '@/integrations/supabase/client';
 import { addRegistration } from '@/utils/database/operations/addRegistration';
 
 export const useRegistrationForm = () => {

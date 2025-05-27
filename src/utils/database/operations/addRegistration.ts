@@ -1,5 +1,5 @@
 
-import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '../../supabase/client';
+import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '@/integrations/supabase/client';
 import { Registration, SupabaseRegistration } from '../types';
 
 // Add a new registration

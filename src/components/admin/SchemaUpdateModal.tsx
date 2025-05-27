@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Dialog,
@@ -10,7 +11,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { RefreshCcw, Database, Copy, Play } from 'lucide-react';
-import { getAllRegistrations, supabase, REGISTRATIONS_TABLE } from '@/utils/database';
+import { getAllRegistrations } from '@/utils/database';
+import { supabase, REGISTRATIONS_TABLE } from '@/integrations/supabase/client';
 import { executeSql } from '@/utils/database/schema/connection/execute-sql';
 
 interface SchemaUpdateModalProps {

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
-import { REGISTRATIONS_TABLE } from '@/utils/supabase/client';
+import { REGISTRATIONS_TABLE } from '@/integrations/supabase/client';
 
 interface DatabaseAlertsProps {
   hasValidCredentials: boolean;

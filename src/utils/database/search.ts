@@ -1,5 +1,5 @@
 
-import { supabase, REGISTRATIONS_TABLE } from '../supabase/client';
+import { supabase, REGISTRATIONS_TABLE } from '@/integrations/supabase/client';
 import { Registration } from './types';
 
 // Search registrations by field and term

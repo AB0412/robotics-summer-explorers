@@ -1,5 +1,5 @@
 
-import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '../../supabase/client';
+import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '@/integrations/supabase/client';
 
 // Delete a registration
 export const deleteRegistration = async (registrationId: string): Promise<{success: boolean; error?: string}> => {
