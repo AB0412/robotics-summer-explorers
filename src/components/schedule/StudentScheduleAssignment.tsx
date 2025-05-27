@@ -197,7 +197,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
                 <SelectContent>
                   {unassignedStudents.map(student => (
                     <SelectItem key={student.registrationid} value={student.registrationid}>
-                      {student.childname} (Grade {student.childgrade}) - {student.parentname}
+                      {student.childname} (Age {student.childage}, Grade {student.childgrade}) - {student.parentname}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -309,7 +309,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
                           <div>
                             <p className="font-medium">{assignment.registrations?.childname}</p>
                             <p className="text-sm text-gray-600">
-                              Grade {assignment.registrations?.childgrade} • 
+                              Age {assignment.registrations?.childage} • Grade {assignment.registrations?.childgrade} • 
                               Parent: {assignment.registrations?.parentname}
                             </p>
                             <div className="flex items-center gap-2 text-sm text-blue-600">
