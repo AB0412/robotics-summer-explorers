@@ -1,71 +1,62 @@
 
-import { Registration } from '@/utils/database/types';
+import { FormValues } from '@/components/registration/RegistrationTypes';
+import { Registration } from '@/utils/database';
+import { supabase } from '@/utils/supabase/client';
 
-// Helper function to generate a unique registration ID
-export const generateRegistrationId = (): string => {
-  const timestamp = new Date().getTime();
-  const random = Math.floor(Math.random() * 1000);
-  return `REG-${timestamp}-${random}`;
+// Generate a unique registration ID
+export const generateRegistrationId = () => {
+  return 'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
-// Helper function to validate required fields
-export const validateRegistrationData = (data: Partial<Registration>): string[] => {
-  const errors: string[] = [];
-  
-  if (!data.parentName?.trim()) errors.push('Parent name is required');
-  if (!data.parentEmail?.trim()) errors.push('Parent email is required');
-  if (!data.parentPhone?.trim()) errors.push('Parent phone is required');
-  if (!data.emergencyContact?.trim()) errors.push('Emergency contact is required');
-  if (!data.childName?.trim()) errors.push('Child name is required');
-  if (!data.childAge?.trim()) errors.push('Child age is required');
-  if (!data.childGrade?.trim()) errors.push('Child grade is required');
-  if (!data.schoolName?.trim()) errors.push('School name is required');
-  if (!data.preferredBatch?.trim()) errors.push('Preferred batch is required');
-  if (!data.referralSource?.trim()) errors.push('Referral source is required');
-  if (!data.hasPriorExperience) errors.push('Prior experience response is required');
-  
-  return errors;
-};
+// Send confirmation email using our Supabase Edge Function
+export const sendConfirmationEmail = async (data: FormValues, registrationId: string) => {
+  try {
+    // Create registration summary for the email
+    const registrationSummary = `
+      Registration ID: ${registrationId}
+      Parent: ${data.parentName}
+      Email: ${data.parentEmail}
+      Phone: ${data.parentPhone}
+      Child: ${data.childName}
+      Age: ${data.childAge}
+      Grade: ${data.childGrade}
+      School: ${data.schoolName}
+      Preferred Batch: ${data.preferredBatch}
+      Alternate Batch: ${data.alternateBatch || 'None'}
+      Medical Information: ${data.medicalInfo || 'None provided'}
+      Prior Experience: ${data.hasPriorExperience}
+      Experience Description: ${data.experienceDescription || 'N/A'}
+      Interest Level: ${data.interestLevel}
+      T-Shirt Size: ${data.tShirtSize || 'Not selected'}
+      Special Requests: ${data.specialRequests || 'None'}
+      Volunteer Interest: ${data.volunteerInterest ? 'Yes' : 'No'}
+      Photo Consent: ${data.photoConsent ? 'Yes' : 'No'}
+    `;
 
-// Helper function to create a complete registration object
-export const createCompleteRegistration = (formData: Partial<Registration>): Registration => {
-  const registrationId = generateRegistrationId();
-  const submittedAt = new Date().toISOString();
-  
-  return {
-    registrationId,
-    parentName: formData.parentName || '',
-    parentEmail: formData.parentEmail || '',
-    parentPhone: formData.parentPhone || '',
-    emergencyContact: formData.emergencyContact || '',
-    childName: formData.childName || '',
-    childAge: formData.childAge || '',
-    childGrade: formData.childGrade || '',
-    schoolName: formData.schoolName || '',
-    medicalInfo: formData.medicalInfo || '',
-    preferredBatch: formData.preferredBatch || '',
-    alternateBatch: formData.alternateBatch || '',
-    hasPriorExperience: formData.hasPriorExperience || 'no',
-    experienceDescription: formData.experienceDescription || '',
-    interestLevel: formData.interestLevel || '',
-    referralSource: formData.referralSource || '',
-    photoConsent: formData.photoConsent || false,
-    waiverAgreement: formData.waiverAgreement || false,
-    tShirtSize: formData.tShirtSize || '',
-    specialRequests: formData.specialRequests || '',
-    volunteerInterest: formData.volunteerInterest || false,
-    submittedAt,
-  };
-};
+    console.log("Sending confirmation email to:", data.parentEmail);
+    
+    // Call our Supabase Edge Function to send emails
+    const { data: emailResponse, error } = await supabase.functions.invoke('send-registration-email', {
+      body: JSON.stringify({
+        parentEmail: data.parentEmail,
+        parentName: data.parentName,
+        childName: data.childName,
+        registrationId: registrationId,
+        preferredBatch: data.preferredBatch,
+        registrationSummary: registrationSummary
+      })
+    });
 
-// Helper function to format registration data for display
-export const formatRegistrationForDisplay = (registration: Registration) => {
-  return {
-    id: registration.registrationId,
-    parentInfo: `${registration.parentName} (${registration.parentEmail})`,
-    childInfo: `${registration.childName}, Age ${registration.childAge}, Grade ${registration.childGrade}`,
-    school: registration.schoolName,
-    preferredBatch: registration.preferredBatch,
-    submittedAt: new Date(registration.submittedAt).toLocaleDateString(),
-  };
+    if (error) {
+      console.error("Error calling email function:", error);
+      return false;
+    }
+    
+    console.log("Email function response:", emailResponse);
+    return emailResponse.success;
+    
+  } catch (error) {
+    console.error("Email sending failed:", error);
+    return false;
+  }
 };

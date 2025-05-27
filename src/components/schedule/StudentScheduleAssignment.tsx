@@ -39,7 +39,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
   const [selectedDay, setSelectedDay] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [dayFilter, setDayFilter] = useState<string>('all');
+  const [dayFilter, setDayFilter] = useState<string>('');
 
   useEffect(() => {
     loadRegistrations();
@@ -180,22 +180,23 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
   };
 
   const filteredSchedules = studentSchedules.filter(schedule => {
-    // First filter by search term
+    // Apply search filter
+    let matchesSearch = true;
     if (searchTerm) {
       const student = schedule.registrations;
-      const matchesSearch = (
+      matchesSearch = (
         student?.childname.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student?.parentname.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      if (!matchesSearch) return false;
     }
 
-    // Then filter by day
-    if (dayFilter !== 'all') {
-      return schedule.day_of_week === dayFilter;
+    // Apply day filter
+    let matchesDay = true;
+    if (dayFilter) {
+      matchesDay = schedule.day_of_week === dayFilter;
     }
 
-    return true;
+    return matchesSearch && matchesDay;
   });
 
   const groupedSchedules = timeSlots.map(slot => ({
@@ -315,7 +316,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
                 <SelectValue placeholder="Filter by day..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Days</SelectItem>
+                <SelectItem value="">All Days</SelectItem>
                 {daysOfWeek.map(day => (
                   <SelectItem key={day.value} value={day.value}>
                     {day.label}
@@ -350,9 +351,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
               </CardHeader>
               <CardContent>
                 {slot.assignments.length === 0 ? (
-                  <p className="text-gray-500 italic">
-                    {dayFilter === 'all' ? 'No students assigned yet' : `No students assigned for ${daysOfWeek.find(d => d.value === dayFilter)?.label || dayFilter}`}
-                  </p>
+                  <p className="text-gray-500 italic">No students assigned yet</p>
                 ) : (
                   <div className="space-y-2">
                     {slot.assignments.map(assignment => (
