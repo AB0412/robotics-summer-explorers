@@ -14,6 +14,10 @@ export type { EnhancedRegistration } from '@/components/admin/RegistrationsTable
 import { getAllRegistrations, addRegistration as addReg, deleteRegistration as deleteReg } from './operations';
 export { getAllRegistrations, addReg as addRegistrationOp, deleteReg as deleteRegistrationOp };
 
+// Import and re-export the new core functions
+import { exportDatabase, importDatabase, getDownloadLink } from './core';
+export { exportDatabase, importDatabase, getDownloadLink };
+
 // Initialize the database when this module loads
 import { initializeDatabase } from '../supabase/client';
 

@@ -151,3 +151,36 @@ export const saveDatabase = async (db: DBStorage): Promise<{success: boolean; er
     };
   }
 };
+
+// Export database to JSON
+export const exportDatabase = async (): Promise<string> => {
+  const result = await loadDatabase();
+  if (!result.success || !result.data) {
+    throw new Error(result.error || 'Failed to load database for export');
+  }
+  return JSON.stringify(result.data.registrations, null, 2);
+};
+
+// Import database from JSON
+export const importDatabase = async (jsonData: string): Promise<void> => {
+  try {
+    const registrations = JSON.parse(jsonData);
+    
+    if (!Array.isArray(registrations)) {
+      throw new Error('Invalid JSON format - expected an array of registrations');
+    }
+
+    await saveDatabase({ registrations });
+    console.log(`Successfully imported ${registrations.length} registrations`);
+  } catch (error) {
+    console.error('Error importing database:', error);
+    throw new Error('Failed to import database');
+  }
+};
+
+// Get download link for exported data
+export const getDownloadLink = async (): Promise<string> => {
+  const csvData = await exportDatabase();
+  const blob = new Blob([csvData], { type: 'application/json' });
+  return URL.createObjectURL(blob);
+};

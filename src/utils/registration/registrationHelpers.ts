@@ -69,3 +69,15 @@ export const formatRegistrationForDisplay = (registration: Registration) => {
     submittedAt: new Date(registration.submittedAt).toLocaleDateString(),
   };
 };
+
+// Send confirmation email (placeholder function)
+export const sendConfirmationEmail = async (registration: Registration): Promise<void> => {
+  try {
+    console.log('Sending confirmation email for registration:', registration.registrationId);
+    // This is a placeholder - in a real implementation, you would integrate with an email service
+    console.log(`Confirmation email would be sent to: ${registration.parentEmail}`);
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+    throw new Error('Failed to send confirmation email');
+  }
+};
