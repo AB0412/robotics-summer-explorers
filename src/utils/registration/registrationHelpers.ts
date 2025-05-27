@@ -1,62 +1,73 @@
+import { Registration } from '@/types/schedule';
+import { formatRegistrationData } from '@/utils/database/core';
+import { addRegistration } from '@/utils/database/operations/addRegistration';
+import { supabase } from '@/integrations/supabase/client';
 
-import { FormValues } from '@/components/registration/RegistrationTypes';
-import { Registration } from '@/utils/database';
-import { supabase } from '@/utils/supabase/client';
-
-// Generate a unique registration ID
-export const generateRegistrationId = () => {
-  return 'REG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-};
-
-// Send confirmation email using our Supabase Edge Function
-export const sendConfirmationEmail = async (data: FormValues, registrationId: string) => {
+/**
+ * Processes a registration form submission.
+ * @param {Registration} registration - The registration data to be submitted.
+ * @returns {Promise<boolean>} - A promise that resolves to true if the submission was successful, false otherwise.
+ */
+export const submitRegistration = async (registration: Registration): Promise<boolean> => {
   try {
-    // Create registration summary for the email
-    const registrationSummary = `
-      Registration ID: ${registrationId}
-      Parent: ${data.parentName}
-      Email: ${data.parentEmail}
-      Phone: ${data.parentPhone}
-      Child: ${data.childName}
-      Age: ${data.childAge}
-      Grade: ${data.childGrade}
-      School: ${data.schoolName}
-      Preferred Batch: ${data.preferredBatch}
-      Alternate Batch: ${data.alternateBatch || 'None'}
-      Medical Information: ${data.medicalInfo || 'None provided'}
-      Prior Experience: ${data.hasPriorExperience}
-      Experience Description: ${data.experienceDescription || 'N/A'}
-      Interest Level: ${data.interestLevel}
-      T-Shirt Size: ${data.tShirtSize || 'Not selected'}
-      Special Requests: ${data.specialRequests || 'None'}
-      Volunteer Interest: ${data.volunteerInterest ? 'Yes' : 'No'}
-      Photo Consent: ${data.photoConsent ? 'Yes' : 'No'}
-    `;
+    // Format the registration data to match the database schema
+    const formattedRegistration = formatRegistrationData(registration);
 
-    console.log("Sending confirmation email to:", data.parentEmail);
-    
-    // Call our Supabase Edge Function to send emails
-    const { data: emailResponse, error } = await supabase.functions.invoke('send-registration-email', {
-      body: JSON.stringify({
-        parentEmail: data.parentEmail,
-        parentName: data.parentName,
-        childName: data.childName,
-        registrationId: registrationId,
-        preferredBatch: data.preferredBatch,
-        registrationSummary: registrationSummary
-      })
-    });
+    // Add the registration to the database
+    const success = await addRegistration(formattedRegistration);
 
-    if (error) {
-      console.error("Error calling email function:", error);
+    if (success) {
+      console.log('Registration submitted successfully!');
+      return true;
+    } else {
+      console.error('Failed to submit registration.');
       return false;
     }
-    
-    console.log("Email function response:", emailResponse);
-    return emailResponse.success;
-    
   } catch (error) {
-    console.error("Email sending failed:", error);
+    console.error('Error submitting registration:', error);
     return false;
+  }
+};
+
+/**
+ * Generates a unique registration ID.
+ * @returns {string} - A unique registration ID.
+ */
+export const generateRegistrationId = (): string => {
+  const timestamp = Date.now().toString(36); // Convert timestamp to base36
+  const randomString = Math.random().toString(36).substring(2, 8); // Get a random string
+
+  return `${timestamp}-${randomString}`.toUpperCase(); // Combine and format the ID
+};
+
+/**
+ * Uploads a file to Supabase storage.
+ * @param {File} file - The file to upload.
+ * @param {string} filePath - The path in Supabase storage where the file should be stored.
+ * @returns {Promise<string | null>} - A promise that resolves to the public URL of the uploaded file, or null if the upload failed.
+ */
+export const uploadFile = async (file: File, filePath: string): Promise<string | null> => {
+  try {
+    const { data, error } = await supabase.storage
+      .from('uploads') // Replace 'uploads' with your storage bucket name
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (error) {
+      console.error('Error uploading file:', error);
+      return null;
+    }
+
+    // Get the public URL for the uploaded file
+    const { data: publicUrlData } = supabase.storage
+      .from('uploads') // Replace 'uploads' with your storage bucket name
+      .getPublicUrl(data.path);
+
+    return publicUrlData.publicUrl;
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    return null;
   }
 };
