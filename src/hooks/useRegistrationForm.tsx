@@ -115,8 +115,8 @@ export const useRegistrationForm = () => {
         duration: 8000,
       });
       
-      // Send confirmation email (but don't show a toast about it)
-      await sendConfirmationEmail(data, newRegistrationId);
+      // Send confirmation email (but don't show a toast about it) - fix: only pass the registration object
+      await sendConfirmationEmail(registrationWithIdAndTimestamp);
       
       // Reset form
       form.reset();

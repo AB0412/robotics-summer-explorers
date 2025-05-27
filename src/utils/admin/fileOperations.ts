@@ -36,7 +36,7 @@ const convertToCSV = (registrations: any[]): string => {
 // Handle saving database to local file
 export const handleSaveDatabase = async (toast: ReturnType<typeof useToast>['toast']) => {
   try {
-    const downloadLink = getDownloadLink();
+    const downloadLink = await getDownloadLink(); // Fix: await the Promise
     if (downloadLink) {
       // Create anchor and trigger download
       const a = document.createElement('a');
@@ -119,22 +119,14 @@ export const handleImportDatabase = async (
     reader.onload = async (e) => {
       try {
         const jsonData = e.target?.result as string;
-        const success = await importDatabase(jsonData);
+        await importDatabase(jsonData); // Fix: don't test void return value for truthiness
         
-        if (success) {
-          await loadRegistrations(); // Reload registrations
-          toast({
-            title: "Import Successful",
-            description: "Registration data has been imported successfully.",
-          });
-          resolve();
-        } else {
-          toast({
-            title: "Import Failed",
-            description: "Invalid data format. Please check your JSON file.",
-          });
-          reject(new Error("Invalid data format"));
-        }
+        await loadRegistrations(); // Reload registrations
+        toast({
+          title: "Import Successful",
+          description: "Registration data has been imported successfully.",
+        });
+        resolve();
       } catch (error) {
         console.error("Error importing database:", error);
         toast({
