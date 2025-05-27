@@ -1,109 +1,55 @@
+import { supabase, REGISTRATIONS_TABLE } from '@/integrations/supabase/client';
 
-import { supabase, REGISTRATIONS_TABLE } from '../../supabase/client';
-import { getExpectedColumns } from './column-management';
+// Function to generate SQL for creating the registrations table
+export const generateCreateTableSQL = (): string => {
+  return `
+    CREATE TABLE IF NOT EXISTS ${REGISTRATIONS_TABLE} (
+      id SERIAL PRIMARY KEY,
+      registrationId VARCHAR(255) UNIQUE NOT NULL,
+      parentName VARCHAR(255) NOT NULL,
+      parentEmail VARCHAR(255) NOT NULL,
+      parentPhone VARCHAR(20) NOT NULL,
+      emergencyContact VARCHAR(255) NOT NULL,
+      childName VARCHAR(255) NOT NULL,
+      childAge VARCHAR(3) NOT NULL,
+      childGrade VARCHAR(3) NOT NULL,
+      schoolName VARCHAR(255) NOT NULL,
+      medicalInfo TEXT,
+      preferredBatch VARCHAR(255) NOT NULL,
+      alternateBatch VARCHAR(255),
+      hasPriorExperience VARCHAR(10) NOT NULL,
+      experienceDescription TEXT,
+      interestLevel VARCHAR(255),
+      referralSource VARCHAR(255) NOT NULL,
+      photoConsent BOOLEAN NOT NULL DEFAULT FALSE,
+      waiverAgreement BOOLEAN NOT NULL DEFAULT FALSE,
+      tShirtSize VARCHAR(10),
+      specialRequests TEXT,
+      volunteerInterest BOOLEAN NOT NULL DEFAULT FALSE,
+      submittedAt TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+};
 
-// Generate SQL statements for missing columns
-export const generateSchemaUpdateSQL = async (): Promise<string> => {
-  try {
-    console.log('Generating schema update SQL...');
-    
-    // First, check if our RPC function exists
-    const { data: functions, error: functionsError } = await supabase
-      .from('pg_catalog.pg_proc')
-      .select('proname')
-      .eq('proname', 'get_table_columns')
-      .limit(1);
-      
-    // If the function doesn't exist, create it first
-    if (functionsError || !functions || functions.length === 0) {
-      console.log('Creating get_table_columns function...');
-      // We need to include this in our SQL script
-      let sql = `-- First, create a helper function to get table columns\n`;
-      sql += `CREATE OR REPLACE FUNCTION get_table_columns(table_name text)\n`;
-      sql += `RETURNS TABLE(column_name text, data_type text) LANGUAGE sql AS $$\n`;
-      sql += `  SELECT column_name::text, data_type::text\n`;
-      sql += `  FROM information_schema.columns\n`;
-      sql += `  WHERE table_name = $1 AND table_schema = 'public'\n`;
-      sql += `$$;\n\n`;
-      
-      // Now we need to include the actual table updates
-      sql += `-- Now, let's add the missing columns\n`;
-      
-      // Get all the expected columns
-      const expectedColumnsMap = getExpectedColumns();
-      
-      // Generate SQL for all expected columns
-      Object.entries(expectedColumnsMap).forEach(([colName, colDefinition]) => {
-        sql += `ALTER TABLE ${REGISTRATIONS_TABLE} ADD COLUMN IF NOT EXISTS ${colName} ${colDefinition};\n`;
-      });
-      
-      return sql;
-    }
-    
-    // Use our custom function to get columns
-    const { data: columns, error: columnsError } = await supabase
-      .rpc('get_table_columns', { table_name: REGISTRATIONS_TABLE })
-      .select('column_name');
-      
-    if (columnsError) {
-      console.error('Error fetching table schema:', columnsError);
-      return `-- Error fetching table schema: ${columnsError.message}\n\n` +
-             `-- Let's create a helper function first:\n` +
-             `CREATE OR REPLACE FUNCTION get_table_columns(table_name text)\n` +
-             `RETURNS TABLE(column_name text, data_type text) LANGUAGE sql AS $$\n` +
-             `  SELECT column_name::text, data_type::text\n` +
-             `  FROM information_schema.columns\n` +
-             `  WHERE table_name = $1 AND table_schema = 'public'\n` +
-             `$$;\n\n` +
-             `-- Then run this function to check for columns:\n` +
-             `SELECT * FROM get_table_columns('${REGISTRATIONS_TABLE}');\n\n` +
-             `-- After that, run the ALTER TABLE commands below:\n\n` +
-             Object.entries(getExpectedColumns()).map(([colName, colDefinition]) => 
-               `ALTER TABLE ${REGISTRATIONS_TABLE} ADD COLUMN IF NOT EXISTS ${colName} ${colDefinition};`
-             ).join('\n');
-    }
-    
-    if (!columns) {
-      console.error('No columns data returned');
-      return `-- Could not retrieve column information for table: ${REGISTRATIONS_TABLE}\n` +
-             `-- Let's add all expected columns:\n\n` +
-             Object.entries(getExpectedColumns()).map(([colName, colDefinition]) => 
-               `ALTER TABLE ${REGISTRATIONS_TABLE} ADD COLUMN IF NOT EXISTS ${colName} ${colDefinition};`
-             ).join('\n');
-    }
-    
-    console.log('Retrieved columns:', columns);
-    
-    // Get all column names in lowercase for case-insensitive comparison
-    const columnNames = columns.map(col => col.column_name.toLowerCase());
-    
-    // Get expected columns
-    const expectedColumnsMap = getExpectedColumns();
-    const expectedColumns = Object.keys(expectedColumnsMap).map(key => key.toLowerCase());
-    
-    // Find missing columns
-    const missingColumns = expectedColumns.filter(col => !columnNames.includes(col));
-    console.log('Missing columns:', missingColumns);
-    
-    if (missingColumns.length === 0) {
-      return '-- No schema updates needed. All required columns exist.';
-    }
-    
-    // Generate SQL for missing columns
-    let sql = `-- Run this SQL in your Supabase SQL Editor to update the '${REGISTRATIONS_TABLE}' table\n\n`;
-    
-    missingColumns.forEach(colName => {
-      const colDefinition = expectedColumnsMap[colName];
-      sql += `ALTER TABLE ${REGISTRATIONS_TABLE} ADD COLUMN IF NOT EXISTS ${colName} ${colDefinition};\n`;
-    });
-    
-    return sql;
-  } catch (err) {
-    console.error('Error generating schema update SQL:', err);
-    return `-- Error generating schema update SQL: ${err}\n\n` + 
-           `-- You can manually add missing columns with this SQL:\n\n` +
-           Object.entries(getExpectedColumns()).map(([colName, colDefinition]) => 
-             `ALTER TABLE ${REGISTRATIONS_TABLE} ADD COLUMN IF NOT EXISTS ${colName} ${colDefinition};`
-           ).join('\n');
+// Function to generate SQL for adding a column
+export const generateAddColumnSQL = (columnName: string, dataType: string): string => {
+  return `ALTER TABLE ${REGISTRATIONS_TABLE} ADD COLUMN IF NOT EXISTS ${columnName} ${dataType};`;
+};
+
+// Function to generate SQL for dropping a column
+export const generateDropColumnSQL = (columnName: string): string => {
+  return `ALTER TABLE ${REGISTRATIONS_TABLE} DROP COLUMN IF EXISTS ${columnName};`;
+};
+
+// Function to execute raw SQL
+export const executeSQL = async (sql: string): Promise<{ data: any; error: any }> => {
+  const { data, error } = await supabase.rpc('execute_sql', { sql });
+  
+  if (error) {
+    console.error('Error executing SQL:', error);
+  } else {
+    console.log('SQL executed successfully:', data);
   }
+  
+  return { data, error };
 };

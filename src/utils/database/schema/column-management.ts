@@ -1,94 +1,48 @@
+import { supabase, REGISTRATIONS_TABLE } from '@/integrations/supabase/client';
 
-import { supabase, REGISTRATIONS_TABLE } from '../../supabase/client';
-
-// Get a map of expected columns with their SQL definition
-export const getExpectedColumns = (): Record<string, string> => {
-  return {
-    id: 'SERIAL PRIMARY KEY',
-    registrationid: 'TEXT UNIQUE NOT NULL',
-    parentname: 'TEXT NOT NULL',
-    parentemail: 'TEXT NOT NULL',
-    parentphone: 'TEXT NOT NULL',
-    emergencycontact: 'TEXT NOT NULL',
-    childname: 'TEXT NOT NULL',
-    childage: 'TEXT NOT NULL',
-    childgrade: 'TEXT NOT NULL',
-    schoolname: 'TEXT NOT NULL',
-    medicalinfo: 'TEXT',
-    preferredbatch: 'TEXT NOT NULL',
-    alternatebatch: 'TEXT',
-    haspriorexperience: 'TEXT NOT NULL',
-    experiencedescription: 'TEXT',
-    interestlevel: 'TEXT',
-    referralsource: 'TEXT NOT NULL',
-    photoconsent: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    waiveragreement: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    tshirtsize: 'TEXT',
-    specialrequests: 'TEXT',
-    volunteerinterest: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    submittedat: 'TEXT NOT NULL'
-  };
+/**
+ * Fetches column names and data types for a given table.
+ * @param tableName The name of the table to fetch columns from.
+ * @returns An array of objects containing column names and data types, or undefined if an error occurs.
+ */
+export const getTableColumns = async (tableName: string): Promise<{ column_name: string; data_type: string; }[] | undefined> => {
+  try {
+    const { data, error } = await supabase.rpc('get_table_columns', { table_name: tableName });
+    
+    if (error) {
+      console.error(`Error fetching columns for table ${tableName}:`, error);
+      return undefined;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error(`Error calling get_table_columns RPC:`, error);
+    return undefined;
+  }
 };
 
-// Add missing columns to the table
-export const addMissingColumns = async (): Promise<boolean> => {
+/**
+ * Compares the actual database schema with the expected schema.
+ * @param expectedColumns An array of expected column names.
+ * @returns An object containing the missing columns.
+ */
+export const compareSchema = async (expectedColumns: string[]): Promise<string[]> => {
   try {
-    console.log('Checking for missing columns to add...');
+    const columns = await getTableColumns(REGISTRATIONS_TABLE);
     
-    // Get all columns from the registration table
-    const { data: columns, error: columnsError } = await supabase
-      .from('information_schema.columns')
-      .select('column_name')
-      .eq('table_name', REGISTRATIONS_TABLE)
-      .eq('table_schema', 'public');
-      
-    if (columnsError) {
-      console.error('Error fetching table schema:', columnsError);
-      return false;
+    if (!columns) {
+      console.error('Could not retrieve table columns.');
+      return expectedColumns; // Return expected columns as missing
     }
     
-    // Get all column names in lowercase for case-insensitive comparison
-    const columnNames = columns?.map(col => col.column_name.toLowerCase()) || [];
-    
-    // Get expected columns
-    const expectedColumnsMap = getExpectedColumns();
-    const expectedColumns = Object.keys(expectedColumnsMap).map(key => key.toLowerCase());
+    const existingColumns = columns.map(col => col.column_name);
     
     // Find missing columns
-    const missingColumns = expectedColumns.filter(col => !columnNames.includes(col));
+    const missingColumns = expectedColumns.filter(col => !existingColumns.includes(col));
     
-    if (missingColumns.length === 0) {
-      console.log('No missing columns to add');
-      return true;
-    }
-    
-    console.log('Missing columns to add:', missingColumns);
-    
-    // Add each missing column
-    for (const colName of missingColumns) {
-      const colDefinition = expectedColumnsMap[colName];
-      
-      if (!colDefinition) {
-        console.error(`Definition missing for column: ${colName}`);
-        continue;
-      }
-      
-      console.log(`Adding column ${colName} with definition: ${colDefinition}`);
-      
-      const { error } = await supabase.rpc('execute_sql', { 
-        sql: `ALTER TABLE ${REGISTRATIONS_TABLE} ADD COLUMN IF NOT EXISTS ${colName} ${colDefinition}` 
-      });
-      
-      if (error) {
-        console.error(`Error adding column ${colName}:`, error);
-        return false;
-      }
-    }
-    
-    console.log('All missing columns added successfully');
-    return true;
-  } catch (err) {
-    console.error('Error adding missing columns:', err);
-    return false;
+    return missingColumns;
+  } catch (error) {
+    console.error('Error comparing schema:', error);
+    return expectedColumns; // Return expected columns as missing
   }
 };
