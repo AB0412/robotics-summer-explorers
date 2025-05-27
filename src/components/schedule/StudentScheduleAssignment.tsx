@@ -39,6 +39,15 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
     getTimeSlotCapacity,
   } = useStudentScheduleData(studentSchedules || [], onUpdate);
 
+  console.log('StudentScheduleAssignment: Hook data:', {
+    searchTerm,
+    dayFilter,
+    filteredSchedulesCount: filteredSchedules?.length || 0,
+    unassignedStudentsCount: unassignedStudents?.length || 0,
+    isLoading,
+    error
+  });
+
   if (error) {
     console.error('StudentScheduleAssignment: Error state:', error);
     return (
@@ -50,6 +59,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
   }
 
   if (isLoading) {
+    console.log('StudentScheduleAssignment: Rendering loading state');
     return (
       <Card>
         <CardContent className="p-8">
@@ -64,6 +74,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
 
   // Check if we have the required data
   if (!timeSlots || timeSlots.length === 0) {
+    console.log('StudentScheduleAssignment: No time slots available');
     return (
       <Card>
         <CardContent className="p-8">

@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import type { TimeSlot, StudentSchedule } from '@/types/schedule';
 
 const ScheduleManagement = () => {
+  console.log('ScheduleManagement: Component rendering started');
+  
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'assignments' | 'calendar'>('assignments');
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
@@ -19,33 +21,37 @@ const ScheduleManagement = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('ScheduleManagement: Component mounted, loading data...');
+    console.log('ScheduleManagement: useEffect triggered');
     loadData();
   }, []);
 
   const loadData = async () => {
-    console.log('ScheduleManagement: Starting data load...');
+    console.log('ScheduleManagement: loadData called');
     setIsLoading(true);
     setError(null);
     
     try {
-      // Load time slots first
-      console.log('ScheduleManagement: Loading time slots...');
+      console.log('ScheduleManagement: Starting to load time slots...');
+      
+      // Load time slots
       const { data: slots, error: slotsError } = await supabase
         .from('program_time_slots')
         .select('*')
         .order('start_time');
 
+      console.log('ScheduleManagement: Time slots response:', { slots, slotsError });
+
       if (slotsError) {
-        console.error('ScheduleManagement: Error loading time slots:', slotsError);
+        console.error('ScheduleManagement: Time slots error:', slotsError);
         throw new Error(`Failed to load time slots: ${slotsError.message}`);
       }
 
-      console.log('ScheduleManagement: Time slots loaded:', slots);
+      console.log('ScheduleManagement: Setting time slots:', slots?.length || 0);
       setTimeSlots(slots || []);
 
-      // Load student schedules with related data
-      console.log('ScheduleManagement: Loading student schedules...');
+      console.log('ScheduleManagement: Starting to load student schedules...');
+
+      // Load student schedules
       const { data: schedules, error: schedulesError } = await supabase
         .from('student_schedules')
         .select(`
@@ -55,15 +61,18 @@ const ScheduleManagement = () => {
         `)
         .order('assigned_at', { ascending: false });
 
+      console.log('ScheduleManagement: Student schedules response:', { schedules, schedulesError });
+
       if (schedulesError) {
-        console.error('ScheduleManagement: Error loading student schedules:', schedulesError);
+        console.error('ScheduleManagement: Student schedules error:', schedulesError);
         throw new Error(`Failed to load student schedules: ${schedulesError.message}`);
       }
 
-      console.log('ScheduleManagement: Student schedules loaded:', schedules);
+      console.log('ScheduleManagement: Setting student schedules:', schedules?.length || 0);
       setStudentSchedules(schedules || []);
 
       console.log('ScheduleManagement: Data loading completed successfully');
+      
       toast({
         title: "Data Loaded",
         description: `Loaded ${slots?.length || 0} time slots and ${schedules?.length || 0} student assignments`,
@@ -85,7 +94,7 @@ const ScheduleManagement = () => {
     }
   };
 
-  console.log('ScheduleManagement: Rendering with state:', {
+  console.log('ScheduleManagement: Current state:', {
     isLoading,
     error,
     timeSlotsCount: timeSlots.length,
@@ -93,7 +102,9 @@ const ScheduleManagement = () => {
     activeTab
   });
 
+  // Early return for loading state
   if (isLoading) {
+    console.log('ScheduleManagement: Rendering loading state');
     return (
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-6">Schedule Management</h1>
@@ -109,7 +120,9 @@ const ScheduleManagement = () => {
     );
   }
 
+  // Early return for error state
   if (error) {
+    console.log('ScheduleManagement: Rendering error state:', error);
     return (
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-6">Schedule Management</h1>
@@ -134,6 +147,8 @@ const ScheduleManagement = () => {
     );
   }
 
+  console.log('ScheduleManagement: Rendering main content');
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex items-center justify-between mb-6">
@@ -141,7 +156,10 @@ const ScheduleManagement = () => {
         <div className="flex gap-2">
           <Button
             variant={activeTab === 'assignments' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('assignments')}
+            onClick={() => {
+              console.log('ScheduleManagement: Switching to assignments tab');
+              setActiveTab('assignments');
+            }}
             className="flex items-center gap-2"
           >
             <Users className="h-4 w-4" />
@@ -149,7 +167,10 @@ const ScheduleManagement = () => {
           </Button>
           <Button
             variant={activeTab === 'calendar' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('calendar')}
+            onClick={() => {
+              console.log('ScheduleManagement: Switching to calendar tab');
+              setActiveTab('calendar');
+            }}
             className="flex items-center gap-2"
           >
             <Calendar className="h-4 w-4" />
@@ -167,7 +188,10 @@ const ScheduleManagement = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={loadData}
+                onClick={() => {
+                  console.log('ScheduleManagement: Refresh button clicked');
+                  loadData();
+                }}
                 className="flex items-center gap-1"
               >
                 <RefreshCw className="h-3 w-3" />
@@ -179,18 +203,25 @@ const ScheduleManagement = () => {
       </div>
 
       {activeTab === 'assignments' && (
-        <StudentScheduleAssignment 
-          timeSlots={timeSlots}
-          studentSchedules={studentSchedules}
-          onUpdate={loadData}
-        />
+        <div>
+          <StudentScheduleAssignment 
+            timeSlots={timeSlots}
+            studentSchedules={studentSchedules}
+            onUpdate={() => {
+              console.log('ScheduleManagement: onUpdate callback triggered');
+              loadData();
+            }}
+          />
+        </div>
       )}
       
       {activeTab === 'calendar' && (
-        <ScheduleCalendarView 
-          timeSlots={timeSlots} 
-          studentSchedules={studentSchedules} 
-        />
+        <div>
+          <ScheduleCalendarView 
+            timeSlots={timeSlots} 
+            studentSchedules={studentSchedules} 
+          />
+        </div>
       )}
     </div>
   );
