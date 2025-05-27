@@ -1,9 +1,11 @@
 
-import React, { useState } from 'react';
-import { useStudentSchedules } from '@/hooks/useStudentSchedules';
-import { StudentAssignmentForm } from './StudentAssignmentForm';
-import { ScheduleFilters } from './ScheduleFilters';
-import { ScheduleAssignmentsList } from './ScheduleAssignmentsList';
+import React from 'react';
+import { useStudentScheduleData } from '@/hooks/useStudentScheduleData';
+import { StudentScheduleFilters } from './StudentScheduleFilters';
+import { StudentScheduleForm } from './StudentScheduleForm';
+import { StudentScheduleList } from './StudentScheduleList';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 import type { TimeSlot, StudentSchedule } from '@/types/schedule';
 
 interface StudentScheduleAssignmentProps {
@@ -17,45 +19,28 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
   studentSchedules,
   onUpdate,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [dayFilter, setDayFilter] = useState<string>('');
-
   const {
+    searchTerm,
+    setSearchTerm,
+    dayFilter,
+    setDayFilter,
+    filteredSchedules,
     unassignedStudents,
     isLoading,
+    error,
     assignStudent,
     removeAssignment,
-  } = useStudentSchedules(studentSchedules, onUpdate);
+    getTimeSlotCapacity,
+  } = useStudentScheduleData(studentSchedules, onUpdate);
 
-  const getTimeSlotCapacity = (timeSlotId: string) => {
-    const slot = timeSlots.find(s => s.id === timeSlotId);
-    const assigned = studentSchedules.filter(s => s.time_slot_id === timeSlotId).length;
-    return {
-      assigned,
-      total: slot?.max_capacity || 0,
-      available: (slot?.max_capacity || 0) - assigned
-    };
-  };
-
-  const filteredSchedules = studentSchedules.filter(schedule => {
-    // Apply search filter
-    let matchesSearch = true;
-    if (searchTerm) {
-      const student = schedule.registrations;
-      matchesSearch = (
-        student?.childname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student?.parentname.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Apply day filter
-    let matchesDay = true;
-    if (dayFilter) {
-      matchesDay = schedule.day_of_week === dayFilter;
-    }
-
-    return matchesSearch && matchesDay;
-  });
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -68,21 +53,21 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
 
   return (
     <div className="space-y-6">
-      <StudentAssignmentForm
+      <StudentScheduleForm
         timeSlots={timeSlots}
         unassignedStudents={unassignedStudents}
         onAssign={assignStudent}
         getTimeSlotCapacity={getTimeSlotCapacity}
       />
 
-      <ScheduleFilters
+      <StudentScheduleFilters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         dayFilter={dayFilter}
         onDayFilterChange={setDayFilter}
       />
 
-      <ScheduleAssignmentsList
+      <StudentScheduleList
         timeSlots={timeSlots}
         filteredSchedules={filteredSchedules}
         onRemoveAssignment={removeAssignment}
