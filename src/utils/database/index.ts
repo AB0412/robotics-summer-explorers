@@ -12,7 +12,7 @@ export type { EnhancedRegistration } from '@/components/admin/RegistrationsTable
 
 // Import and re-export operations separately to avoid conflicts
 import { getAllRegistrations, addRegistration as addReg, deleteRegistration as deleteReg } from './operations';
-export { getAllRegistrations, addReg as addRegistrationOp, deleteReg as deleteRegistrationOp };
+export { getAllRegistrations, addReg as addRegistration, deleteReg as deleteRegistration };
 
 // Initialize the database when this module loads
 import { initializeDatabase } from '../supabase/client';
