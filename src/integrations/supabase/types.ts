@@ -126,6 +126,7 @@ export type Database = {
       student_schedules: {
         Row: {
           assigned_at: string | null
+          day_of_week: string | null
           id: string
           notes: string | null
           registration_id: string
@@ -133,6 +134,7 @@ export type Database = {
         }
         Insert: {
           assigned_at?: string | null
+          day_of_week?: string | null
           id?: string
           notes?: string | null
           registration_id: string
@@ -140,6 +142,7 @@ export type Database = {
         }
         Update: {
           assigned_at?: string | null
+          day_of_week?: string | null
           id?: string
           notes?: string | null
           registration_id?: string

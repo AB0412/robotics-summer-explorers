@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -82,7 +81,30 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
       return;
     }
 
+    // Check if student is already assigned to this time slot on this day
+    const existingAssignment = studentSchedules.find(
+      s => s.registration_id === selectedStudent && 
+           s.time_slot_id === selectedTimeSlot && 
+           s.day_of_week === selectedDay
+    );
+
+    if (existingAssignment) {
+      toast({
+        title: "Already Assigned",
+        description: "This student is already assigned to this time slot on this day",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
+      console.log('Assigning student:', {
+        registration_id: selectedStudent,
+        time_slot_id: selectedTimeSlot,
+        day_of_week: selectedDay,
+        notes: notes || null,
+      });
+
       const { error } = await supabase
         .from('student_schedules')
         .insert([{
@@ -92,7 +114,10 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
           notes: notes || null,
         }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
 
       toast({
         title: "Success",
@@ -109,7 +134,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
       console.error('Error assigning student:', error);
       toast({
         title: "Error",
-        description: "Failed to assign student to time slot",
+        description: `Failed to assign student to time slot: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     }
