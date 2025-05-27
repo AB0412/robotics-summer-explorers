@@ -1,14 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Calendar, Users } from 'lucide-react';
+import { Calendar, Users, Settings } from 'lucide-react';
 import { StudentScheduleAssignment } from '@/components/schedule/StudentScheduleAssignment';
 import { ScheduleCalendarView } from '@/components/schedule/ScheduleCalendarView';
+import { TimeSlotManager } from '@/components/schedule/TimeSlotManager';
 import { supabase } from '@/utils/supabase/client';
 import type { TimeSlot, StudentSchedule } from '@/types/schedule';
 
 const ScheduleManagement = () => {
-  const [activeTab, setActiveTab] = useState<'assignments' | 'calendar'>('assignments');
+  const [activeTab, setActiveTab] = useState<'assignments' | 'calendar' | 'timeslots'>('assignments');
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [studentSchedules, setStudentSchedules] = useState<StudentSchedule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +43,7 @@ const ScheduleManagement = () => {
       if (schedulesError) throw schedulesError;
       setStudentSchedules(schedules || []);
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error('Error loading schedule data:', error);
     } finally {
       setIsLoading(false);
     }
@@ -80,6 +81,14 @@ const ScheduleManagement = () => {
             <Calendar className="h-4 w-4" />
             Calendar View
           </Button>
+          <Button
+            variant={activeTab === 'timeslots' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('timeslots')}
+            className="flex items-center gap-2"
+          >
+            <Settings className="h-4 w-4" />
+            Time Slots
+          </Button>
         </div>
       </div>
 
@@ -94,6 +103,12 @@ const ScheduleManagement = () => {
         <ScheduleCalendarView 
           timeSlots={timeSlots} 
           studentSchedules={studentSchedules} 
+        />
+      )}
+      {activeTab === 'timeslots' && (
+        <TimeSlotManager 
+          timeSlots={timeSlots}
+          onUpdate={loadData}
         />
       )}
     </div>
