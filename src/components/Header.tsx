@@ -50,7 +50,7 @@ const Header = () => {
       <div className="container mx-auto py-4 px-4 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
           <Bot size={32} className="text-robotics-accent" />
-          <span className="font-display font-bold text-lg sm:text-2xl">Robotics Summer Explorers</span>
+          <span className="font-display font-bold text-lg sm:text-2xl">Robotics Academy</span>
         </Link>
         
         <nav className={`${mobileMenuOpen ? 'flex flex-col absolute top-16 right-0 bg-robotics-navy p-4 rounded-bl-lg shadow-lg z-50' : 'hidden md:flex'} items-center gap-8 font-medium`}>
@@ -62,11 +62,11 @@ const Header = () => {
             About
           </a>
           <a 
-            href="#program" 
-            onClick={scrollToSection('program')} 
+            href="#programs" 
+            onClick={scrollToSection('programs')} 
             className="hover:text-robotics-accent transition-colors"
           >
-            Program
+            Programs
           </a>
           <a 
             href="#contact" 

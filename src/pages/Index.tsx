@@ -1,18 +1,226 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Phone, Mail, MessageSquare, MapPin, Download, Bot, Cog, Zap, Users, Trophy, Lightbulb } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import Hero from '@/components/Hero';
 import AboutSection from '@/components/AboutSection';
 import ProgramDetails from '@/components/ProgramDetails';
-import { Card, CardContent } from '@/components/ui/card';
-import { Phone, Mail, MessageSquare, MapPin, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Hero />
-      
+      {/* Hero Section - Updated for Year-Round Classes */}
+      <section className="relative bg-robotics-navy text-white py-20 overflow-hidden">
+        <div className="absolute left-0 top-0 opacity-10">
+          <Cog size={200} className="text-white animate-gear-spin" />
+        </div>
+        <div className="absolute right-0 bottom-0 opacity-10">
+          <Cog size={150} className="text-white animate-gear-spin" style={{ animationDirection: 'reverse' }} />
+        </div>
+        
+        <div className="container relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl mb-6">
+              <span className="text-robotics-accent">Year-Round</span> Robotics Classes
+            </h1>
+            
+            <p className="text-xl md:text-2xl mb-8">
+              Hands-on STEAM education through VEX robotics for elementary students grades 1-5
+            </p>
+            
+            <div className="bg-white/10 backdrop-blur-sm p-8 rounded-lg mb-8">
+              <h2 className="font-display font-bold text-2xl mb-6 text-robotics-accent">Our STEAM Approach: Learning That Connects the Dots</h2>
+              <p className="text-lg leading-relaxed">
+                In our robotics classes, we go beyond just building and coding—we bring the full power of STEAM (Science, Technology, Engineering, Arts, and Math) into every session. Students not only learn how robots move and think, but also why design matters, how to solve real-world problems creatively, and how teamwork and critical thinking turn ideas into action. It's hands-on learning that's fun, challenging, and built for the future.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg">
+                <Bot className="text-robotics-accent mb-4 mx-auto" size={48} />
+                <h3 className="font-bold text-xl mb-2">VEX Robotics</h3>
+                <p>Professional-grade robotics platform used in schools worldwide</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg">
+                <Users className="text-robotics-accent mb-4 mx-auto" size={48} />
+                <h3 className="font-bold text-xl mb-2">Small Classes</h3>
+                <p>Personalized attention with maximum 12 students per class</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg">
+                <Trophy className="text-robotics-accent mb-4 mx-auto" size={48} />
+                <h3 className="font-bold text-xl mb-2">Competition Ready</h3>
+                <p>Prepare for VEX IQ competitions and robotics tournaments</p>
+              </div>
+            </div>
+            
+            <Link to="/registration">
+              <Button size="lg" className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy font-bold text-lg px-8 py-4">
+                <Zap className="mr-2" size={24} />
+                Register for Classes Now
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Program Options with Tabs */}
+      <section id="programs" className="py-20 bg-gray-50">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 text-robotics-navy">
+              Choose Your Program
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              We offer both year-round classes and intensive summer programs to fit your schedule and learning goals.
+            </p>
+          </div>
+          
+          <Tabs defaultValue="year-round" className="max-w-6xl mx-auto">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="year-round" className="text-lg font-medium">Year-Round Classes</TabsTrigger>
+              <TabsTrigger value="summer" className="text-lg font-medium">Summer Program</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="year-round" className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <Card className="overflow-hidden shadow-lg">
+                  <CardContent className="p-8">
+                    <div className="text-center mb-6">
+                      <Lightbulb className="text-robotics-blue mx-auto mb-4" size={64} />
+                      <h3 className="font-display font-bold text-2xl mb-4 text-robotics-navy">Beginner Program</h3>
+                      <p className="text-gray-600 mb-6">Perfect for students new to robotics</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium">Duration:</span>
+                        <span>12 weeks per session</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium">Schedule:</span>
+                        <span>Weekly 1.5-hour classes</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium">Cost:</span>
+                        <span className="text-robotics-blue font-bold">$200/month</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium">Age Group:</span>
+                        <span>Grades 1-3</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Class Size:</span>
+                        <span>Max 10 students</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="overflow-hidden shadow-lg">
+                  <CardContent className="p-8">
+                    <div className="text-center mb-6">
+                      <Bot className="text-robotics-blue mx-auto mb-4" size={64} />
+                      <h3 className="font-display font-bold text-2xl mb-4 text-robotics-navy">Advanced Program</h3>
+                      <p className="text-gray-600 mb-6">For students with robotics experience</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium">Duration:</span>
+                        <span>12 weeks per session</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium">Schedule:</span>
+                        <span>Weekly 2-hour classes</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium">Cost:</span>
+                        <span className="text-robotics-blue font-bold">$250/month</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="font-medium">Age Group:</span>
+                        <span>Grades 3-5</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Class Size:</span>
+                        <span>Max 12 students</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div className="text-center">
+                <Link to="/registration">
+                  <Button size="lg" className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy font-bold">
+                    Register for Year-Round Classes
+                  </Button>
+                </Link>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="summer" className="space-y-8">
+              <Card className="overflow-hidden shadow-lg max-w-4xl mx-auto">
+                <CardContent className="p-8">
+                  <div className="text-center mb-8">
+                    <h3 className="font-display font-bold text-3xl mb-4 text-robotics-navy">Summer Robotics Explorers</h3>
+                    <p className="text-lg text-gray-600">Intensive 8-week summer program</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="text-center">
+                      <p className="font-bold text-robotics-accent text-2xl">8 Weeks</p>
+                      <p className="text-gray-600">Summer Program</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="font-bold text-robotics-accent text-2xl">$100</p>
+                      <p className="text-gray-600">Per Month</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="font-bold text-robotics-accent text-2xl">1.5 Hours</p>
+                      <p className="text-gray-600">Weekly Classes</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-6 rounded-lg">
+                    <h4 className="font-bold text-xl mb-4">What You'll Learn:</h4>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <li className="flex items-center gap-2">
+                        <span className="text-robotics-blue">•</span>
+                        <span>VEX robotics fundamentals</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-robotics-blue">•</span>
+                        <span>Basic programming concepts</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-robotics-blue">•</span>
+                        <span>Engineering design process</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-robotics-blue">•</span>
+                        <span>Problem-solving skills</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-robotics-blue">•</span>
+                        <span>Teamwork and collaboration</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-robotics-blue">•</span>
+                        <span>Competition preparation</span>
+                      </li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </section>
+
       <AboutSection />
       <ProgramDetails />
       
@@ -24,7 +232,7 @@ const Index = () => {
               Contact Information
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Get in touch to learn more about our 8-week robotics summer program for grades 1-5.
+              Get in touch to learn more about our robotics programs.
             </p>
           </div>
           
@@ -57,19 +265,19 @@ const Index = () => {
                     </div>
                     
                     <div>
-                      <h3 className="font-display font-bold text-xl mb-4">Program Details</h3>
+                      <h3 className="font-display font-bold text-xl mb-4">Quick Facts</h3>
                       <ul className="space-y-2 text-gray-600">
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
-                          <span>8-week summer program</span>
+                          <span>Year-round and summer programs</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
-                          <span>$100 per month</span>
+                          <span>Small class sizes (max 12 students)</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
-                          <span>1.5 hour weekly classes</span>
+                          <span>Weekly classes</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
@@ -77,7 +285,7 @@ const Index = () => {
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
-                          <span>VEX robotics</span>
+                          <span>VEX robotics platform</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
@@ -88,9 +296,9 @@ const Index = () => {
                   </div>
                   
                   <div className="bg-robotics-navy text-white rounded-lg p-6">
-                    <h3 className="font-display font-bold text-xl mb-6">Contact Us</h3>
+                    <h3 className="font-display font-bold text-xl mb-6">Ready to Start?</h3>
                     <div className="space-y-4">
-                      <p>To register your child or learn more about our program, please contact us directly by phone or WhatsApp.</p>
+                      <p>Join our robotics community and give your child the skills for tomorrow!</p>
                       
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
@@ -109,10 +317,15 @@ const Index = () => {
                           <MapPin size={18} className="mt-1 flex-shrink-0" />
                           <p>683 Carryduff St NW, Concord - 28027</p>
                         </div>
-                        <p className="mt-2">Limited spots available!</p>
                       </div>
                       
-                      <div className="mt-6">
+                      <div className="mt-6 space-y-3">
+                        <Link to="/registration">
+                          <Button className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy w-full font-bold">
+                            <Bot size={18} className="mr-2" />
+                            Register Now
+                          </Button>
+                        </Link>
                         <Link to="/flyer">
                           <Button variant="outline" className="bg-white text-robotics-navy hover:bg-gray-100 w-full">
                             <Download size={18} className="mr-2" />
