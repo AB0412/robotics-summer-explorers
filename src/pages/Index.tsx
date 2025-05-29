@@ -28,7 +28,7 @@ const Index = () => {
             </h1>
             
             <p className="text-xl md:text-2xl mb-8">
-              Hands-on STEAM education through VEX robotics for elementary students grades 1-5
+              Hands-on STEAM education through VEX robotics for students grades 1-5
             </p>
             
             <div className="bg-white/10 backdrop-blur-sm p-8 rounded-lg mb-8">
@@ -47,7 +47,7 @@ const Index = () => {
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg">
                 <Users className="text-robotics-accent mb-4 mx-auto" size={48} />
                 <h3 className="font-bold text-xl mb-2">Small Classes</h3>
-                <p>Personalized attention with maximum 12 students per class</p>
+                <p>Personalized attention with maximum 6 students per class</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg">
                 <Trophy className="text-robotics-accent mb-4 mx-auto" size={48} />
@@ -85,68 +85,27 @@ const Index = () => {
             </TabsList>
             
             <TabsContent value="year-round" className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card className="overflow-hidden shadow-lg">
-                  <CardContent className="p-8">
-                    <div className="text-center mb-6">
-                      <Lightbulb className="text-robotics-blue mx-auto mb-4" size={64} />
-                      <h3 className="font-display font-bold text-2xl mb-4 text-robotics-navy">Beginner Program</h3>
-                      <p className="text-gray-600 mb-6">Perfect for students new to robotics</p>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium">Duration:</span>
-                        <span>12 weeks per session</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium">Schedule:</span>
-                        <span>Weekly 1.5-hour classes</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium">Cost:</span>
-                        <span className="text-robotics-blue font-bold">$200/month</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium">Age Group:</span>
-                        <span>Grades 1-3</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="font-medium">Class Size:</span>
-                        <span>Max 10 students</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
+              <div className="max-w-2xl mx-auto">
                 <Card className="overflow-hidden shadow-lg">
                   <CardContent className="p-8">
                     <div className="text-center mb-6">
                       <Bot className="text-robotics-blue mx-auto mb-4" size={64} />
-                      <h3 className="font-display font-bold text-2xl mb-4 text-robotics-navy">Advanced Program</h3>
-                      <p className="text-gray-600 mb-6">For students with robotics experience</p>
+                      <h3 className="font-display font-bold text-2xl mb-4 text-robotics-navy">Robotics Program</h3>
+                      <p className="text-gray-600 mb-6">Comprehensive robotics education for all skill levels</p>
                     </div>
                     
                     <div className="space-y-4">
                       <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium">Duration:</span>
-                        <span>12 weeks per session</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
                         <span className="font-medium">Schedule:</span>
-                        <span>Weekly 2-hour classes</span>
+                        <span>Weekly classes</span>
                       </div>
                       <div className="flex justify-between border-b pb-2">
                         <span className="font-medium">Cost:</span>
-                        <span className="text-robotics-blue font-bold">$250/month</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium">Age Group:</span>
-                        <span>Grades 3-5</span>
+                        <span className="text-robotics-blue font-bold">$200-250/month</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="font-medium">Class Size:</span>
-                        <span>Max 12 students</span>
+                        <span>Max 6 students</span>
                       </div>
                     </div>
                   </CardContent>
@@ -273,7 +232,7 @@ const Index = () => {
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
-                          <span>Small class sizes (max 12 students)</span>
+                          <span>Small class sizes (max 6 students)</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
