@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Phone, Mail, MessageSquare, MapPin, Download, Bot, Cog, Zap, Users, Trophy, Lightbulb } from 'lucide-react';
+import { Phone, Mail, MessageSquare, MapPin, Download, Bot, Cog, Zap, Users, Trophy, Lightbulb, Calendar, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Hero from '@/components/Hero';
 import AboutSection from '@/components/AboutSection';
@@ -85,27 +85,151 @@ const Index = () => {
             </TabsList>
             
             <TabsContent value="year-round" className="space-y-8">
-              <div className="max-w-2xl mx-auto">
+              <div className="max-w-4xl mx-auto">
                 <Card className="overflow-hidden shadow-lg">
                   <CardContent className="p-8">
-                    <div className="text-center mb-6">
+                    <div className="text-center mb-8">
                       <Bot className="text-robotics-blue mx-auto mb-4" size={64} />
-                      <h3 className="font-display font-bold text-2xl mb-4 text-robotics-navy">Robotics Program</h3>
-                      <p className="text-gray-600 mb-6">Comprehensive robotics education for all skill levels</p>
+                      <h3 className="font-display font-bold text-3xl mb-4 text-robotics-navy">Year-Round Robotics Program</h3>
+                      <p className="text-lg text-gray-600 mb-6">Comprehensive robotics education with structured curriculum</p>
                     </div>
                     
-                    <div className="space-y-4">
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium">Schedule:</span>
-                        <span>Weekly classes</span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                      <div className="text-center bg-gray-50 p-6 rounded-lg">
+                        <Calendar className="text-robotics-blue mx-auto mb-2" size={32} />
+                        <p className="font-bold text-robotics-accent text-xl">Aug 15 - May 15</p>
+                        <p className="text-gray-600">Program Duration</p>
                       </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="font-medium">Cost:</span>
-                        <span className="text-robotics-blue font-bold">$200-250/month</span>
+                      <div className="text-center bg-gray-50 p-6 rounded-lg">
+                        <p className="font-bold text-robotics-accent text-xl">$100</p>
+                        <p className="text-gray-600">Per Month</p>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="font-medium">Class Size:</span>
-                        <span>Max 6 students</span>
+                      <div className="text-center bg-gray-50 p-6 rounded-lg">
+                        <Users className="text-robotics-blue mx-auto mb-2" size={32} />
+                        <p className="font-bold text-robotics-accent text-xl">Max 6</p>
+                        <p className="text-gray-600">Students per Class</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-robotics-navy text-white p-6 rounded-lg mb-8">
+                      <h4 className="font-bold text-xl mb-4 text-robotics-accent">Program Schedule</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="mb-2">📅 <strong>Program Duration:</strong> August 15, 2025 – May 15, 2026</p>
+                          <p className="mb-2">❄️ <strong>Winter Break:</strong> December 15, 2025 – January 5, 2026</p>
+                        </div>
+                        <div>
+                          <p className="mb-2">📅 <strong>Weekly Classes:</strong> One session per week</p>
+                          <p className="mb-2">⏰ <strong>Options:</strong> Wednesdays or weekends</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-6">
+                      <h4 className="font-bold text-2xl text-center text-robotics-navy mb-6">📘 Curriculum Plan by Month</h4>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 August (3 Weeks)</h5>
+                          <p className="font-medium mb-2">Getting Started with VEX EXP</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Introduction to Robotics & VEX EXP kits</li>
+                            <li>• Basic building concepts</li>
+                            <li>• Introduction to VEXcode</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 September</h5>
+                          <p className="font-medium mb-2">Mechanics & Drive Systems</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Gears, pulleys, and motion</li>
+                            <li>• Building drive systems</li>
+                            <li>• Programming drive control</li>
+                            <li>• Mini challenge – Navigation</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-yellow-50 p-4 rounded-lg">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 October</h5>
+                          <p className="font-medium mb-2">Sensors & Smart Programming</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Introduction to sensors</li>
+                            <li>• Sensor integration in code</li>
+                            <li>• Looping & conditional logic</li>
+                            <li>• Autonomous obstacle navigation</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 November</h5>
+                          <p className="font-medium mb-2">Team Collaboration</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Team formation and roles</li>
+                            <li>• Design process & sketching</li>
+                            <li>• Building arm/lift mechanisms</li>
+                            <li>• Iterating designs</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-red-50 p-4 rounded-lg">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 December</h5>
+                          <p className="font-medium mb-2">Strategy & Mini Challenges</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Game-based strategy</li>
+                            <li>• Autonomous + driver control</li>
+                            <li>• Winter Break: Dec 15 - Jan 5</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-indigo-50 p-4 rounded-lg">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 January</h5>
+                          <p className="font-medium mb-2">Full Robot Build Phase</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Design final robot</li>
+                            <li>• Building & programming</li>
+                            <li>• Testing & refinement</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-pink-50 p-4 rounded-lg">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 February</h5>
+                          <p className="font-medium mb-2">Advanced Coding</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Variables & functions</li>
+                            <li>• Tuning autonomous routines</li>
+                            <li>• Practice matches</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-teal-50 p-4 rounded-lg">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 March</h5>
+                          <p className="font-medium mb-2">Mock Competition Prep</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Strategy refinement</li>
+                            <li>• Judging rubric review</li>
+                            <li>• Internal mock tournament</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-orange-50 p-4 rounded-lg">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 April</h5>
+                          <p className="font-medium mb-2">Engineering Notebook</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Documentation skills</li>
+                            <li>• Design improvements</li>
+                            <li>• Presentation development</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-gray-100 p-4 rounded-lg md:col-span-2 lg:col-span-1">
+                          <h5 className="font-bold text-robotics-navy mb-2">🔹 May</h5>
+                          <p className="font-medium mb-2">Final Project Showcase</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Final testing & polish</li>
+                            <li>• Showcase event for families</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
