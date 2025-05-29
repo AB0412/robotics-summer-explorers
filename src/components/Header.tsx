@@ -69,6 +69,13 @@ const Header = () => {
             Programs
           </a>
           <a 
+            href="#curriculum" 
+            onClick={scrollToSection('curriculum')} 
+            className="hover:text-robotics-accent transition-colors"
+          >
+            Curriculum
+          </a>
+          <a 
             href="#contact" 
             onClick={scrollToSection('contact')} 
             className="hover:text-robotics-accent transition-colors"
