@@ -1,8 +1,15 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Bot, Menu, X } from 'lucide-react';
+import { Bot, Menu, X, ChevronDown } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -45,6 +52,37 @@ const Header = () => {
     }
   };
 
+  // Handle navigation to summer program section and switch to summer tab
+  const handleSummerProgramClick = () => {
+    if (location.pathname !== '/') {
+      // Navigate to home page with summer program section
+      window.location.href = '/#programs';
+      // Note: We'll need to handle tab switching on the client side
+      setTimeout(() => {
+        const summerTab = document.querySelector('[value="summer"]') as HTMLButtonElement;
+        if (summerTab) {
+          summerTab.click();
+        }
+      }, 100);
+    } else {
+      // Scroll to programs section and switch to summer tab
+      const element = document.getElementById('programs');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+          const summerTab = document.querySelector('[value="summer"]') as HTMLButtonElement;
+          if (summerTab) {
+            summerTab.click();
+          }
+        }, 100);
+      }
+    }
+    
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  };
+
   return (
     <header className="bg-robotics-navy text-white">
       <div className="container mx-auto py-4 px-4 flex justify-between items-center">
@@ -68,6 +106,40 @@ const Header = () => {
           >
             Programs
           </a>
+          
+          {/* Summer Program Dropdown - Desktop */}
+          <div className="hidden md:block">
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="bg-transparent text-white hover:text-robotics-accent transition-colors font-medium">
+                    Summer Program
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="p-4 w-48">
+                      <button
+                        onClick={handleSummerProgramClick}
+                        className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-md text-gray-900"
+                      >
+                        Summer Program Details
+                      </button>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+          
+          {/* Summer Program - Mobile */}
+          <div className="md:hidden">
+            <button
+              onClick={handleSummerProgramClick}
+              className="hover:text-robotics-accent transition-colors"
+            >
+              Summer Program
+            </button>
+          </div>
+          
           <a 
             href="#curriculum" 
             onClick={scrollToSection('curriculum')} 
