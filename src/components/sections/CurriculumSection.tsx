@@ -32,7 +32,7 @@ const CurriculumSection = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* August */}
                 <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-robotics-blue">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">August (3 Weeks)</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">(3 Weeks)</h4>
                   <h5 className="font-semibold text-robotics-blue mb-2">Getting Started with VEX</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Introduction to Robotics</li>
@@ -43,7 +43,7 @@ const CurriculumSection = () => {
 
                 {/* September */}
                 <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">September</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">Module 2</h4>
                   <h5 className="font-semibold text-green-600 mb-2">Mechanics & Drive Systems</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Gears, pulleys, and motion</li>
@@ -55,7 +55,7 @@ const CurriculumSection = () => {
 
                 {/* October */}
                 <div className="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-500">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">October</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">Module 3</h4>
                   <h5 className="font-semibold text-yellow-600 mb-2">Sensors & Smart Programming</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Introduction to sensors</li>
@@ -67,7 +67,7 @@ const CurriculumSection = () => {
 
                 {/* November */}
                 <div className="bg-purple-50 p-6 rounded-lg border-l-4 border-purple-500">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">November</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">Module 4</h4>
                   <h5 className="font-semibold text-purple-600 mb-2">Team Collaboration</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Team formation and roles</li>
@@ -79,7 +79,7 @@ const CurriculumSection = () => {
 
                 {/* December */}
                 <div className="bg-red-50 p-6 rounded-lg border-l-4 border-red-500">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">December</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">Module 5</h4>
                   <h5 className="font-semibold text-red-600 mb-2">Strategy & Mini Challenges</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Game-based strategy</li>
@@ -90,7 +90,7 @@ const CurriculumSection = () => {
 
                 {/* January */}
                 <div className="bg-indigo-50 p-6 rounded-lg border-l-4 border-indigo-500">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">January</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">Module 6</h4>
                   <h5 className="font-semibold text-indigo-600 mb-2">Full Robot Build Phase</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Design final robot</li>
@@ -101,7 +101,7 @@ const CurriculumSection = () => {
 
                 {/* February */}
                 <div className="bg-pink-50 p-6 rounded-lg border-l-4 border-pink-500">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">February</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">Module 7</h4>
                   <h5 className="font-semibold text-pink-600 mb-2">Advanced Coding</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Variables & functions</li>
@@ -112,7 +112,7 @@ const CurriculumSection = () => {
 
                 {/* March */}
                 <div className="bg-teal-50 p-6 rounded-lg border-l-4 border-teal-500">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">March</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">Module 8</h4>
                   <h5 className="font-semibold text-teal-600 mb-2">Mock Competition Prep</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Strategy refinement</li>
@@ -123,7 +123,7 @@ const CurriculumSection = () => {
 
                 {/* April */}
                 <div className="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-500">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">April</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">Module 9</h4>
                   <h5 className="font-semibold text-orange-600 mb-2">Engineering Notebook</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Documentation skills</li>
@@ -134,7 +134,7 @@ const CurriculumSection = () => {
 
                 {/* May */}
                 <div className="bg-gray-100 p-6 rounded-lg border-l-4 border-gray-500">
-                  <h4 className="font-bold text-xl text-robotics-navy mb-3">May</h4>
+                  <h4 className="font-bold text-xl text-robotics-navy mb-3">Module 10</h4>
                   <h5 className="font-semibold text-gray-600 mb-2">Final Project Showcase</h5>
                   <ul className="space-y-1 text-gray-700">
                     <li>• Final testing & polish</li>
