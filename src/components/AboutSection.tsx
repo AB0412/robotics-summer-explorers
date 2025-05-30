@@ -50,8 +50,7 @@ const AboutSection = () => {
         </div>
         
         <div className="mt-16 bg-robotics-navy rounded-lg p-8 text-white text-center">
-          <h3 className="font-display font-bold text-2xl mb-4">Designed for Elementary Students</h3>
-          <p className="text-lg mb-6">Our program is specifically designed for children in grades 1-5, with age-appropriate activities and challenges.</p>
+          <p className="text-lg mb-6">Our program is designed for children for all the age groups, with age-appropriate activities and challenges.</p>
           <p className="text-robotics-accent font-bold text-xl">No prior experience necessary!</p>
         </div>
       </div>
