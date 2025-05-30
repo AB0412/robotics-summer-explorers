@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,7 +6,6 @@ import { Phone, Mail, MessageSquare, MapPin, Download, Bot, Cog, Zap, Users, Tro
 import { Button } from '@/components/ui/button';
 import Hero from '@/components/Hero';
 import AboutSection from '@/components/AboutSection';
-import ProgramDetails from '@/components/ProgramDetails';
 
 const Index = () => {
   return (
@@ -219,7 +217,6 @@ const Index = () => {
       </section>
 
       <AboutSection />
-      <ProgramDetails />
 
       {/* Curriculum Section */}
       <section id="curriculum" className="py-20 bg-white">

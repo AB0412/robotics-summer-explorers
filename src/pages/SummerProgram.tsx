@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle2, Calendar, Clock, DollarSign, BookOpen, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, Calendar, Clock, DollarSign, BookOpen, ArrowLeft, Bot, Users } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 
@@ -33,16 +33,55 @@ const SummerProgram = () => {
         </div>
       </section>
 
-      {/* Program Overview */}
+      {/* Program Details Cards */}
       <section className="py-12">
         <div className="container">
+          <div className="text-center mb-8">
+            <h2 className="font-display font-bold text-3xl mb-4 text-robotics-navy">
+              Program Details
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Everything you need to know about our summer robotics program
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="text-center bg-white p-6 rounded-lg shadow-md border border-gray-100">
+              <Bot className="text-robotics-blue mx-auto mb-4" size={48} />
+              <h3 className="font-bold text-xl mb-2 text-robotics-navy">Program Details</h3>
+              <p className="text-gray-600">Comprehensive STEAM education through VEX robotics platform</p>
+            </div>
+            
+            <div className="text-center bg-white p-6 rounded-lg shadow-md border border-gray-100">
+              <Calendar className="text-robotics-blue mx-auto mb-4" size={48} />
+              <h3 className="font-bold text-xl mb-2 text-robotics-navy">Program Duration</h3>
+              <p className="font-bold text-robotics-accent text-lg">8 Weeks</p>
+              <p className="text-gray-600">Summer intensive program</p>
+            </div>
+            
+            <div className="text-center bg-white p-6 rounded-lg shadow-md border border-gray-100">
+              <Clock className="text-robotics-blue mx-auto mb-4" size={48} />
+              <h3 className="font-bold text-xl mb-2 text-robotics-navy">Class Format</h3>
+              <p className="font-bold text-robotics-accent text-lg">1.5 Hours</p>
+              <p className="text-gray-600">Weekly classes with hands-on learning</p>
+            </div>
+            
+            <div className="text-center bg-white p-6 rounded-lg shadow-md border border-gray-100">
+              <DollarSign className="text-robotics-blue mx-auto mb-4" size={48} />
+              <h3 className="font-bold text-xl mb-2 text-robotics-navy">Program Cost</h3>
+              <p className="font-bold text-robotics-accent text-lg">$100/month</p>
+              <p className="text-gray-600">All materials included</p>
+            </div>
+          </div>
+
+          {/* Additional Program Overview */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-12 w-12 rounded-full bg-robotics-lightblue/20 flex items-center justify-center text-robotics-blue">
                   <Calendar />
                 </div>
-                <h3 className="font-display font-bold text-xl">Program Duration</h3>
+                <h3 className="font-display font-bold text-xl">Schedule Details</h3>
               </div>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
@@ -67,9 +106,9 @@ const SummerProgram = () => {
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-12 w-12 rounded-full bg-robotics-lightblue/20 flex items-center justify-center text-robotics-blue">
-                  <Clock />
+                  <Users />
                 </div>
-                <h3 className="font-display font-bold text-xl">Class Format</h3>
+                <h3 className="font-display font-bold text-xl">Class Environment</h3>
               </div>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
@@ -82,7 +121,7 @@ const SummerProgram = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Small group settings (max 8 students)</span>
+                  <span>Small group settings (max 6 students)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
@@ -96,7 +135,7 @@ const SummerProgram = () => {
                 <div className="h-12 w-12 rounded-full bg-robotics-lightblue/20 flex items-center justify-center text-robotics-blue">
                   <DollarSign />
                 </div>
-                <h3 className="font-display font-bold text-xl">Program Cost</h3>
+                <h3 className="font-display font-bold text-xl">Investment</h3>
               </div>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
