@@ -68,7 +68,9 @@ const ProgramTabsSection = () => {
                   
                   <div className="text-center">
                     <p className="text-lg text-gray-600 mb-4">
-                      Detailed curriculum available in the Curriculum section below
+                      <Link to="/curriculum" className="text-robotics-blue hover:text-robotics-navy underline">
+                        Detailed curriculum available in the Curriculum Page
+                      </Link>
                     </p>
                     <Link to="/registration">
                       <Button size="lg" className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy font-bold">
