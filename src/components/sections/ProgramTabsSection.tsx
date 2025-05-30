@@ -38,7 +38,7 @@ const ProgramTabsSection = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div className="text-center bg-gray-50 p-6 rounded-lg">
                       <Calendar className="text-robotics-blue mx-auto mb-2" size={32} />
-                      <p className="font-bold text-robotics-accent text-xl">Aug 15 - May 15</p>
+                      <p className="font-bold text-robotics-accent text-xl">Aug 15 2025 - May 15 2026</p>
                       <p className="text-gray-600">Program Duration</p>
                     </div>
                     <div className="text-center bg-gray-50 p-6 rounded-lg">
