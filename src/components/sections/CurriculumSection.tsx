@@ -19,6 +19,55 @@ const CurriculumSection = () => {
             <h4 className="font-bold text-2xl text-center text-robotics-navy mb-6">📘 Curriculum Plan by Month</h4>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="bg-indigo-50 p-4 rounded-lg">
+                <h5 className="font-bold text-robotics-navy mb-2">🔹 January</h5>
+                <p className="font-medium mb-2">Full Robot Build Phase</p>
+                <ul className="text-sm space-y-1">
+                  <li>• Design final robot</li>
+                  <li>• Building & programming</li>
+                  <li>• Testing & refinement</li>
+                </ul>
+              </div>
+
+              <div className="bg-pink-50 p-4 rounded-lg">
+                <h5 className="font-bold text-robotics-navy mb-2">🔹 February</h5>
+                <p className="font-medium mb-2">Advanced Coding</p>
+                <ul className="text-sm space-y-1">
+                  <li>• Variables & functions</li>
+                  <li>• Tuning autonomous routines</li>
+                  <li>• Practice matches</li>
+                </ul>
+              </div>
+
+              <div className="bg-teal-50 p-4 rounded-lg">
+                <h5 className="font-bold text-robotics-navy mb-2">🔹 March</h5>
+                <p className="font-medium mb-2">Mock Competition Prep</p>
+                <ul className="text-sm space-y-1">
+                  <li>• Strategy refinement</li>
+                  <li>• Judging rubric review</li>
+                  <li>• Internal mock tournament</li>
+                </ul>
+              </div>
+
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <h5 className="font-bold text-robotics-navy mb-2">🔹 April</h5>
+                <p className="font-medium mb-2">Engineering Notebook</p>
+                <ul className="text-sm space-y-1">
+                  <li>• Documentation skills</li>
+                  <li>• Design improvements</li>
+                  <li>• Presentation development</li>
+                </ul>
+              </div>
+
+              <div className="bg-gray-100 p-4 rounded-lg">
+                <h5 className="font-bold text-robotics-navy mb-2">🔹 May</h5>
+                <p className="font-medium mb-2">Final Project Showcase</p>
+                <ul className="text-sm space-y-1">
+                  <li>• Final testing & polish</li>
+                  <li>• Showcase event for families</li>
+                </ul>
+              </div>
+
               <div className="bg-blue-50 p-4 rounded-lg">
                 <h5 className="font-bold text-robotics-navy mb-2">🔹 August (3 Weeks)</h5>
                 <p className="font-medium mb-2">Getting Started with VEX EXP</p>
@@ -69,55 +118,6 @@ const CurriculumSection = () => {
                   <li>• Game-based strategy</li>
                   <li>• Autonomous + driver control</li>
                   <li>• Winter Break: Dec 15 - Jan 5</li>
-                </ul>
-              </div>
-
-              <div className="bg-indigo-50 p-4 rounded-lg">
-                <h5 className="font-bold text-robotics-navy mb-2">🔹 January</h5>
-                <p className="font-medium mb-2">Full Robot Build Phase</p>
-                <ul className="text-sm space-y-1">
-                  <li>• Design final robot</li>
-                  <li>• Building & programming</li>
-                  <li>• Testing & refinement</li>
-                </ul>
-              </div>
-
-              <div className="bg-pink-50 p-4 rounded-lg">
-                <h5 className="font-bold text-robotics-navy mb-2">🔹 February</h5>
-                <p className="font-medium mb-2">Advanced Coding</p>
-                <ul className="text-sm space-y-1">
-                  <li>• Variables & functions</li>
-                  <li>• Tuning autonomous routines</li>
-                  <li>• Practice matches</li>
-                </ul>
-              </div>
-
-              <div className="bg-teal-50 p-4 rounded-lg">
-                <h5 className="font-bold text-robotics-navy mb-2">🔹 March</h5>
-                <p className="font-medium mb-2">Mock Competition Prep</p>
-                <ul className="text-sm space-y-1">
-                  <li>• Strategy refinement</li>
-                  <li>• Judging rubric review</li>
-                  <li>• Internal mock tournament</li>
-                </ul>
-              </div>
-
-              <div className="bg-orange-50 p-4 rounded-lg">
-                <h5 className="font-bold text-robotics-navy mb-2">🔹 April</h5>
-                <p className="font-medium mb-2">Engineering Notebook</p>
-                <ul className="text-sm space-y-1">
-                  <li>• Documentation skills</li>
-                  <li>• Design improvements</li>
-                  <li>• Presentation development</li>
-                </ul>
-              </div>
-
-              <div className="bg-gray-100 p-4 rounded-lg md:col-span-2 lg:col-span-1">
-                <h5 className="font-bold text-robotics-navy mb-2">🔹 May</h5>
-                <p className="font-medium mb-2">Final Project Showcase</p>
-                <ul className="text-sm space-y-1">
-                  <li>• Final testing & polish</li>
-                  <li>• Showcase event for families</li>
                 </ul>
               </div>
             </div>
