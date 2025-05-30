@@ -61,7 +61,7 @@ const ProgramTabsSection = () => {
                       </div>
                       <div>
                         <p className="mb-2">📅 <strong>Weekly Classes:</strong> One session per week</p>
-                        <p className="mb-2">⏰ <strong>Options:</strong> Wednesdays or weekends</p>
+                        <p className="mb-2">⏰ <strong>Options:</strong> Weekdays and Weekends</p>
                       </div>
                     </div>
                   </div>
