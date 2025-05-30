@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Phone, Mail, MessageSquare, MapPin, Download, Bot, Cog, Zap, Users, Trophy, Lightbulb, Calendar, BookOpen } from 'lucide-react';
+import { Phone, Mail, MessageSquare, MapPin, Bot, Cog, Zap, Users, Trophy, Lightbulb, Calendar, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Hero from '@/components/Hero';
 import AboutSection from '@/components/AboutSection';
@@ -399,10 +399,6 @@ const Index = () => {
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-robotics-blue">•</span>
-                          <span>Grades 1-5</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-robotics-blue">•</span>
                           <span>VEX robotics platform</span>
                         </li>
                         <li className="flex items-start gap-2">
@@ -437,17 +433,11 @@ const Index = () => {
                         </div>
                       </div>
                       
-                      <div className="mt-6 space-y-3">
+                      <div className="mt-6">
                         <Link to="/registration">
                           <Button className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy w-full font-bold">
                             <Bot size={18} className="mr-2" />
                             Register Now
-                          </Button>
-                        </Link>
-                        <Link to="/flyer">
-                          <Button variant="outline" className="bg-white text-robotics-navy hover:bg-gray-100 w-full">
-                            <Download size={18} className="mr-2" />
-                            Download Program Flyer
                           </Button>
                         </Link>
                       </div>
