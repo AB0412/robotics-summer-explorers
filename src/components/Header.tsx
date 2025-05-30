@@ -52,32 +52,9 @@ const Header = () => {
     }
   };
 
-  // Handle navigation to summer program section and switch to summer tab
+  // Handle navigation to summer program page
   const handleSummerProgramClick = () => {
-    if (location.pathname !== '/') {
-      // Navigate to home page with summer program section
-      window.location.href = '/#programs';
-      // Note: We'll need to handle tab switching on the client side
-      setTimeout(() => {
-        const summerTab = document.querySelector('[value="summer"]') as HTMLButtonElement;
-        if (summerTab) {
-          summerTab.click();
-        }
-      }, 100);
-    } else {
-      // Scroll to programs section and switch to summer tab
-      const element = document.getElementById('programs');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        setTimeout(() => {
-          const summerTab = document.querySelector('[value="summer"]') as HTMLButtonElement;
-          if (summerTab) {
-            summerTab.click();
-          }
-        }, 100);
-      }
-    }
-    
+    navigate('/summer-program');
     if (mobileMenuOpen) {
       setMobileMenuOpen(false);
     }
