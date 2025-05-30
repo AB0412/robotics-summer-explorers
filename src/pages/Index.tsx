@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,7 +12,7 @@ import ProgramDetails from '@/components/ProgramDetails';
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero Section - Updated for Year-Round Classes */}
+      {/* Hero Section - Updated for Regular Classes */}
       <section className="relative bg-robotics-navy text-white py-20 overflow-hidden">
         <div className="absolute left-0 top-0 opacity-10">
           <Cog size={200} className="text-white animate-gear-spin" />
@@ -77,13 +78,13 @@ const Index = () => {
             </p>
           </div>
           
-          <Tabs defaultValue="year-round" className="max-w-6xl mx-auto">
+          <Tabs defaultValue="regular" className="max-w-6xl mx-auto">
             <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="year-round" className="text-lg font-medium">Regular Classes</TabsTrigger>
+              <TabsTrigger value="regular" className="text-lg font-medium">Regular Classes</TabsTrigger>
               <TabsTrigger value="summer" className="text-lg font-medium">Summer Program</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="year-round" className="space-y-8">
+            <TabsContent value="regular" className="space-y-8">
               <div className="max-w-4xl mx-auto">
                 <Card className="overflow-hidden shadow-lg">
                   <CardContent className="p-8">
@@ -144,25 +145,26 @@ const Index = () => {
                 <CardContent className="p-8">
                   <div className="text-center mb-8">
                     <h3 className="font-display font-bold text-3xl mb-4 text-robotics-navy">Summer Robotics Explorers</h3>
-                    <p className="text-lg text-gray-600">Intensive 8-week summer program</p>
+                    <p className="text-lg text-gray-600 mb-6">Intensive 8-week summer program</p>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="text-center">
-                      <p className="font-bold text-robotics-accent text-2xl">8 Weeks</p>
+                    <div className="text-center bg-gray-50 p-6 rounded-lg">
+                      <Calendar className="text-robotics-blue mx-auto mb-2" size={32} />
+                      <p className="font-bold text-robotics-accent text-xl">8 Weeks</p>
                       <p className="text-gray-600">Summer Program</p>
                     </div>
-                    <div className="text-center">
-                      <p className="font-bold text-robotics-accent text-2xl">$100</p>
+                    <div className="text-center bg-gray-50 p-6 rounded-lg">
+                      <p className="font-bold text-robotics-accent text-xl">$100</p>
                       <p className="text-gray-600">Per Month</p>
                     </div>
-                    <div className="text-center">
-                      <p className="font-bold text-robotics-accent text-2xl">1.5 Hours</p>
+                    <div className="text-center bg-gray-50 p-6 rounded-lg">
+                      <p className="font-bold text-robotics-accent text-xl">1.5 Hours</p>
                       <p className="text-gray-600">Weekly Classes</p>
                     </div>
                   </div>
                   
-                  <div className="bg-gray-50 p-6 rounded-lg">
+                  <div className="bg-gray-50 p-6 rounded-lg mb-8">
                     <h4 className="font-bold text-xl mb-4">What You'll Learn:</h4>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <li className="flex items-center gap-2">
@@ -191,6 +193,24 @@ const Index = () => {
                       </li>
                     </ul>
                   </div>
+                  
+                  <div className="text-center">
+                    <p className="text-lg text-gray-600 mb-4">
+                      For detailed curriculum, skills breakdown, and weekly schedule
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      <Link to="/summer-program">
+                        <Button size="lg" className="bg-robotics-blue hover:bg-robotics-navy text-white font-bold">
+                          View Summer Program Details
+                        </Button>
+                      </Link>
+                      <Link to="/registration">
+                        <Button size="lg" className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy font-bold">
+                          Register for Summer Program
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -206,7 +226,7 @@ const Index = () => {
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 text-robotics-navy">
-              Year-Round Curriculum
+              Regular Program Curriculum
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Our comprehensive month-by-month curriculum designed to build robotics skills progressively
