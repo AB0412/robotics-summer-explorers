@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -24,11 +23,11 @@ const Index = () => {
         <div className="container relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl mb-6">
-              <span className="text-robotics-accent">Year-Round</span> Robotics Classes
+              <span className="text-robotics-accent">Robotics</span> Classes
             </h1>
             
             <p className="text-xl md:text-2xl mb-8">
-              Hands-on STEAM education through VEX robotics for students grades 1-5
+              Hands-on STEAM education through VEX robotics
             </p>
             
             <div className="bg-white/10 backdrop-blur-sm p-8 rounded-lg mb-8">
@@ -74,13 +73,13 @@ const Index = () => {
               Choose Your Program
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              We offer both year-round classes and intensive summer programs to fit your schedule and learning goals.
+              We offer both regular classes and intensive summer programs to fit your schedule and learning goals.
             </p>
           </div>
           
           <Tabs defaultValue="year-round" className="max-w-6xl mx-auto">
             <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="year-round" className="text-lg font-medium">Year-Round Classes</TabsTrigger>
+              <TabsTrigger value="year-round" className="text-lg font-medium">Regular Classes</TabsTrigger>
               <TabsTrigger value="summer" className="text-lg font-medium">Summer Program</TabsTrigger>
             </TabsList>
             
@@ -90,7 +89,7 @@ const Index = () => {
                   <CardContent className="p-8">
                     <div className="text-center mb-8">
                       <Bot className="text-robotics-blue mx-auto mb-4" size={64} />
-                      <h3 className="font-display font-bold text-3xl mb-4 text-robotics-navy">Year-Round Robotics Program</h3>
+                      <h3 className="font-display font-bold text-3xl mb-4 text-robotics-navy">Robotics Program</h3>
                       <p className="text-lg text-gray-600 mb-6">Comprehensive robotics education with structured curriculum</p>
                     </div>
                     
@@ -131,7 +130,7 @@ const Index = () => {
                       </p>
                       <Link to="/registration">
                         <Button size="lg" className="bg-robotics-accent hover:bg-robotics-lightblue text-robotics-navy font-bold">
-                          Register for Year-Round Classes
+                          Register for Classes
                         </Button>
                       </Link>
                     </div>
