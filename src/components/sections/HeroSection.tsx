@@ -21,7 +21,7 @@ const HeroSection = () => {
           </h1>
           
           <p className="text-xl md:text-2xl mb-8">
-            Hands-on STEAM education through VEX robotics
+            Hands-on STEAM education through VEX robotics by VEX Certified Instructor
           </p>
           
           <div className="bg-white/10 backdrop-blur-sm p-8 rounded-lg mb-8">
