@@ -60,6 +60,14 @@ const Header = () => {
     }
   };
 
+  // Handle navigation to curriculum page
+  const handleCurriculumClick = () => {
+    navigate('/curriculum');
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  };
+
   return (
     <header className="bg-robotics-navy text-white">
       <div className="container mx-auto py-4 px-4 flex justify-between items-center">
@@ -117,13 +125,12 @@ const Header = () => {
             </button>
           </div>
           
-          <a 
-            href="#curriculum" 
-            onClick={scrollToSection('curriculum')} 
+          <button
+            onClick={handleCurriculumClick}
             className="hover:text-robotics-accent transition-colors"
           >
             Curriculum
-          </a>
+          </button>
           <a 
             href="#contact" 
             onClick={scrollToSection('contact')} 
