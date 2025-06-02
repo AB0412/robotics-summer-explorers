@@ -28,7 +28,6 @@ const ProgramPreferencesSection = ({ form }: ProgramPreferencesSectionProps) => 
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="12:00-1:30">12:00 PM – 1:30 PM</SelectItem>
                 <SelectItem value="4:30-6:00">4:30 PM – 6:00 PM</SelectItem>
                 <SelectItem value="6:00-7:30">6:00 PM – 7:30 PM</SelectItem>
               </SelectContent>
@@ -52,7 +51,6 @@ const ProgramPreferencesSection = ({ form }: ProgramPreferencesSectionProps) => 
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="12:00-1:30">12:00 PM – 1:30 PM</SelectItem>
                 <SelectItem value="4:30-6:00">4:30 PM – 6:00 PM</SelectItem>
                 <SelectItem value="6:00-7:30">6:00 PM – 7:30 PM</SelectItem>
               </SelectContent>
