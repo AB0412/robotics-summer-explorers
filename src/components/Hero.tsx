@@ -43,8 +43,8 @@ const Hero = () => {
                 <p>Per Month</p>
               </div>
               <div>
-                <p className="font-bold text-robotics-accent text-xl">1.5 Hours</p>
-                <p>Weekly Classes</p>
+                <p className="font-bold text-robotics-accent text-xl">Max 4</p>
+                <p>Students per Class</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-2 mt-4 text-robotics-accent">
