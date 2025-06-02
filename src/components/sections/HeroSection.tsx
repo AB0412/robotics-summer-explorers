@@ -51,7 +51,7 @@ const HeroSection = () => {
             <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg">
               <Users className="text-robotics-accent mb-4 mx-auto" size={48} />
               <h3 className="font-bold text-xl mb-2">Small Classes</h3>
-              <p>Personalized attention with maximum 6 students per class</p>
+              <p>Personalized attention with maximum 4 students per class</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg">
               <Trophy className="text-robotics-accent mb-4 mx-auto" size={48} />
