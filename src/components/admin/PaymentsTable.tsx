@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -8,6 +9,8 @@ import { supabase } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { DollarSign, Calendar, CheckCircle, XCircle, Plus, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +48,7 @@ export const PaymentsTable = () => {
   const [selectedStudent, setSelectedStudent] = useState('all');
   const [selectedMonth, setSelectedMonth] = useState('all');
   const [paymentFilter, setPaymentFilter] = useState('all');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash');
   const { toast } = useToast();
 
   // Generate month options (current month and next 11 months)
@@ -122,7 +126,7 @@ export const PaymentsTable = () => {
         registration_id: registrationId,
         student_name: studentName,
         month_year: monthYear,
-        tuition_amount: 100.00, // Updated from 150.00 to 100.00
+        tuition_amount: 100.00,
         is_paid: false,
         payment_date: null,
         payment_method: null,
@@ -250,7 +254,7 @@ export const PaymentsTable = () => {
     return payments.find(p => p.student_name === studentName && p.month_year === monthYear);
   };
 
-  // Handle quick payment assignment
+  // Handle quick payment assignment with payment method
   const handleQuickPayment = async (studentName: string, monthYear: string, isPaid: boolean) => {
     const student = students.find(s => s.childname === studentName);
     if (!student) return;
@@ -259,7 +263,7 @@ export const PaymentsTable = () => {
     
     if (existingPayment) {
       // Update existing payment
-      await updatePaymentStatus(existingPayment.id, isPaid, isPaid ? 'cash' : undefined);
+      await updatePaymentStatus(existingPayment.id, isPaid, isPaid ? selectedPaymentMethod : undefined);
     } else {
       // Create new payment record
       await createPaymentRecord(studentName, student.registrationid, monthYear);
@@ -267,7 +271,7 @@ export const PaymentsTable = () => {
       setTimeout(async () => {
         const newPayment = getPaymentRecord(studentName, monthYear);
         if (newPayment && isPaid) {
-          await updatePaymentStatus(newPayment.id, true, 'cash');
+          await updatePaymentStatus(newPayment.id, true, selectedPaymentMethod);
         }
       }, 1000);
     }
@@ -338,7 +342,7 @@ export const PaymentsTable = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
               <label className="block text-sm font-medium mb-2">Select Student</label>
               <Select value={selectedStudent} onValueChange={setSelectedStudent}>
@@ -371,6 +375,24 @@ export const PaymentsTable = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Payment Method</label>
+              <RadioGroup 
+                value={selectedPaymentMethod} 
+                onValueChange={setSelectedPaymentMethod}
+                className="flex flex-row gap-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="cash" id="cash" />
+                  <Label htmlFor="cash">Cash</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="zelle" id="zelle" />
+                  <Label htmlFor="zelle">Zelle</Label>
+                </div>
+              </RadioGroup>
             </div>
             
             <div className="flex gap-2">
@@ -460,22 +482,32 @@ export const PaymentsTable = () => {
                   <TableCell>
                     {payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : '-'}
                   </TableCell>
-                  <TableCell>{payment.payment_method || '-'}</TableCell>
+                  <TableCell>
+                    {payment.payment_method ? (
+                      <Badge variant="outline" className="capitalize">
+                        {payment.payment_method}
+                      </Badge>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Checkbox
-                        checked={payment.is_paid}
-                        onCheckedChange={(checked) => {
-                          if (checked && !payment.is_paid) {
-                            updatePaymentStatus(payment.id, true, 'cash');
-                          } else if (!checked && payment.is_paid) {
-                            updatePaymentStatus(payment.id, false);
-                          }
-                        }}
-                      />
-                      <span className="text-sm text-muted-foreground">
-                        {payment.is_paid ? 'Paid' : 'Mark as paid'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          checked={payment.is_paid}
+                          onCheckedChange={(checked) => {
+                            if (checked && !payment.is_paid) {
+                              updatePaymentStatus(payment.id, true, selectedPaymentMethod);
+                            } else if (!checked && payment.is_paid) {
+                              updatePaymentStatus(payment.id, false);
+                            }
+                          }}
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          {payment.is_paid ? 'Paid' : 'Mark as paid'}
+                        </span>
+                      </div>
                       
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
