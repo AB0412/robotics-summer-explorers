@@ -39,7 +39,7 @@ export const generatePaymentRecordsForExistingRegistrations = async () => {
           registration_id: registration.registrationid,
           student_name: registration.childname,
           month_year: monthYear,
-          tuition_amount: 150.00, // Default tuition amount
+          tuition_amount: 100.00, // Updated from 150.00 to 100.00
           is_paid: false
         });
       }

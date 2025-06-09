@@ -112,7 +112,7 @@ export const PaymentsTable = () => {
         registration_id: registrationId,
         student_name: studentName,
         month_year: monthYear,
-        tuition_amount: 150.00,
+        tuition_amount: 100.00, // Updated from 150.00 to 100.00
         is_paid: false,
         payment_date: null,
         payment_method: null,
