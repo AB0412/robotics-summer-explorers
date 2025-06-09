@@ -19,6 +19,10 @@ export default {
 			}
 		},
 		extend: {
+			maxWidth: {
+				'a4': '210mm',
+				'letter': '8.5in',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
