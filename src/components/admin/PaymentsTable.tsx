@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { DollarSign, Calendar, CheckCircle, XCircle, Plus } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface StudentPayment {
@@ -22,14 +22,55 @@ interface StudentPayment {
   notes: string | null;
 }
 
+interface Student {
+  registrationid: string;
+  childname: string;
+}
+
 export const PaymentsTable = () => {
   const [payments, setPayments] = useState<StudentPayment[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [filteredPayments, setFilteredPayments] = useState<StudentPayment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStudent, setSelectedStudent] = useState('all');
   const [selectedMonth, setSelectedMonth] = useState('all');
   const [paymentFilter, setPaymentFilter] = useState('all');
   const { toast } = useToast();
+
+  // Generate month options (current month and next 11 months)
+  const generateMonthOptions = () => {
+    const months = [];
+    const currentDate = new Date();
+    
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
+      const monthYear = date.toISOString().substring(0, 7); // YYYY-MM format
+      months.push(monthYear);
+    }
+    
+    return months;
+  };
+
+  const monthOptions = generateMonthOptions();
+
+  // Load students from registrations table
+  const loadStudents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('registrations')
+        .select('registrationid, childname')
+        .order('childname', { ascending: true });
+
+      if (error) {
+        console.error('Error loading students:', error);
+        return;
+      }
+
+      setStudents(data || []);
+    } catch (error) {
+      console.error('Error loading students:', error);
+    }
+  };
 
   // Load payments from database
   const loadPayments = async () => {
@@ -61,6 +102,53 @@ export const PaymentsTable = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Create a new payment record
+  const createPaymentRecord = async (studentName: string, registrationId: string, monthYear: string) => {
+    try {
+      const newPayment = {
+        registration_id: registrationId,
+        student_name: studentName,
+        month_year: monthYear,
+        tuition_amount: 150.00,
+        is_paid: false,
+        payment_date: null,
+        payment_method: null,
+        notes: null
+      };
+
+      const { data, error } = await supabase
+        .from('student_payments')
+        .insert([newPayment])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating payment record:', error);
+        toast({
+          title: "Error Creating Payment Record",
+          description: "Could not create payment record. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Add to local state
+      setPayments(prev => [...prev, data]);
+      
+      toast({
+        title: "Payment Record Created",
+        description: `Created payment record for ${studentName} - ${formatMonth(monthYear)}.`,
+      });
+    } catch (error) {
+      console.error('Error creating payment record:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while creating payment record.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -112,6 +200,34 @@ export const PaymentsTable = () => {
     }
   };
 
+  // Check if payment record exists for student and month
+  const getPaymentRecord = (studentName: string, monthYear: string) => {
+    return payments.find(p => p.student_name === studentName && p.month_year === monthYear);
+  };
+
+  // Handle quick payment assignment
+  const handleQuickPayment = async (studentName: string, monthYear: string, isPaid: boolean) => {
+    const student = students.find(s => s.childname === studentName);
+    if (!student) return;
+
+    const existingPayment = getPaymentRecord(studentName, monthYear);
+    
+    if (existingPayment) {
+      // Update existing payment
+      await updatePaymentStatus(existingPayment.id, isPaid, isPaid ? 'cash' : undefined);
+    } else {
+      // Create new payment record
+      await createPaymentRecord(studentName, student.registrationid, monthYear);
+      // Wait a moment for the record to be created, then update it
+      setTimeout(async () => {
+        const newPayment = getPaymentRecord(studentName, monthYear);
+        if (newPayment && isPaid) {
+          await updatePaymentStatus(newPayment.id, true, 'cash');
+        }
+      }, 1000);
+    }
+  };
+
   // Filter payments based on filters
   useEffect(() => {
     let filtered = payments;
@@ -136,8 +252,9 @@ export const PaymentsTable = () => {
     setFilteredPayments(filtered);
   }, [payments, selectedStudent, selectedMonth, paymentFilter]);
 
-  // Load payments on component mount
+  // Load data on component mount
   useEffect(() => {
+    loadStudents();
     loadPayments();
   }, []);
 
@@ -166,121 +283,168 @@ export const PaymentsTable = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <DollarSign className="h-5 w-5" />
-          Student Payments ({filteredPayments.length})
-        </CardTitle>
-        
-        {/* Filter Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-4">
-          <Select value={selectedStudent} onValueChange={setSelectedStudent}>
-            <SelectTrigger className="w-64">
-              <SelectValue placeholder="Select student" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All students</SelectItem>
-              {uniqueStudents.map(student => (
-                <SelectItem key={student} value={student}>
-                  {student}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by month" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All months</SelectItem>
-              {uniqueMonths.map(month => (
-                <SelectItem key={month} value={month}>
-                  {formatMonth(month)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All payments</SelectItem>
-              <SelectItem value="paid">Paid only</SelectItem>
-              <SelectItem value="unpaid">Unpaid only</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Student Name</TableHead>
-              <TableHead>Month</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Payment Date</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredPayments.map((payment) => (
-              <TableRow key={payment.id}>
-                <TableCell className="font-medium">{payment.student_name}</TableCell>
-                <TableCell>{formatMonth(payment.month_year)}</TableCell>
-                <TableCell>${payment.tuition_amount?.toFixed(2) || '0.00'}</TableCell>
-                <TableCell>
-                  {payment.is_paid ? (
-                    <Badge variant="default" className="bg-green-100 text-green-800">
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                      Paid
-                    </Badge>
-                  ) : (
-                    <Badge variant="destructive">
-                      <XCircle className="h-3 w-3 mr-1" />
-                      Unpaid
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : '-'}
-                </TableCell>
-                <TableCell>{payment.payment_method || '-'}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      checked={payment.is_paid}
-                      onCheckedChange={(checked) => {
-                        if (checked && !payment.is_paid) {
-                          // When marking as paid, default to cash method
-                          updatePaymentStatus(payment.id, true, 'cash');
-                        } else if (!checked && payment.is_paid) {
-                          updatePaymentStatus(payment.id, false);
-                        }
-                      }}
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {payment.is_paid ? 'Paid' : 'Mark as paid'}
-                    </span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-
-        {filteredPayments.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            No payments found matching your criteria.
+    <div className="space-y-6">
+      {/* Quick Payment Assignment Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5" />
+            Quick Payment Assignment
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+              <label className="block text-sm font-medium mb-2">Select Student</label>
+              <Select value={selectedStudent} onValueChange={setSelectedStudent}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose student" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All students</SelectItem>
+                  {students.map(student => (
+                    <SelectItem key={student.registrationid} value={student.childname}>
+                      {student.childname}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">Select Month</label>
+              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose month" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All months</SelectItem>
+                  {monthOptions.map(month => (
+                    <SelectItem key={month} value={month}>
+                      {formatMonth(month)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => {
+                  if (selectedStudent !== 'all' && selectedMonth !== 'all') {
+                    handleQuickPayment(selectedStudent, selectedMonth, true);
+                  }
+                }}
+                disabled={selectedStudent === 'all' || selectedMonth === 'all'}
+                className="flex-1"
+              >
+                Mark as Paid
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  if (selectedStudent !== 'all' && selectedMonth !== 'all') {
+                    handleQuickPayment(selectedStudent, selectedMonth, false);
+                  }
+                }}
+                disabled={selectedStudent === 'all' || selectedMonth === 'all'}
+                className="flex-1"
+              >
+                Mark as Unpaid
+              </Button>
+            </div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      {/* Payments Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Student Payments ({filteredPayments.length})
+          </CardTitle>
+          
+          {/* Filter Controls */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-4">
+            <Select value={paymentFilter} onValueChange={setPaymentFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All payments</SelectItem>
+                <SelectItem value="paid">Paid only</SelectItem>
+                <SelectItem value="unpaid">Unpaid only</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Student Name</TableHead>
+                <TableHead>Month</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Payment Date</TableHead>
+                <TableHead>Method</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredPayments.map((payment) => (
+                <TableRow key={payment.id}>
+                  <TableCell className="font-medium">{payment.student_name}</TableCell>
+                  <TableCell>{formatMonth(payment.month_year)}</TableCell>
+                  <TableCell>${payment.tuition_amount?.toFixed(2) || '0.00'}</TableCell>
+                  <TableCell>
+                    {payment.is_paid ? (
+                      <Badge variant="default" className="bg-green-100 text-green-800">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Paid
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive">
+                        <XCircle className="h-3 w-3 mr-1" />
+                        Unpaid
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : '-'}
+                  </TableCell>
+                  <TableCell>{payment.payment_method || '-'}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={payment.is_paid}
+                        onCheckedChange={(checked) => {
+                          if (checked && !payment.is_paid) {
+                            updatePaymentStatus(payment.id, true, 'cash');
+                          } else if (!checked && payment.is_paid) {
+                            updatePaymentStatus(payment.id, false);
+                          }
+                        }}
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {payment.is_paid ? 'Paid' : 'Mark as paid'}
+                      </span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          {filteredPayments.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              No payments found matching your criteria.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 };
