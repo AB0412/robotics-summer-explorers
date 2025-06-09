@@ -123,6 +123,56 @@ export type Database = {
         }
         Relationships: []
       }
+      student_payments: {
+        Row: {
+          created_at: string
+          id: string
+          is_paid: boolean
+          month_year: string
+          notes: string | null
+          payment_date: string | null
+          payment_method: string | null
+          registration_id: string
+          student_name: string
+          tuition_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_paid?: boolean
+          month_year: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          registration_id: string
+          student_name: string
+          tuition_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_paid?: boolean
+          month_year?: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          registration_id?: string
+          student_name?: string
+          tuition_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["registrationid"]
+          },
+        ]
+      }
       student_schedules: {
         Row: {
           assigned_at: string | null

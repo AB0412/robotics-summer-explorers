@@ -5,18 +5,20 @@ import { RegistrationsTable } from './RegistrationsTable';
 import { PaginationControls } from './PaginationControls';
 import { useAdminDashboard } from '@/hooks/useAdminDashboard';
 import { Button } from '@/components/ui/button';
-import { Database, RefreshCw } from 'lucide-react';
+import { Database, RefreshCw, DollarSign, Users } from 'lucide-react';
 import { SchemaUpdateModal } from './SchemaUpdateModal';
 import { validateDatabaseSchema } from '@/utils/database/schema-utils';
 import { supabase } from '@/utils/supabase/client';
 import { checkRLSPolicies, fixRLSPolicies } from '@/utils/supabase/rls-helpers';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface AdminDashboardProps {
   onLogout: () => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
+  const navigate = useNavigate();
   const {
     registrations,
     currentPage,
@@ -37,7 +39,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [needsSchemaUpdate, setNeedsSchemaUpdate] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFixingRLS, setIsFixingRLS] = useState(false);
-  // Add a flag to track initial setup status
+  // Add state to track if we've already initialized to prevent double toasts
   const [initialSetupDone, setInitialSetupDone] = useState(false);
 
   // Check if schema needs updating, auth status, and RLS policies
@@ -170,6 +172,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
   return (
     <>
+      {/* Main Navigation */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <Card className="flex-1">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-blue-600" />
+                <span className="font-medium">Student Registrations</span>
+              </div>
+              <span className="text-2xl font-bold text-blue-600">{registrations.length}</span>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Button
+          onClick={() => navigate('/payments')}
+          variant="outline"
+          className="flex items-center gap-2 h-auto p-4"
+        >
+          <DollarSign className="h-5 w-5" />
+          <div className="text-left">
+            <div className="font-medium">Payment Management</div>
+            <div className="text-sm text-muted-foreground">Track monthly tuition</div>
+          </div>
+        </Button>
+      </div>
+
       <DashboardToolbar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -181,12 +210,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Registrations ({filteredRegistrations.length})</CardTitle>
+          <CardTitle>Registrations ({getFilteredRegistrations().length})</CardTitle>
           <div className="flex gap-2">
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={handleRunSqlScript}
+              onClick={() => setSchemaModalOpen(true)}
             >
               <Database className="h-4 w-4 mr-2" />
               Database Setup
@@ -211,12 +240,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           ) : (
             <>
               <RegistrationsTable 
-                registrations={currentRegistrations} 
+                registrations={getFilteredRegistrations().slice(
+                  (currentPage - 1) * itemsPerPage, 
+                  currentPage * itemsPerPage
+                )} 
                 onDeleteRegistration={handleDeleteRegistration} 
               />
               <PaginationControls 
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={Math.ceil(getFilteredRegistrations().length / itemsPerPage)}
                 onPageChange={setCurrentPage}
               />
             </>
@@ -231,4 +263,39 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       />
     </>
   );
+
+  // Helper function for manual refresh
+  async function handleManualRefresh() {
+    setIsRefreshing(true);
+    try {
+      // First try to authenticate if needed
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        const { error: signInError } = await supabase.auth.signInAnonymously();
+        if (signInError) {
+          console.error('Sign in error:', signInError);
+        }
+      }
+      
+      // Now try to load registrations
+      await loadRegistrations();
+      
+      // Check RLS status again silently
+      await checkRLSPolicies();
+      
+      toast({
+        title: "Data Refreshed",
+        description: "Successfully refreshed registration data.",
+      });
+    } catch (error) {
+      console.error('Refresh error:', error);
+      toast({
+        title: "Refresh Failed",
+        description: "An error occurred while refreshing data. Check console for details.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  }
 }
