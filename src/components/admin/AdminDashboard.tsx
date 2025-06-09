@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardToolbar } from './DashboardToolbar';
@@ -82,16 +83,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     initialize();
   }, [loadRegistrations]);
 
-  // Get filtered registrations
-  const filteredRegistrations = getFilteredRegistrations();
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
-  const currentRegistrations = filteredRegistrations.slice(
-    (currentPage - 1) * itemsPerPage, 
-    currentPage * itemsPerPage
-  );
-
   // Handle manual refresh with forced authentication
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
@@ -169,6 +160,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       console.error('Error preparing SQL script:', error);
     }
   };
+
+  // Get filtered registrations
+  const filteredRegistrations = getFilteredRegistrations();
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
+  const currentRegistrations = filteredRegistrations.slice(
+    (currentPage - 1) * itemsPerPage, 
+    currentPage * itemsPerPage
+  );
 
   return (
     <>
@@ -263,39 +264,4 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       />
     </>
   );
-
-  // Helper function for manual refresh
-  async function handleManualRefresh() {
-    setIsRefreshing(true);
-    try {
-      // First try to authenticate if needed
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        const { error: signInError } = await supabase.auth.signInAnonymously();
-        if (signInError) {
-          console.error('Sign in error:', signInError);
-        }
-      }
-      
-      // Now try to load registrations
-      await loadRegistrations();
-      
-      // Check RLS status again silently
-      await checkRLSPolicies();
-      
-      toast({
-        title: "Data Refreshed",
-        description: "Successfully refreshed registration data.",
-      });
-    } catch (error) {
-      console.error('Refresh error:', error);
-      toast({
-        title: "Refresh Failed",
-        description: "An error occurred while refreshing data. Check console for details.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsRefreshing(false);
-    }
-  }
-}
+};
