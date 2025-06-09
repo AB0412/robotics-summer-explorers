@@ -10,7 +10,7 @@ interface AdminLoginProps {
 }
 
 // Hard-coded admin password - in a real app, this would be handled securely
-const ADMIN_PASSWORD = "admin123";
+const ADMIN_PASSWORD = "Rock@987654321$";
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
