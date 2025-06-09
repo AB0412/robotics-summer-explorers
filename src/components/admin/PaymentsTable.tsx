@@ -28,7 +28,7 @@ export const PaymentsTable = () => {
   const [filteredPayments, setFilteredPayments] = useState<StudentPayment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('all');
   const [paymentFilter, setPaymentFilter] = useState('all');
   const { toast } = useToast();
 
@@ -126,7 +126,7 @@ export const PaymentsTable = () => {
     }
 
     // Month filter
-    if (selectedMonth) {
+    if (selectedMonth && selectedMonth !== 'all') {
       filtered = filtered.filter(payment => payment.month_year === selectedMonth);
     }
 
@@ -193,7 +193,7 @@ export const PaymentsTable = () => {
               <SelectValue placeholder="Filter by month" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All months</SelectItem>
+              <SelectItem value="all">All months</SelectItem>
               {uniqueMonths.map(month => (
                 <SelectItem key={month} value={month}>
                   {formatMonth(month)}
