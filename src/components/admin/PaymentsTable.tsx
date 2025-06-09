@@ -3,12 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Search, DollarSign, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { DollarSign, Calendar, CheckCircle, XCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface StudentPayment {
@@ -27,7 +26,7 @@ export const PaymentsTable = () => {
   const [payments, setPayments] = useState<StudentPayment[]>([]);
   const [filteredPayments, setFilteredPayments] = useState<StudentPayment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStudent, setSelectedStudent] = useState('all');
   const [selectedMonth, setSelectedMonth] = useState('all');
   const [paymentFilter, setPaymentFilter] = useState('all');
   const { toast } = useToast();
@@ -113,16 +112,13 @@ export const PaymentsTable = () => {
     }
   };
 
-  // Filter payments based on search and filters
+  // Filter payments based on filters
   useEffect(() => {
     let filtered = payments;
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(payment =>
-        payment.student_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        payment.registration_id.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    // Student filter
+    if (selectedStudent && selectedStudent !== 'all') {
+      filtered = filtered.filter(payment => payment.student_name === selectedStudent);
     }
 
     // Month filter
@@ -138,14 +134,15 @@ export const PaymentsTable = () => {
     }
 
     setFilteredPayments(filtered);
-  }, [payments, searchTerm, selectedMonth, paymentFilter]);
+  }, [payments, selectedStudent, selectedMonth, paymentFilter]);
 
   // Load payments on component mount
   useEffect(() => {
     loadPayments();
   }, []);
 
-  // Get unique months for filter dropdown
+  // Get unique students and months for filter dropdowns
+  const uniqueStudents = [...new Set(payments.map(p => p.student_name))].sort();
   const uniqueMonths = [...new Set(payments.map(p => p.month_year))].sort();
 
   // Format month for display
@@ -176,17 +173,21 @@ export const PaymentsTable = () => {
           Student Payments ({filteredPayments.length})
         </CardTitle>
         
-        {/* Search and Filter Controls */}
+        {/* Filter Controls */}
         <div className="flex flex-col sm:flex-row gap-4 mt-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by student name or registration ID..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8"
-            />
-          </div>
+          <Select value={selectedStudent} onValueChange={setSelectedStudent}>
+            <SelectTrigger className="w-64">
+              <SelectValue placeholder="Select student" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All students</SelectItem>
+              {uniqueStudents.map(student => (
+                <SelectItem key={student} value={student}>
+                  {student}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           
           <Select value={selectedMonth} onValueChange={setSelectedMonth}>
             <SelectTrigger className="w-48">
