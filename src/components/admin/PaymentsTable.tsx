@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -7,8 +6,19 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, Calendar, CheckCircle, XCircle, Plus } from 'lucide-react';
+import { DollarSign, Calendar, CheckCircle, XCircle, Plus, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface StudentPayment {
   id: string;
@@ -195,6 +205,41 @@ export const PaymentsTable = () => {
       toast({
         title: "Error",
         description: "An unexpected error occurred while updating payment.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Delete payment record
+  const deletePaymentRecord = async (paymentId: string, studentName: string, monthYear: string) => {
+    try {
+      const { error } = await supabase
+        .from('student_payments')
+        .delete()
+        .eq('id', paymentId);
+
+      if (error) {
+        console.error('Error deleting payment:', error);
+        toast({
+          title: "Error Deleting Payment",
+          description: "Could not delete payment record. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Remove from local state
+      setPayments(prev => prev.filter(payment => payment.id !== paymentId));
+
+      toast({
+        title: "Payment Deleted",
+        description: `Payment record for ${studentName} - ${formatMonth(monthYear)} has been deleted.`,
+      });
+    } catch (error) {
+      console.error('Error deleting payment:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while deleting payment.",
         variant: "destructive",
       });
     }
@@ -431,6 +476,35 @@ export const PaymentsTable = () => {
                       <span className="text-sm text-muted-foreground">
                         {payment.is_paid ? 'Paid' : 'Mark as paid'}
                       </span>
+                      
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="ml-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Payment Record</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete the payment record for {payment.student_name} - {formatMonth(payment.month_year)}? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deletePaymentRecord(payment.id, payment.student_name, payment.month_year)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </TableCell>
                 </TableRow>
