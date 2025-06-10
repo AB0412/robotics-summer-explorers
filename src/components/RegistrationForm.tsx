@@ -3,6 +3,7 @@ import React from 'react';
 import { Form } from '@/components/ui/form';
 import BasicInfoSection from './registration/BasicInfoSection';
 import ChildDetailsSection from './registration/ChildDetailsSection';
+import ProgramTypeSection from './registration/ProgramTypeSection';
 import ProgramPreferencesSection from './registration/ProgramPreferencesSection';
 import RoboticsExperienceSection from './registration/RoboticsExperienceSection';
 import LogisticsConsentSection from './registration/LogisticsConsentSection';
@@ -43,16 +44,19 @@ const RegistrationForm = () => {
           {/* Section 2: Child Details */}
           <ChildDetailsSection form={form} />
           
-          {/* Section 3: Program Preferences */}
+          {/* Section 3: Program Type */}
+          <ProgramTypeSection form={form} />
+          
+          {/* Section 4: Program Preferences */}
           <ProgramPreferencesSection form={form} />
           
-          {/* Section 4: Robotics Experience */}
+          {/* Section 5: Robotics Experience */}
           <RoboticsExperienceSection form={form} />
           
-          {/* Section 5: Logistics & Consent */}
+          {/* Section 6: Logistics & Consent */}
           <LogisticsConsentSection form={form} />
           
-          {/* Section 6: Payment Options */}
+          {/* Section 7: Payment Options */}
           <PaymentOptionsSection form={form} />
           
           {/* Submit Button */}

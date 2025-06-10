@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 // Define the form validation schema
@@ -15,20 +16,25 @@ export const formSchema = z.object({
   schoolName: z.string().min(2, { message: 'School name is required' }),
   medicalInfo: z.string().optional(),
   
-  // 3. Program Preferences
+  // 3. Program Type Selection
+  programType: z.enum(['summer-camp', 'school-year'], {
+    required_error: "Please select a program type",
+  }),
+  
+  // 4. Program Preferences
   preferredBatch: z.string({
     required_error: "Please select a preferred batch time",
   }),
   alternateBatch: z.string().optional(),
 
-  // 4. Robotics Experience
+  // 5. Robotics Experience
   hasPriorExperience: z.enum(['yes', 'no'], {
     required_error: "Please select an option",
   }),
   experienceDescription: z.string().optional(),
   interestLevel: z.string().optional(),
   
-  // 5. Logistics & Consent
+  // 6. Logistics & Consent
   referralSource: z.string().min(1, { message: 'Please tell us how you heard about us' }),
   photoConsent: z.boolean().default(false),
   waiverAgreement: z.boolean({
@@ -44,6 +50,12 @@ export const formSchema = z.object({
 });
 
 export type FormValues = z.infer<typeof formSchema>;
+
+// Program type options
+export const programTypes = [
+  { value: "summer-camp", label: "Summer Camp" },
+  { value: "school-year", label: "School Year Classes" },
+];
 
 // Experience level options
 export const interestLevels = [

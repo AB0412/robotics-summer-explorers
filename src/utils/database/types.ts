@@ -16,6 +16,7 @@ export interface Registration {
   childGrade: string;
   schoolName: string;
   medicalInfo?: string;
+  programType: "summer-camp" | "school-year";
   preferredBatch: string;
   alternateBatch?: string;
   hasPriorExperience: "yes" | "no";
@@ -43,6 +44,7 @@ export interface SupabaseRegistration {
   childgrade: string;
   schoolname: string;
   medicalinfo?: string;
+  programtype: "summer-camp" | "school-year";
   preferredbatch: string;
   alternatebatch?: string;
   haspriorexperience: "yes" | "no";
