@@ -100,6 +100,7 @@ function normalizeRegistration(reg: any): EnhancedRegistration {
     childGrade: reg.childGrade || reg.childgrade || '',
     schoolName: reg.schoolName || reg.schoolname || '',
     medicalInfo: reg.medicalInfo || reg.medicalinfo || '',
+    programType: (reg.programType || reg.programtype || 'summer-camp') as "summer-camp" | "school-year",
     preferredBatch: reg.preferredBatch || reg.preferredbatch || '',
     alternateBatch: reg.alternateBatch || reg.alternatebatch || '',
     hasPriorExperience: (reg.hasPriorExperience || reg.haspriorexperience || 'no') as "yes" | "no",

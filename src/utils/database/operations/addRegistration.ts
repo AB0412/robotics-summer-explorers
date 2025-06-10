@@ -47,6 +47,7 @@ export const addRegistration = async (registration: Registration): Promise<{succ
       childgrade: registration.childGrade,
       schoolname: registration.schoolName,
       medicalinfo: registration.medicalInfo,
+      programtype: registration.programType,
       preferredbatch: registration.preferredBatch,
       alternatebatch: registration.alternateBatch,
       haspriorexperience: registration.hasPriorExperience,
