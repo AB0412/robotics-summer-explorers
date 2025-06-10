@@ -62,6 +62,7 @@ export type Database = {
           parentphone: string
           photoconsent: boolean
           preferredbatch: string
+          programtype: string
           referralsource: string
           registrationid: string
           schoolname: string
@@ -87,6 +88,7 @@ export type Database = {
           parentphone: string
           photoconsent?: boolean
           preferredbatch: string
+          programtype?: string
           referralsource: string
           registrationid: string
           schoolname: string
@@ -112,6 +114,7 @@ export type Database = {
           parentphone?: string
           photoconsent?: boolean
           preferredbatch?: string
+          programtype?: string
           referralsource?: string
           registrationid?: string
           schoolname?: string
