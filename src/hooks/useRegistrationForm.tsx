@@ -117,8 +117,27 @@ export const useRegistrationForm = () => {
         duration: 8000,
       });
       
-      // Send confirmation email (but don't show a toast about it) - fix: only pass the registration object
-      await sendConfirmationEmail(registrationWithIdAndTimestamp);
+      // Send confirmation email to both parent and admin (billoreavinash12@gmail.com)
+      try {
+        await sendConfirmationEmail(registrationWithIdAndTimestamp);
+        console.log('Confirmation email sent successfully to both parent and admin');
+        
+        // Show additional toast confirming email was sent
+        toast({
+          title: "Confirmation Email Sent",
+          description: "Confirmation emails have been sent to both the parent and administrator.",
+          duration: 5000,
+        });
+      } catch (emailError) {
+        console.error('Email sending failed, but registration was saved:', emailError);
+        // Don't throw here - registration was successful, email is secondary
+        toast({
+          title: "Registration Saved",
+          description: "Registration was saved successfully, but there was an issue sending the confirmation email.",
+          variant: "destructive",
+          duration: 6000,
+        });
+      }
       
       // Reset form
       form.reset();
@@ -128,7 +147,7 @@ export const useRegistrationForm = () => {
         title: "Registration Error",
         description: error instanceof Error ? error.message : "There was a problem submitting your registration. Please try again.",
         variant: "destructive",
-        duration: 8000, // Make the error toast stay longer
+        duration: 8000,
       });
     } finally {
       setIsSubmitting(false);

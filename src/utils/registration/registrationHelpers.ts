@@ -1,5 +1,6 @@
 
 import { Registration } from '@/utils/database/types';
+import { supabase } from '@/integrations/supabase/client';
 
 // Helper function to generate a unique registration ID
 export const generateRegistrationId = (): string => {
@@ -71,12 +72,68 @@ export const formatRegistrationForDisplay = (registration: Registration) => {
   };
 };
 
-// Send confirmation email (placeholder function)
+// Helper function to create registration summary for email
+const createRegistrationSummary = (registration: Registration): string => {
+  return `
+Registration ID: ${registration.registrationId}
+Submitted: ${new Date(registration.submittedAt).toLocaleString()}
+
+PARENT INFORMATION:
+Name: ${registration.parentName}
+Email: ${registration.parentEmail}
+Phone: ${registration.parentPhone}
+Emergency Contact: ${registration.emergencyContact}
+
+CHILD INFORMATION:
+Name: ${registration.childName}
+Age: ${registration.childAge}
+Grade: ${registration.childGrade}
+School: ${registration.schoolName}
+Medical Info: ${registration.medicalInfo || 'None provided'}
+
+PROGRAM DETAILS:
+Program Type: ${registration.programType}
+Preferred Batch: ${registration.preferredBatch}
+Alternate Batch: ${registration.alternateBatch || 'None'}
+Prior Experience: ${registration.hasPriorExperience}
+Experience Description: ${registration.experienceDescription || 'None provided'}
+Interest Level: ${registration.interestLevel || 'Not specified'}
+Referral Source: ${registration.referralSource}
+
+ADDITIONAL INFORMATION:
+T-Shirt Size: ${registration.tShirtSize || 'Not specified'}
+Special Requests: ${registration.specialRequests || 'None'}
+Photo Consent: ${registration.photoConsent ? 'Yes' : 'No'}
+Waiver Agreement: ${registration.waiverAgreement ? 'Yes' : 'No'}
+Volunteer Interest: ${registration.volunteerInterest ? 'Yes' : 'No'}
+  `.trim();
+};
+
+// Send confirmation email using the edge function
 export const sendConfirmationEmail = async (registration: Registration): Promise<void> => {
   try {
     console.log('Sending confirmation email for registration:', registration.registrationId);
-    // This is a placeholder - in a real implementation, you would integrate with an email service
-    console.log(`Confirmation email would be sent to: ${registration.parentEmail}`);
+    
+    const registrationSummary = createRegistrationSummary(registration);
+    
+    const { data, error } = await supabase.functions.invoke('send-registration-email', {
+      body: {
+        parentEmail: registration.parentEmail,
+        parentName: registration.parentName,
+        childName: registration.childName,
+        registrationId: registration.registrationId,
+        preferredBatch: registration.preferredBatch,
+        registrationSummary: registrationSummary
+      }
+    });
+
+    if (error) {
+      console.error('Error calling email function:', error);
+      throw new Error(`Failed to send confirmation email: ${error.message}`);
+    }
+
+    console.log('Email function response:', data);
+    console.log(`Confirmation emails sent to: ${registration.parentEmail} and billoreavinash12@gmail.com`);
   } catch (error) {
     console.error('Error sending confirmation email:', error);
     throw new Error('Failed to send confirmation email');
