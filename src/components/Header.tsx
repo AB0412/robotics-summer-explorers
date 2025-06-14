@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot, Menu, X, ChevronDown } from 'lucide-react';
@@ -73,7 +72,7 @@ const Header = () => {
       <div className="container mx-auto py-4 px-4 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
           <Bot size={32} className="text-robotics-accent" />
-          <span className="font-display font-bold text-lg sm:text-2xl">Robotics Academy</span>
+          <span className="font-display font-bold text-lg sm:text-2xl">Bot-Venture</span>
         </Link>
         
         <nav className={`${mobileMenuOpen ? 'flex flex-col absolute top-16 right-0 bg-robotics-navy p-4 rounded-bl-lg shadow-lg z-50' : 'hidden md:flex'} items-center gap-8 font-medium`}>
