@@ -28,7 +28,7 @@ const HeroSection = () => {
       <div className="container relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl mb-6">
-            <span className="text-robotics-accent">Robotics</span> Classes
+            <span className="text-robotics-accent">Bot-Venture</span>
           </h1>
           
           <p className="text-xl md:text-2xl mb-8">
