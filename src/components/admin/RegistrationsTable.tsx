@@ -64,6 +64,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
           <TableHead>Registration ID</TableHead>
           <TableHead>Parent Name</TableHead>
           <TableHead>Email</TableHead>
+          <TableHead>Phone</TableHead>
           <TableHead>Child Name</TableHead>
           <TableHead>Child Age</TableHead>
           <TableHead>Preferred Batch</TableHead>
@@ -77,6 +78,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
             <TableCell>{reg.registrationId || 'N/A'}</TableCell>
             <TableCell>{reg.parentName}</TableCell>
             <TableCell>{reg.parentEmail}</TableCell>
+            <TableCell>{reg.parentPhone}</TableCell>
             <TableCell>{reg.childName}</TableCell>
             <TableCell>{reg.childAge}</TableCell>
             <TableCell>{reg.preferredBatch}</TableCell>
