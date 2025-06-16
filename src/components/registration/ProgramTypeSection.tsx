@@ -15,11 +15,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FormValues, programTypes } from './RegistrationTypes';
+import { FormValues } from './RegistrationTypes';
 
 interface ProgramTypeSectionProps {
   form: UseFormReturn<FormValues>;
 }
+
+// Filter out summer program options
+const availableProgramTypes = [
+  { value: 'regular', label: 'Regular Classes (Aug 2025 - May 2026)' }
+];
 
 const ProgramTypeSection = ({ form }: ProgramTypeSectionProps) => {
   return (
@@ -42,7 +47,7 @@ const ProgramTypeSection = ({ form }: ProgramTypeSectionProps) => {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {programTypes.map((type) => (
+                {availableProgramTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
                   </SelectItem>

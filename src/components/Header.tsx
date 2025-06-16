@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot, Menu, X, ChevronDown } from 'lucide-react';
@@ -51,14 +52,6 @@ const Header = () => {
     }
   };
 
-  // Handle navigation to summer program page
-  const handleSummerProgramClick = () => {
-    navigate('/summer-program');
-    if (mobileMenuOpen) {
-      setMobileMenuOpen(false);
-    }
-  };
-
   // Handle navigation to curriculum page
   const handleCurriculumClick = () => {
     navigate('/curriculum');
@@ -90,39 +83,6 @@ const Header = () => {
           >
             Programs
           </a>
-          
-          {/* Summer Program Dropdown - Desktop */}
-          <div className="hidden md:block">
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent text-white hover:text-robotics-accent transition-colors font-medium">
-                    Summer Program
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="p-4 w-48">
-                      <button
-                        onClick={handleSummerProgramClick}
-                        className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-md text-gray-900"
-                      >
-                        Summer Program Details
-                      </button>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
-          
-          {/* Summer Program - Mobile */}
-          <div className="md:hidden">
-            <button
-              onClick={handleSummerProgramClick}
-              className="hover:text-robotics-accent transition-colors"
-            >
-              Summer Program
-            </button>
-          </div>
           
           <button
             onClick={handleCurriculumClick}
