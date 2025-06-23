@@ -4,7 +4,7 @@ export interface DBStorage {
   registrations: Registration[];
 }
 
-// Registration interface matching our form data
+// Registration interface matching our form data - Updated to support 'regular' program type
 export interface Registration {
   registrationId: string;
   parentName: string;
@@ -16,7 +16,7 @@ export interface Registration {
   childGrade: string;
   schoolName: string;
   medicalInfo?: string;
-  programType: "summer-camp" | "school-year";
+  programType: "regular"; // Updated to only allow 'regular'
   preferredBatch: string;
   alternateBatch?: string;
   hasPriorExperience: "yes" | "no";
@@ -31,7 +31,7 @@ export interface Registration {
   submittedAt: string;
 }
 
-// Supabase database format (snake_case columns)
+// Supabase database format (snake_case columns) - Updated to support 'regular' program type
 export interface SupabaseRegistration {
   id?: number;
   registrationid: string;
@@ -44,7 +44,7 @@ export interface SupabaseRegistration {
   childgrade: string;
   schoolname: string;
   medicalinfo?: string;
-  programtype: "summer-camp" | "school-year";
+  programtype: "regular"; // Updated to only allow 'regular'
   preferredbatch: string;
   alternatebatch?: string;
   haspriorexperience: "yes" | "no";

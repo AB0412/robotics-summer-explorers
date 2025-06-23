@@ -44,7 +44,7 @@ export const createCompleteRegistration = (formData: Partial<Registration>): Reg
     childGrade: formData.childGrade || '',
     schoolName: formData.schoolName || '',
     medicalInfo: formData.medicalInfo || '',
-    programType: formData.programType || 'summer-camp',
+    programType: formData.programType || 'regular', // Updated default to 'regular'
     preferredBatch: formData.preferredBatch || '',
     alternateBatch: formData.alternateBatch || '',
     hasPriorExperience: formData.hasPriorExperience || 'no',

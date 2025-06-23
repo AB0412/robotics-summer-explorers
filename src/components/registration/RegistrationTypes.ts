@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 // Define the form validation schema
@@ -16,8 +15,8 @@ export const formSchema = z.object({
   schoolName: z.string().min(2, { message: 'School name is required' }),
   medicalInfo: z.string().optional(),
   
-  // 3. Program Type Selection
-  programType: z.enum(['summer-camp', 'school-year'], {
+  // 3. Program Type Selection - Updated to accept 'regular'
+  programType: z.enum(['regular'], {
     required_error: "Please select a program type",
   }),
   
@@ -51,10 +50,9 @@ export const formSchema = z.object({
 
 export type FormValues = z.infer<typeof formSchema>;
 
-// Program type options
+// Program type options - Updated to only include regular
 export const programTypes = [
-  { value: "summer-camp", label: "Summer Camp" },
-  { value: "school-year", label: "School Year Classes" },
+  { value: "regular", label: "Regular Classes (Aug 2025 - May 2026)" },
 ];
 
 // Experience level options
