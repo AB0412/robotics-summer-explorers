@@ -100,7 +100,7 @@ function normalizeRegistration(reg: any): EnhancedRegistration {
     childGrade: reg.childGrade || reg.childgrade || '',
     schoolName: reg.schoolName || reg.schoolname || '',
     medicalInfo: reg.medicalInfo || reg.medicalinfo || '',
-    programType: (reg.programType || reg.programtype || 'summer-camp') as "summer-camp" | "school-year",
+    programType: 'regular', // Updated to always use 'regular'
     preferredBatch: reg.preferredBatch || reg.preferredbatch || '',
     alternateBatch: reg.alternateBatch || reg.alternatebatch || '',
     hasPriorExperience: (reg.hasPriorExperience || reg.haspriorexperience || 'no') as "yes" | "no",
@@ -159,8 +159,12 @@ async function tryMigrateOldRegistrations(
       if (Array.isArray(parsedOldRegistrations) && parsedOldRegistrations.length > 0) {
         console.log("Migrating old registrations to new database format");
         await importDatabase(JSON.stringify({ registrations: parsedOldRegistrations }));
-        // Need the as EnhancedRegistration[] type assertion to satisfy TypeScript
-        setRegistrations(parsedOldRegistrations as EnhancedRegistration[]);
+        // Convert old registrations to use 'regular' program type
+        const normalizedOldRegistrations = parsedOldRegistrations.map(reg => ({
+          ...reg,
+          programType: 'regular' as const
+        })) as EnhancedRegistration[];
+        setRegistrations(normalizedOldRegistrations);
       }
     } catch (error) {
       console.error("Error parsing old registrations:", error);
