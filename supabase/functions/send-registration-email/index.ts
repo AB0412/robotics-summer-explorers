@@ -34,18 +34,24 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("RESEND_API_KEY is not configured");
     }
 
-    // 1. Send confirmation to the parent
+    // For now, we'll send both emails to the admin address due to Resend domain verification requirements
+    // Once you verify a custom domain, you can change this back to send to parentEmail
+    const emailRecipient = "billoreavinash12@gmail.com"; // Change this once domain is verified
+    
+    // 1. Send confirmation to the admin (acting as parent confirmation for now)
     const parentEmailResponse = await resend.emails.send({
       from: "Summer Robotics Program <noreply@resend.dev>",
-      to: [parentEmail],
-      subject: `Registration Confirmation #${registrationId} - Summer Robotics Program`,
+      to: [emailRecipient],
+      subject: `Registration Confirmation for ${parentName} #${registrationId} - Summer Robotics Program`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
           <h2 style="color: #0A4B78;">Registration Confirmation</h2>
+          <p><strong>Note:</strong> This email was sent to admin due to domain verification requirements. Original recipient: ${parentEmail}</p>
           <p>Dear ${parentName},</p>
           <p>Thank you for registering ${childName} for our Summer Robotics Program!</p>
           <p><strong>Registration ID:</strong> ${registrationId}</p>
           <p><strong>Preferred Batch:</strong> ${preferredBatch}</p>
+          <p><strong>Parent Email:</strong> ${parentEmail}</p>
           
           <h3 style="color: #0A4B78; margin-top: 20px;">Registration Details:</h3>
           <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; font-family: monospace; white-space: pre-wrap;">${registrationSummary}</pre>
@@ -103,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
         success: true,
         parentEmailId: parentEmailResponse.data?.id,
         adminEmailId: adminEmailResponse.data?.id,
-        message: "Emails sent successfully"
+        message: "Emails sent successfully (sent to admin due to domain verification requirements)"
       }),
       {
         status: 200,
