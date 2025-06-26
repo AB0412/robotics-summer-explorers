@@ -29,9 +29,14 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log(`Sending email to ${parentEmail} for registration ${registrationId}`);
 
+    // Check if API key is available
+    if (!Deno.env.get("RESEND_API_KEY")) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+
     // 1. Send confirmation to the parent
     const parentEmailResponse = await resend.emails.send({
-      from: "Summer Robotics Program <onboarding@resend.dev>",
+      from: "Summer Robotics Program <noreply@resend.dev>",
       to: [parentEmail],
       subject: `Registration Confirmation #${registrationId} - Summer Robotics Program`,
       html: `
@@ -57,9 +62,16 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
+    console.log("Parent email response:", parentEmailResponse);
+
+    if (parentEmailResponse.error) {
+      console.error("Error sending parent email:", parentEmailResponse.error);
+      throw new Error(`Failed to send parent email: ${parentEmailResponse.error.message}`);
+    }
+
     // 2. Send notification to the admin
     const adminEmailResponse = await resend.emails.send({
-      from: "Summer Robotics Program <onboarding@resend.dev>",
+      from: "Summer Robotics Program <noreply@resend.dev>",
       to: ["billoreavinash12@gmail.com"],
       subject: `New Registration Alert: ${childName} (ID: ${registrationId})`,
       html: `
@@ -79,14 +91,19 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Parent email response:", parentEmailResponse);
     console.log("Admin email response:", adminEmailResponse);
+
+    if (adminEmailResponse.error) {
+      console.error("Error sending admin email:", adminEmailResponse.error);
+      // Don't throw here - parent email was successful, admin email is secondary
+    }
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        parentEmailId: parentEmailResponse.id,
-        adminEmailId: adminEmailResponse.id
+        parentEmailId: parentEmailResponse.data?.id,
+        adminEmailId: adminEmailResponse.data?.id,
+        message: "Emails sent successfully"
       }),
       {
         status: 200,
@@ -101,7 +118,8 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message || "Failed to send email" 
+        error: error.message || "Failed to send email",
+        details: error.toString()
       }),
       {
         status: 500,
