@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardToolbar } from './DashboardToolbar';
@@ -25,11 +24,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     currentPage,
     searchTerm,
     searchFilter,
+    programTypeFilter,
     isLoading,
     itemsPerPage,
     setCurrentPage,
     setSearchTerm,
     setSearchFilter,
+    setProgramTypeFilter,
     loadRegistrations,
     handleDeleteRegistration,
     getFilteredRegistrations
@@ -205,6 +206,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         setSearchTerm={setSearchTerm}
         searchFilter={searchFilter}
         setSearchFilter={setSearchFilter}
+        programTypeFilter={programTypeFilter}
+        setProgramTypeFilter={setProgramTypeFilter}
         onImport={loadRegistrations}
         onLogout={onLogout}
       />

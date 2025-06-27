@@ -1,3 +1,4 @@
+
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,12 +16,15 @@ import {
   handleImportDatabase, 
   handleSaveDatabase 
 } from '@/utils/admin/fileOperations';
+import { SearchBar } from './SearchBar';
 
 interface DashboardToolbarProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   searchFilter: string;
   setSearchFilter: (filter: string) => void;
+  programTypeFilter: string;
+  setProgramTypeFilter: (filter: string) => void;
   onImport: () => Promise<void>;
   onLogout: () => void;
 }
@@ -30,6 +34,8 @@ export const DashboardToolbar: React.FC<DashboardToolbarProps> = ({
   setSearchTerm,
   searchFilter,
   setSearchFilter,
+  programTypeFilter,
+  setProgramTypeFilter,
   onImport,
   onLogout,
 }) => {
@@ -58,36 +64,15 @@ export const DashboardToolbar: React.FC<DashboardToolbarProps> = ({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mb-6">
-      <div className="flex items-center space-x-2 flex-grow">
-        <div className="relative flex-grow">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="Search registrations..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="searchFilter" className="text-sm font-medium">
-            Filter by:
-          </Label>
-          <select
-            id="searchFilter"
-            className="border rounded px-2 py-1 text-sm"
-            value={searchFilter}
-            onChange={(e) => setSearchFilter(e.target.value)}
-          >
-            <option value="">All Fields</option>
-            <option value="parentname">Parent Name</option>
-            <option value="parentemail">Parent Email</option>
-            <option value="childname">Child Name</option>
-            {/* Add more filter options as needed */}
-          </select>
-        </div>
-      </div>
+    <div className="flex flex-col gap-4 mb-6">
+      <SearchBar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        searchFilter={searchFilter}
+        setSearchFilter={setSearchFilter}
+        programTypeFilter={programTypeFilter}
+        setProgramTypeFilter={setProgramTypeFilter}
+      />
       
       <div className="flex flex-wrap gap-2">
         <Button
