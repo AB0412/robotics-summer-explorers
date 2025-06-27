@@ -13,8 +13,12 @@ export function useRegistrationSearch(registrations: EnhancedRegistration[]) {
     
     return registrations.filter(reg => {
       // First apply program type filter
-      if (programTypeFilter !== 'all' && reg.programType !== programTypeFilter) {
-        return false;
+      if (programTypeFilter !== 'all') {
+        // Map the filter values to database values
+        const dbProgramType = programTypeFilter === 'summer-camp' ? 'summer-camp' : 'regular';
+        if (reg.programType !== dbProgramType) {
+          return false;
+        }
       }
       
       // Then apply search term filter
