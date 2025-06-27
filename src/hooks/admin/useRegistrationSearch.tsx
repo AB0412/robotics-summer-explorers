@@ -5,12 +5,19 @@ import { EnhancedRegistration } from '@/utils/database';
 export function useRegistrationSearch(registrations: EnhancedRegistration[]) {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFilter, setSearchFilter] = useState('all');
+  const [programTypeFilter, setProgramTypeFilter] = useState('all');
 
-  // Filter registrations based on search term and selected filter
+  // Filter registrations based on search term, search filter, and program type
   const getFilteredRegistrations = useMemo(() => {
     const searchTermLower = searchTerm.toLowerCase();
     
     return registrations.filter(reg => {
+      // First apply program type filter
+      if (programTypeFilter !== 'all' && reg.programType !== programTypeFilter) {
+        return false;
+      }
+      
+      // Then apply search term filter
       if (!searchTermLower) return true;
       
       switch(searchFilter) {
@@ -32,13 +39,15 @@ export function useRegistrationSearch(registrations: EnhancedRegistration[]) {
           );
       }
     });
-  }, [registrations, searchTerm, searchFilter]);
+  }, [registrations, searchTerm, searchFilter, programTypeFilter]);
 
   return {
     searchTerm,
     searchFilter,
+    programTypeFilter,
     setSearchTerm,
     setSearchFilter,
+    setProgramTypeFilter,
     filteredRegistrations: getFilteredRegistrations
   };
 }

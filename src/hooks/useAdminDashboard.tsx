@@ -14,8 +14,10 @@ export function useAdminDashboard() {
   const { 
     searchTerm, 
     searchFilter, 
+    programTypeFilter,
     setSearchTerm, 
     setSearchFilter, 
+    setProgramTypeFilter,
     filteredRegistrations 
   } = useRegistrationSearch(registrations);
 
@@ -49,8 +51,10 @@ export function useAdminDashboard() {
     // Search
     searchTerm,
     searchFilter,
+    programTypeFilter,
     setSearchTerm,
     setSearchFilter,
+    setProgramTypeFilter,
     getFilteredRegistrations: () => filteredRegistrations,
     
     // Pagination
