@@ -34,8 +34,8 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("RESEND_API_KEY is not configured");
     }
 
-    // Replace "yourdomain.com" with your actual verified domain
-    const fromEmail = "Summer Robotics Program <noreply@yourdomain.com>";
+    // Using your verified domain
+    const fromEmail = "Summer Robotics Program <noreply@bot-venture.com>";
     
     // 1. Send confirmation to the parent
     const parentEmailResponse = await resend.emails.send({
