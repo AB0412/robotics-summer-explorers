@@ -14,12 +14,17 @@ export function useRegistrationSearch(registrations: EnhancedRegistration[]) {
     try {
       // Parse the submitted date - it could be in various formats
       const submissionDate = new Date(submittedAt);
-      const cutoffDate = new Date('2024-06-10'); // June 10th cutoff
+      const cutoffDate = new Date('2025-06-10'); // June 10th 2025 cutoff
       
-      // If submission date is before June 10th, it's summer camp
-      return submissionDate < cutoffDate ? 'summer-camp' : 'regular';
+      console.log('Checking date:', submittedAt, 'Parsed as:', submissionDate, 'Cutoff:', cutoffDate);
+      
+      // If submission date is before June 10th 2025, it's summer camp
+      const isSummerCamp = submissionDate < cutoffDate;
+      console.log('Is summer camp:', isSummerCamp);
+      
+      return isSummerCamp ? 'summer-camp' : 'regular';
     } catch (error) {
-      console.error('Error parsing submission date:', submittedAt);
+      console.error('Error parsing submission date:', submittedAt, error);
       return 'regular'; // Default to regular if date parsing fails
     }
   };
@@ -28,13 +33,18 @@ export function useRegistrationSearch(registrations: EnhancedRegistration[]) {
   const getFilteredRegistrations = useMemo(() => {
     const searchTermLower = searchTerm.toLowerCase();
     
-    return registrations.filter(reg => {
+    console.log('Filtering with program type filter:', programTypeFilter);
+    console.log('Total registrations:', registrations.length);
+    
+    const filtered = registrations.filter(reg => {
       // First apply program type filter based on submission date
       if (programTypeFilter !== 'all') {
         const actualProgramType = getProgramTypeByDate(reg.submittedAt);
         
         // Map the filter values to our date-based program types
         const targetProgramType = programTypeFilter === 'summer-camp' ? 'summer-camp' : 'regular';
+        
+        console.log('Registration:', reg.childName, 'Date:', reg.submittedAt, 'Actual type:', actualProgramType, 'Target type:', targetProgramType);
         
         if (actualProgramType !== targetProgramType) {
           return false;
@@ -63,6 +73,9 @@ export function useRegistrationSearch(registrations: EnhancedRegistration[]) {
           );
       }
     });
+    
+    console.log('Filtered registrations count:', filtered.length);
+    return filtered;
   }, [registrations, searchTerm, searchFilter, programTypeFilter]);
 
   return {
