@@ -18,14 +18,6 @@ const CurriculumSection = () => {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            {/* Introduction to Robotics */}
-            <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-robotics-blue">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🧠 Introduction to Robotics</h4>
-              <p className="text-gray-700">
-                Learn what robotics is, why it's important, and how it applies to the real world. Great for first-time learners to get excited about technology and engineering.
-              </p>
-            </div>
-
             {/* Getting Started with VEX */}
             <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
               <h4 className="font-bold text-xl text-robotics-navy mb-3">🔧 Getting Started with VEX</h4>
