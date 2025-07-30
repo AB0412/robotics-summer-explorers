@@ -39,10 +39,10 @@ const CurriculumFlyer = () => {
           <div className="relative bg-robotics-navy text-white p-3 print:p-2">
             <div className="text-center">
               <h1 className="font-display font-bold text-2xl mb-1 text-robotics-accent print:text-xl">
-                VEX Robotics Program 2025-26
+                🛠️ VEX Robotics Year-Round Curriculum
               </h1>
               <p className="text-base print:text-sm">
-                9-Month Learning Journey for Young Engineers
+                From Beginner to Advanced – Hands-on Engineering, Coding & Competition Skills
               </p>
               <div className="text-robotics-accent text-xs mt-1">
                 https://bot-venture.com/curriculum
@@ -50,123 +50,139 @@ const CurriculumFlyer = () => {
             </div>
           </div>
 
-          {/* Program Overview - Compact */}
+          {/* Key Features - Compact */}
           <div className="p-3 print:p-2 bg-gray-50">
-            <div className="grid grid-cols-4 gap-2 text-center">
-              <div className="bg-white p-2 rounded border-2 border-robotics-lightblue print:p-1">
-                <p className="font-bold text-robotics-blue text-sm print:text-xs">9 Months</p>
-                <p className="text-xs print:text-xs">Aug 2025 - May 2026</p>
+            <div className="grid grid-cols-2 gap-2 text-center">
+              <div className="bg-white p-2 rounded border-2 border-green-500 print:p-1">
+                <p className="font-bold text-green-600 text-sm print:text-xs">✓ Flexible Entry</p>
+                <p className="text-xs print:text-xs">Join anytime</p>
               </div>
-              <div className="bg-white p-2 rounded border-2 border-robotics-lightblue print:p-1">
-                <p className="font-bold text-robotics-blue text-sm print:text-xs">VEX Platform</p>
-                <p className="text-xs print:text-xs">Professional</p>
-              </div>
-              <div className="bg-white p-2 rounded border-2 border-robotics-lightblue print:p-1">
-                <p className="font-bold text-robotics-blue text-sm print:text-xs">Max 6 Students</p>
-                <p className="text-xs print:text-xs">Per Class</p>
-              </div>
-              <div className="bg-white p-2 rounded border-2 border-robotics-lightblue print:p-1">
-                <p className="font-bold text-robotics-blue text-sm print:text-xs">$100/Month</p>
-                <p className="text-xs print:text-xs">Tuition</p>
+              <div className="bg-white p-2 rounded border-2 border-robotics-blue print:p-1">
+                <p className="font-bold text-robotics-blue text-sm print:text-xs">📈 Continuous Learning</p>
+                <p className="text-xs print:text-xs">Progressive skills</p>
               </div>
             </div>
           </div>
 
-          {/* Curriculum Grid - Compact Layout */}
+          {/* Curriculum Topics - Compact Layout */}
           <div className="p-3 print:p-2">
             <h2 className="font-display font-bold text-lg mb-2 text-robotics-navy print:text-base print:mb-1">
-              Monthly Curriculum
+              Learning Topics (Students Join Anytime)
             </h2>
             
             <div className="grid grid-cols-2 gap-2 print:gap-1">
-              {/* August */}
+              {/* Robotics Foundations */}
               <div className="bg-blue-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">Aug (3 Weeks) - Getting Started</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Intro to Robotics & VEX EXP</li>
-                  <li>• VEXcode basics</li>
-                </ul>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🏁 Robotics Foundations</h3>
+                <p className="text-xs print:text-xs">Core robotics concepts, real-world applications</p>
               </div>
 
-              {/* September */}
+              {/* VEX EXP Kit */}
               <div className="bg-green-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">Sep - Mechanics & Drive</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Gears, pulleys, motion</li>
-                  <li>• Drive systems & programming</li>
-                </ul>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🔩 Mastering VEX EXP Kit</h3>
+                <p className="text-xs print:text-xs">Motors, sensors, components, connections</p>
               </div>
 
-              {/* October */}
+              {/* VEXcode Programming */}
               <div className="bg-yellow-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">Oct - Sensors & Programming</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Sensor integration</li>
-                  <li>• Autonomous navigation</li>
-                </ul>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">💻 VEXcode Programming</h3>
+                <p className="text-xs print:text-xs">Block & text coding, logic, loops</p>
               </div>
 
-              {/* November */}
+              {/* Mechanical Systems */}
               <div className="bg-purple-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">Nov - Team Collaboration</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Team roles & design process</li>
-                  <li>• Building arm/lift mechanisms</li>
-                </ul>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">⚙️ Mechanical Systems</h3>
+                <p className="text-xs print:text-xs">Gears, pulleys, drive engineering</p>
               </div>
 
-              {/* December */}
+              {/* Drive Systems */}
               <div className="bg-red-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">Dec - Strategy & Challenges</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Game strategy</li>
-                  <li>• Winter Break: Dec 15 - Jan 5</li>
-                </ul>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🚗 Robust Drive Systems</h3>
+                <p className="text-xs print:text-xs">Stable bases, wheel configurations</p>
               </div>
 
-              {/* January */}
+              {/* Driver Control */}
               <div className="bg-indigo-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">Jan - Full Robot Build</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Design & build final robot</li>
-                  <li>• Testing & refinement</li>
-                </ul>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🎮 Precision Control</h3>
+                <p className="text-xs print:text-xs">Tank drive, arcade control, tuning</p>
               </div>
 
-              {/* February */}
+              {/* Autonomous Challenges */}
               <div className="bg-pink-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">Feb - Advanced Coding</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Variables & functions</li>
-                  <li>• Autonomous tuning</li>
-                </ul>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🧭 Autonomous Movement</h3>
+                <p className="text-xs print:text-xs">Navigation, obstacle avoidance</p>
               </div>
 
-              {/* March */}
+              {/* Advanced Sensors */}
               <div className="bg-teal-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">Mar - Competition Prep</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Strategy refinement</li>
-                  <li>• Mock tournament</li>
-                </ul>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">📡 Advanced Sensors</h3>
+                <p className="text-xs print:text-xs">Bumper, optical, distance, gyro</p>
               </div>
 
-              {/* April */}
+              {/* Efficient Logic */}
               <div className="bg-orange-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">Apr - Documentation</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Engineering notebook</li>
-                  <li>• Presentation development</li>
-                </ul>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🔁 Efficient Logic</h3>
+                <p className="text-xs print:text-xs">Functions, branches, optimization</p>
               </div>
 
-              {/* May */}
-              <div className="bg-gray-100 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">May - Showcase</h3>
-                <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Final project showcase</li>
-                  <li>• Family presentation</li>
-                </ul>
+              {/* Team Engineering */}
+              <div className="bg-cyan-50 p-2 rounded border print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🤝 Team Engineering</h3>
+                <p className="text-xs print:text-xs">Collaboration, leadership, roles</p>
+              </div>
+
+              {/* Design Thinking */}
+              <div className="bg-emerald-50 p-2 rounded border print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">📐 Design Thinking</h3>
+                <p className="text-xs print:text-xs">Sketching, CAD-style planning</p>
+              </div>
+
+              {/* Mechanism Engineering */}
+              <div className="bg-violet-50 p-2 rounded border print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🤖 Arm & Lift Engineering</h3>
+                <p className="text-xs print:text-xs">Claws, torque, structural support</p>
+              </div>
+
+              {/* Strategy & Game Play */}
+              <div className="bg-rose-50 p-2 rounded border print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🎯 Strategy Engineering</h3>
+                <p className="text-xs print:text-xs">Game rules, scoring optimization</p>
+              </div>
+
+              {/* Full Robot Build */}
+              <div className="bg-amber-50 p-2 rounded border print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🛠️ Full Robot Build</h3>
+                <p className="text-xs print:text-xs">Competition-ready machines</p>
+              </div>
+
+              {/* Advanced Programming */}
+              <div className="bg-lime-50 p-2 rounded border print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🧠 Advanced Programming</h3>
+                <p className="text-xs print:text-xs">Variables, autonomous tuning</p>
+              </div>
+
+              {/* Competition Simulation */}
+              <div className="bg-sky-50 p-2 rounded border print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🏆 Competition Practice</h3>
+                <p className="text-xs print:text-xs">Match simulation, strategy refinement</p>
+              </div>
+
+              {/* Engineering Notebook */}
+              <div className="bg-slate-50 p-2 rounded border print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🧾 Documentation</h3>
+                <p className="text-xs print:text-xs">Engineering notebook skills</p>
+              </div>
+
+              {/* Presentation Skills */}
+              <div className="bg-zinc-50 p-2 rounded border print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🎤 Presentation Skills</h3>
+                <p className="text-xs print:text-xs">Judging prep, public speaking</p>
+              </div>
+
+              {/* Final Showcase */}
+              <div className="bg-gradient-to-br from-robotics-blue/20 to-robotics-accent/20 p-2 rounded border-2 border-robotics-accent print:p-1">
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🎉 Final Showcase</h3>
+                <p className="text-xs print:text-xs">Demo presentations, celebration</p>
               </div>
             </div>
           </div>
@@ -174,25 +190,25 @@ const CurriculumFlyer = () => {
           {/* Learning Outcomes - Compact */}
           <div className="p-3 print:p-2 bg-gray-50">
             <h2 className="font-display font-bold text-lg mb-2 text-robotics-navy print:text-base print:mb-1">
-              Learning Outcomes
+              Student Outcomes
             </h2>
             <div className="grid grid-cols-2 gap-3 print:gap-2">
               <div>
                 <h3 className="font-bold mb-1 text-robotics-blue text-sm print:text-xs">Technical Skills</h3>
                 <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Robot building & design</li>
-                  <li>• Programming fundamentals</li>
+                  <li>• Advanced robot building & design</li>
+                  <li>• Competition-level programming</li>
                   <li>• Engineering problem solving</li>
-                  <li>• Documentation & iteration</li>
+                  <li>• Strategic thinking & optimization</li>
                 </ul>
               </div>
               <div>
                 <h3 className="font-bold mb-1 text-robotics-blue text-sm print:text-xs">Life Skills</h3>
                 <ul className="text-xs space-y-0 print:text-xs">
-                  <li>• Teamwork & collaboration</li>
-                  <li>• Critical thinking</li>
-                  <li>• Presentation skills</li>
-                  <li>• Resilience & persistence</li>
+                  <li>• Leadership & teamwork</li>
+                  <li>• Critical thinking & analysis</li>
+                  <li>• Professional presentation</li>
+                  <li>• Resilience & iteration</li>
                 </ul>
               </div>
             </div>
@@ -205,11 +221,11 @@ const CurriculumFlyer = () => {
             </h2>
             <div className="grid grid-cols-2 gap-3 print:gap-2">
               <div>
-                <p className="font-bold mb-1 text-sm print:text-xs">Program Details</p>
-                <p className="text-xs mb-0">📅 August 15, 2025 – May 15, 2026</p>
-                <p className="text-xs mb-0">💰 $100 per month</p>
-                <p className="text-xs mb-0">👥 Max 6 students per class</p>
-                <p className="text-xs">⏰ Weekly sessions available</p>
+                <p className="font-bold mb-1 text-sm print:text-xs">Program Flexibility</p>
+                <p className="text-xs mb-0">✓ Join anytime during the year</p>
+                <p className="text-xs mb-0">✓ Skill-level based placement</p>
+                <p className="text-xs mb-0">✓ Beginner to advanced tracks</p>
+                <p className="text-xs">✓ Continuous learning progression</p>
               </div>
               <div>
                 <p className="font-bold mb-1 text-sm print:text-xs">Contact Information</p>
