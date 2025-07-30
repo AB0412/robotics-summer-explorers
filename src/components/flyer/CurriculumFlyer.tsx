@@ -77,9 +77,9 @@ const CurriculumFlyer = () => {
                 <p className="text-xs print:text-xs">Core robotics concepts, real-world applications</p>
               </div>
 
-              {/* VEX EXP Kit */}
+              {/* VEX Robotics Kit */}
               <div className="bg-green-50 p-2 rounded border print:p-1">
-                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🔩 Mastering VEX EXP Kit</h3>
+                <h3 className="font-bold text-robotics-navy mb-1 text-sm print:text-xs">🔩 Mastering VEX Robotics Kit</h3>
                 <p className="text-xs print:text-xs">Motors, sensors, components, connections</p>
               </div>
 
