@@ -26,11 +26,11 @@ const CurriculumSection = () => {
               </p>
             </div>
 
-            {/* Getting Started with VEX EXP */}
+            {/* Getting Started with VEX */}
             <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🔧 Getting Started with VEX EXP</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🔧 Getting Started with VEX</h4>
               <p className="text-gray-700">
-                Explore the VEX EXP kit components—motors, sensors, brain, and structural parts. Understand how to connect and power the robot.
+                Explore the VEX robotics kit components—motors, sensors, brain, and structural parts. Understand how to connect and power the robot.
               </p>
             </div>
 
