@@ -7,169 +7,197 @@ const CurriculumSection = () => {
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 text-robotics-navy">
-            VEX Robotics Year-Round Curriculum
+            🛠️ VEX Robotics Year-Round Curriculum
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Topic-based structure that allows students to <strong>jump in at any point</strong>, 
-            while ensuring they get exposed to the full cycle of robotics design, programming, testing, and presentation.
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-6">
+            <strong>From Beginner to Advanced – Hands-on Engineering, Coding & Competition Skills</strong>
           </p>
         </div>
         
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             
-            {/* Getting Started with VEX */}
+            {/* Robotics Foundations */}
+            <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-robotics-blue">
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🏁 Robotics Foundations</h4>
+              <p className="text-gray-700">
+                Explore core robotics concepts used in real-world applications. Understand how mechanical systems, electronics, and coding come together to create intelligent machines.
+              </p>
+            </div>
+
+            {/* Mastering the VEX EXP Kit */}
             <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🔧 Getting Started with VEX</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🔩 Mastering the VEX EXP Kit</h4>
               <p className="text-gray-700">
-                Explore the VEX robotics kit components—motors, sensors, brain, and structural parts. Understand how to connect and power the robot.
+                Gain hands-on experience with the VEX EXP system—motors, sensors, metal components, and the control brain. Learn to safely build and connect your robot's physical systems.
               </p>
             </div>
 
-            {/* Introduction to VEXcode */}
+            {/* VEXcode Programming */}
             <div className="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">💻 Introduction to VEXcode</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">💻 VEXcode Programming – Beginner to Intermediate</h4>
               <p className="text-gray-700">
-                Begin programming your robot using VEXcode Blocks or Text. Learn how to write basic code to control motors and movements.
+                Start with block-based or text-based programming in VEXcode. Progress from basic commands to logic, loops, and sensor control as you master robot behavior.
               </p>
             </div>
 
-            {/* Gears, Pulleys & Motion */}
+            {/* Mechanical Systems & Drive Engineering */}
             <div className="bg-purple-50 p-6 rounded-lg border-l-4 border-purple-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">⚙️ Gears, Pulleys & Motion</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">⚙️ Mechanical Systems & Drive Engineering</h4>
               <p className="text-gray-700">
-                Understand mechanical systems. Learn how gears and pulleys affect speed and torque in robot movement.
+                Dive into gear ratios, pulleys, wheels, and drive train designs. Apply mechanical principles to create robots that balance speed, power, and control.
               </p>
             </div>
 
-            {/* Building Drive Systems */}
+            {/* Building Robust Drive Systems */}
             <div className="bg-red-50 p-6 rounded-lg border-l-4 border-red-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🚗 Building Drive Systems</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🚗 Building Robust Drive Systems</h4>
               <p className="text-gray-700">
-                Design and build a stable robot base that can move in multiple directions. Explore different drive configurations.
+                Design and construct strong and accurate drive bases using various wheel configurations. Focus on stability, symmetry, and modular design for upgrades.
               </p>
             </div>
 
-            {/* Programming Drive Control */}
+            {/* Precision Driver Control Coding */}
             <div className="bg-indigo-50 p-6 rounded-lg border-l-4 border-indigo-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🎮 Programming Drive Control</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🎮 Precision Driver Control Coding</h4>
               <p className="text-gray-700">
-                Write code to control your robot using a controller. Learn about forward, reverse, turning, and speed adjustments.
+                Program the robot to respond to controller input with accuracy. Practice techniques like tank drive, arcade control, and speed tuning.
               </p>
             </div>
 
-            {/* Mini Navigation Challenge */}
+            {/* Autonomous Movement Challenges */}
             <div className="bg-pink-50 p-6 rounded-lg border-l-4 border-pink-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🗺️ Mini Navigation Challenge</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🧭 Autonomous Movement Challenges</h4>
               <p className="text-gray-700">
-                Test your driving and coding skills in a guided mini maze or path-following challenge.
+                Use sensors and smart logic to navigate courses without human input. Tackle obstacle avoidance, maze solving, and target-seeking tasks.
               </p>
             </div>
 
-            {/* Introduction to Sensors */}
+            {/* Advanced Sensor Integration */}
             <div className="bg-teal-50 p-6 rounded-lg border-l-4 border-teal-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">📡 Introduction to Sensors</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">📡 Advanced Sensor Integration</h4>
               <p className="text-gray-700">
-                Discover how robots use sensors to "see" and "react" to their environment. Learn about bumper switches, distance sensors, and more.
+                Integrate bumper, optical, distance, and gyro sensors into your code. Build robots that adapt to environments and execute conditional behaviors.
               </p>
             </div>
 
-            {/* Sensor-Based Programming */}
+            {/* Efficient Logic */}
             <div className="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🔄 Sensor-Based Programming</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🔁 Efficient Logic: Loops, Branches & Functions</h4>
               <p className="text-gray-700">
-                Use logic and conditions to create autonomous robot behavior based on sensor input.
+                Move beyond manual coding with modular, reusable functions and optimized logic. Learn how to break complex behavior into manageable code blocks.
               </p>
             </div>
 
-            {/* Loops & Conditional Logic */}
+            {/* Team Engineering & Leadership */}
             <div className="bg-cyan-50 p-6 rounded-lg border-l-4 border-cyan-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🔁 Loops & Conditional Logic</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🤝 Team Engineering & Leadership</h4>
               <p className="text-gray-700">
-                Master repeating actions and decision-making in code. Essential for efficient autonomous routines.
+                Work in engineering teams with rotating roles—builder, coder, documenter, and tester. Practice collaboration, leadership, and iterative problem-solving.
               </p>
             </div>
 
-            {/* Team Collaboration & Roles */}
+            {/* Design Thinking & Robot Planning */}
             <div className="bg-emerald-50 p-6 rounded-lg border-l-4 border-emerald-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🤝 Team Collaboration & Roles</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">📐 Design Thinking & Robot Planning</h4>
               <p className="text-gray-700">
-                Form teams and explore engineering roles: builder, programmer, designer, and driver. Practice communication and planning.
+                Develop sketches, models, and CAD-style designs for complex builds. Learn to design with purpose—planning arms, lifts, and multi-functional attachments.
               </p>
             </div>
 
-            {/* Design Process & Sketching */}
+            {/* Arm, Claw & Lift Mechanism Engineering */}
             <div className="bg-violet-50 p-6 rounded-lg border-l-4 border-violet-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">✏️ Design Process & Sketching</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🤖 Arm, Claw & Lift Mechanism Engineering</h4>
               <p className="text-gray-700">
-                Learn how to brainstorm, sketch, and plan a robot before building. Apply design thinking and creativity.
+                Engineer mechanical subsystems that can grab, lift, and manipulate game elements. Understand torque, structural support, and gearing for strength.
               </p>
             </div>
 
-            {/* Building Arm & Lift Mechanisms */}
+            {/* Strategy & Game Play Engineering */}
             <div className="bg-rose-50 p-6 rounded-lg border-l-4 border-rose-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">💪 Building Arm & Lift Mechanisms</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🎯 Strategy & Game Play Engineering</h4>
               <p className="text-gray-700">
-                Build functional mechanisms like claws, arms, or lifts. Explore torque and leverage.
+                Study game rules, scoring zones, and field layouts to design robots that dominate both autonomous and driver-controlled periods.
               </p>
             </div>
 
-            {/* Game-Based Strategy */}
+            {/* Full Robot Build & Iteration */}
             <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🎯 Game-Based Strategy</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🛠️ Full Robot Build & Iteration</h4>
               <p className="text-gray-700">
-                Understand robotics competitions and how to plan for both autonomous and driver-controlled play.
+                Plan, construct, and refine a competition-ready robot. Integrate structure, wiring, code, and sensors into a cohesive high-performance machine.
               </p>
             </div>
 
-            {/* Complete Robot Build */}
+            {/* Advanced Programming & Autonomous Tuning */}
             <div className="bg-lime-50 p-6 rounded-lg border-l-4 border-lime-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🛠️ Complete Robot Build</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🧠 Advanced Programming & Autonomous Tuning</h4>
               <p className="text-gray-700">
-                Design and build a fully functional robot that performs tasks in a challenge or game setup.
+                Learn to tune motors, create timed sequences, and use variables for decision-making. Build a robot that operates flawlessly in autonomous mode.
               </p>
             </div>
 
-            {/* Advanced Coding Concepts */}
+            {/* Competition Simulation & Match Practice */}
             <div className="bg-sky-50 p-6 rounded-lg border-l-4 border-sky-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🧠 Advanced Coding Concepts</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🏆 Competition Simulation & Match Practice</h4>
               <p className="text-gray-700">
-                Learn about functions, variables, and how to structure large programs. Tune your code for better precision.
+                Run practice matches and refine competitive strategy. Evaluate robot performance under timed and judged conditions.
               </p>
             </div>
 
-            {/* Practice Matches */}
+            {/* Engineering Notebook & Documentation */}
             <div className="bg-slate-50 p-6 rounded-lg border-l-4 border-slate-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🏆 Practice Matches</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🧾 Engineering Notebook & Documentation</h4>
               <p className="text-gray-700">
-                Simulate match conditions and refine your robot's performance through repetition and feedback.
+                Document your full design process, iterations, testing data, and team roles. Prepare for judged events and develop real-world engineering habits.
               </p>
             </div>
 
-            {/* Engineering Notebook Skills */}
+            {/* Presentation Skills & Judging Prep */}
             <div className="bg-zinc-50 p-6 rounded-lg border-l-4 border-zinc-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🧾 Engineering Notebook Skills</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🎤 Presentation Skills & Judging Prep</h4>
               <p className="text-gray-700">
-                Learn how to document your ideas, designs, and progress like a real engineer. Focus on clear, organized communication.
+                Learn how to present your design process and team work to a panel. Build confidence in explaining technical work to both experts and beginners.
               </p>
             </div>
 
-            {/* Presentation & Judging Prep */}
-            <div className="bg-neutral-50 p-6 rounded-lg border-l-4 border-neutral-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🎤 Presentation & Judging Prep</h4>
-              <p className="text-gray-700">
-                Practice presenting your robot and design process for a judging panel. Build public speaking and confidence.
-              </p>
-            </div>
-
-            {/* Showcase & Demo Day */}
+            {/* Final Showcase & Demo Presentations */}
             <div className="bg-gradient-to-br from-robotics-blue/10 to-robotics-accent/10 p-6 rounded-lg border-l-4 border-robotics-accent">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🎉 Showcase & Demo Day</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🎉 Final Showcase & Demo Presentations</h4>
               <p className="text-gray-700">
-                Host a final event where students demonstrate their work to families, friends, or school leaders. Celebrate learning and innovation!
+                Showcase your finished robots and projects at a public event for families and school leaders. Demonstrate advanced robotics knowledge and teamwork.
               </p>
             </div>
 
+          </div>
+
+          {/* Key Features */}
+          <div className="bg-gradient-to-r from-robotics-blue/5 to-robotics-accent/5 rounded-lg p-8 border border-robotics-blue/20">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-1">
+                  <span className="text-white font-bold text-sm">✓</span>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-robotics-navy mb-1">Flexible Entry</h5>
+                  <p className="text-gray-700 text-sm">
+                    Students can begin at any time and will be placed in challenges that match their skill level—from beginner to advanced.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-robotics-blue rounded-full flex items-center justify-center mt-1">
+                  <span className="text-white font-bold text-sm">📈</span>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-robotics-navy mb-1">Continuous Learning</h5>
+                  <p className="text-gray-700 text-sm">
+                    Topics are revisited at deeper levels, so long-term students grow from basic to competitive-ready robotics engineers.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
