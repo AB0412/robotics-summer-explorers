@@ -7,7 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, Calendar, CheckCircle, XCircle, Plus, Trash2 } from 'lucide-react';
+import { DollarSign, Calendar, CheckCircle, XCircle, Plus, Trash2, Download } from 'lucide-react';
+import { downloadPaymentReceipt } from '@/utils/payments/receiptGenerator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -212,6 +213,24 @@ export const PaymentsTable = () => {
         variant: "destructive",
       });
     }
+  };
+
+  // Download receipt for a paid payment
+  const handleDownloadReceipt = (payment: StudentPayment) => {
+    downloadPaymentReceipt({
+      student_name: payment.student_name,
+      month_year: payment.month_year,
+      tuition_amount: payment.tuition_amount ?? 0,
+      payment_date: payment.payment_date,
+      payment_method: payment.payment_method,
+      registration_id: payment.registration_id,
+      organization_name: 'Robotics Academy',
+    });
+
+    toast({
+      title: 'Receipt Downloaded',
+      description: `Receipt for ${payment.student_name} - ${formatMonth(payment.month_year)} has been downloaded.`,
+    });
   };
 
   // Delete payment record
@@ -508,6 +527,18 @@ export const PaymentsTable = () => {
                           {payment.is_paid ? 'Paid' : 'Mark as paid'}
                         </span>
                       </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDownloadReceipt(payment)}
+                        disabled={!payment.is_paid}
+                        className="ml-2"
+                        aria-label={`Download receipt for ${payment.student_name} ${formatMonth(payment.month_year)}`}
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        Receipt
+                      </Button>
                       
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
