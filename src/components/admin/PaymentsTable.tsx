@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { DollarSign, Calendar, CheckCircle, XCircle, Plus, Trash2, Download } from 'lucide-react';
-import { downloadPaymentReceipt } from '@/utils/payments/receiptGenerator';
+import { generateReceiptBlob } from '@/utils/payments/receiptGenerator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -34,6 +34,7 @@ interface StudentPayment {
   payment_date: string | null;
   payment_method: string | null;
   notes: string | null;
+  receipt_path?: string | null;
 }
 
 interface Student {
@@ -215,22 +216,74 @@ export const PaymentsTable = () => {
     }
   };
 
-  // Download receipt for a paid payment
-  const handleDownloadReceipt = (payment: StudentPayment) => {
-    downloadPaymentReceipt({
-      student_name: payment.student_name,
-      month_year: payment.month_year,
-      tuition_amount: payment.tuition_amount ?? 0,
-      payment_date: payment.payment_date,
-      payment_method: payment.payment_method,
-      registration_id: payment.registration_id,
-      organization_name: 'Robotics Academy',
-    });
+  // Download or generate+save receipt
+  const handleDownloadReceipt = async (payment: StudentPayment) => {
+    if (!payment.is_paid) {
+      toast({
+        title: 'Not Paid',
+        description: 'Mark as paid before generating a receipt.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-    toast({
-      title: 'Receipt Downloaded',
-      description: `Receipt for ${payment.student_name} - ${formatMonth(payment.month_year)} has been downloaded.`,
-    });
+    try {
+      const sanitize = (s: string) => s.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+      let path = payment.receipt_path || `${payment.registration_id}/${payment.month_year}-${sanitize(payment.student_name)}.pdf`;
+
+      if (!payment.receipt_path) {
+        const blob = await generateReceiptBlob({
+          student_name: payment.student_name,
+          month_year: payment.month_year,
+          tuition_amount: payment.tuition_amount ?? 0,
+          payment_date: payment.payment_date,
+          payment_method: payment.payment_method || undefined,
+          registration_id: payment.registration_id,
+          organization_name: 'Robotics Academy',
+        });
+
+        const { error: uploadError } = await supabase.storage
+          .from('receipts')
+          .upload(path, blob, { contentType: 'application/pdf', upsert: true });
+
+        if (uploadError) {
+          console.error('Receipt upload error:', uploadError);
+          toast({ title: 'Upload Failed', description: 'Could not save the receipt. Try again.', variant: 'destructive' });
+          return;
+        }
+
+        const { error: updateErr } = await supabase
+          .from('student_payments')
+          .update({ receipt_path: path })
+          .eq('id', payment.id);
+
+        if (updateErr) {
+          console.error('Save receipt path error:', updateErr);
+          toast({ title: 'Save Failed', description: 'Receipt saved but link not recorded.', variant: 'destructive' });
+        } else {
+          setPayments(prev => prev.map(p => p.id === payment.id ? { ...p, receipt_path: path } : p));
+        }
+      }
+
+      const { data: signed, error: urlErr } = await supabase.storage
+        .from('receipts')
+        .createSignedUrl(path, 60);
+      if (urlErr || !signed?.signedUrl) {
+        console.error('Signed URL error:', urlErr);
+        toast({ title: 'Download Failed', description: 'Could not create a download link.', variant: 'destructive' });
+        return;
+      }
+
+      window.open(signed.signedUrl, '_blank');
+
+      toast({
+        title: 'Receipt Ready',
+        description: `Receipt for ${payment.student_name} - ${formatMonth(payment.month_year)} ${payment.receipt_path ? 'downloaded' : 'generated and saved'}.`,
+      });
+    } catch (e) {
+      console.error('Receipt error:', e);
+      toast({ title: 'Error', description: 'Unexpected error generating receipt.', variant: 'destructive' });
+    }
   };
 
   // Delete payment record

@@ -16,7 +16,7 @@ const formatMonth = (monthYear: string) => {
   return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 };
 
-export const downloadPaymentReceipt = (data: PaymentReceiptData) => {
+export const buildReceiptDoc = (data: PaymentReceiptData) => {
   const {
     student_name,
     month_year,
@@ -68,7 +68,18 @@ export const downloadPaymentReceipt = (data: PaymentReceiptData) => {
   doc.setFontSize(10);
   doc.text('Thank you for your payment.', left, y);
 
-  const safeStudent = student_name.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-  const fileName = `receipt-${safeStudent}-${month_year}.pdf`;
+  return doc;
+};
+
+export const downloadPaymentReceipt = (data: PaymentReceiptData) => {
+  const doc = buildReceiptDoc(data);
+  const safeStudent = data.student_name.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+  const fileName = `receipt-${safeStudent}-${data.month_year}.pdf`;
   doc.save(fileName);
+};
+
+export const generateReceiptBlob = async (data: PaymentReceiptData): Promise<Blob> => {
+  const doc = buildReceiptDoc(data);
+  // @ts-ignore jsPDF types do not include 'blob' in some versions
+  return doc.output('blob');
 };
