@@ -24,7 +24,7 @@ const convertToCSV = (registrations: any[]): string => {
   // Create CSV data rows
   const csvRows = registrations.map(reg => {
     return headers.map(header => {
-      const value = reg[header] || '';
+      const value = reg[header] ?? '';
       // Escape quotes in values and wrap in quotes
       return `"${String(value).replace(/"/g, '""')}"`;
     }).join(',');
@@ -70,10 +70,11 @@ export const handleSaveDatabase = async (toast: ReturnType<typeof useToast>['toa
 export const handleExportDatabase = async (toast: ReturnType<typeof useToast>['toast']) => {
   try {
     const jsonData = await exportDatabase();
-    const parsedData = JSON.parse(jsonData);
+    const parsed = JSON.parse(jsonData);
+    const registrations = Array.isArray(parsed) ? parsed : (parsed?.registrations || []);
     
     // Convert to CSV format
-    const csvData = convertToCSV(parsedData.registrations || []);
+    const csvData = convertToCSV(registrations);
     
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);

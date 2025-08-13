@@ -20,7 +20,7 @@ const convertToCSV = (registrations: any[]): string => {
   // Create CSV data rows
   const csvRows = registrations.map(reg => {
     return headers.map(header => {
-      const value = reg[header] || '';
+      const value = reg[header] ?? '';
       // Escape quotes in values and wrap in quotes
       return `"${String(value).replace(/"/g, '""')}"`;
     }).join(',');
@@ -178,9 +178,12 @@ export const importDatabase = async (jsonData: string): Promise<void> => {
   }
 };
 
-// Get download link for exported data
+// Get download link for exported data (CSV)
 export const getDownloadLink = async (): Promise<string> => {
-  const csvData = await exportDatabase();
-  const blob = new Blob([csvData], { type: 'application/json' });
+  const jsonData = await exportDatabase();
+  const parsed = JSON.parse(jsonData);
+  const registrations = Array.isArray(parsed) ? parsed : (parsed?.registrations || []);
+  const csvData = convertToCSV(registrations);
+  const blob = new Blob([csvData], { type: 'text/csv' });
   return URL.createObjectURL(blob);
 };
