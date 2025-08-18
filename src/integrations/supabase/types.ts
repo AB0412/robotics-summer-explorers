@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
@@ -232,7 +232,7 @@ export type Database = {
     }
     Functions: {
       check_table_permissions: {
-        Args: { table_name: string; permission: string }
+        Args: { permission: string; table_name: string }
         Returns: Json
       }
       check_write_permission: {
