@@ -273,6 +273,10 @@ export type Database = {
         Args: { sql: string }
         Returns: undefined
       }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_table_columns: {
         Args: { table_name: string }
         Returns: {
@@ -281,6 +285,10 @@ export type Database = {
         }[]
       }
       heartbeat: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
