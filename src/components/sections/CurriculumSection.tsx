@@ -7,7 +7,7 @@ const CurriculumSection = () => {
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 text-robotics-navy">
-            🛠️ VEX Robotics Year-Round Curriculum
+            🛠️ VEX IQ & VEX EXP Robotics Year-Round Curriculum
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-6">
             <strong>From Beginner to Advanced – Hands-on Engineering, Coding & Competition Skills</strong>
@@ -25,11 +25,11 @@ const CurriculumSection = () => {
               </p>
             </div>
 
-            {/* Mastering the VEX EXP Kit */}
+            {/* Mastering the VEX IQ & VEX EXP Kits */}
             <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
-              <h4 className="font-bold text-xl text-robotics-navy mb-3">🔩 Mastering the VEX EXP Kit</h4>
+              <h4 className="font-bold text-xl text-robotics-navy mb-3">🔩 Mastering VEX IQ & VEX EXP Kits</h4>
               <p className="text-gray-700">
-                Gain hands-on experience with the VEX EXP system—motors, sensors, metal components, and the control brain. Learn to safely build and connect your robot's physical systems.
+                Gain hands-on experience with both VEX IQ and VEX EXP systems—motors, sensors, metal components, and control brains. Learn to safely build and connect your robot's physical systems using age-appropriate platforms.
               </p>
             </div>
 
