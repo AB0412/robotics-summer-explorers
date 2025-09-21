@@ -56,18 +56,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         const { data } = await supabase.auth.getSession();
         
         if (!data.session) {
-          console.log('User is not authenticated, attempting anonymous sign-in');
-          try {
-            const { error } = await supabase.auth.signInAnonymously();
-            if (error) {
-              console.error('Anonymous sign-in failed:', error);
-            } else {
-              // Reload registrations after authentication
-              loadRegistrations();
-            }
-          } catch (err) {
-            console.error('Auth error:', err);
-          }
+          console.log('User is not authenticated');
+          // Don't attempt anonymous sign-in, wait for proper admin authentication
+        } else {
+          // User is authenticated, load registrations
+          loadRegistrations();
         }
         
         // Check RLS policies silently
@@ -88,13 +81,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
     try {
-      // First try to authenticate if needed
+      // Check if user is authenticated
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) {
-        const { error: signInError } = await supabase.auth.signInAnonymously();
-        if (signInError) {
-          console.error('Sign in error:', signInError);
-        }
+        toast({
+          title: "Authentication Required",
+          description: "Please log in again to refresh data.",
+          variant: "destructive",
+        });
+        setIsRefreshing(false);
+        return;
       }
       
       // Now try to load registrations
