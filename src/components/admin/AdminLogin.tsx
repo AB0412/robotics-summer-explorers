@@ -29,7 +29,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
 
     try {
       // Sign in as admin user using Supabase
-      const adminEmail = 'admin@roboticsacademy.com';
+      const adminEmail = 'billorevinash12@gmail.com';
       
       // Try to sign in first
       let { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
@@ -42,7 +42,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         if (signInError.message.includes('Email not confirmed')) {
           toast({
             title: "Email confirmation required",
-            description: "Please check your email and click the confirmation link before logging in. Check admin@roboticsacademy.com inbox.",
+            description: "Please check your email and click the confirmation link before logging in. Check billorevinash12@gmail.com inbox.",
             variant: "destructive",
           });
           return;
@@ -68,7 +68,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
 
           toast({
             title: "Admin account created",
-            description: "Please check admin@roboticsacademy.com for a confirmation email, then return to login.",
+            description: "Please check billorevinash12@gmail.com for a confirmation email, then return to login.",
             variant: "default",
           });
           return;
