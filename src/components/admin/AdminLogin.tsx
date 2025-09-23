@@ -37,35 +37,43 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         password: ADMIN_PASSWORD,
       });
 
-      // If user doesn't exist, create them
-      if (signInError && signInError.message.includes('Invalid login credentials')) {
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: adminEmail,
-          password: ADMIN_PASSWORD,
-          options: {
-            data: {
-              full_name: 'Admin User',
-              role: 'admin'
+      // Handle specific error cases
+      if (signInError) {
+        if (signInError.message.includes('Email not confirmed')) {
+          toast({
+            title: "Email confirmation required",
+            description: "Please check your email and click the confirmation link before logging in. Check admin@roboticsacademy.com inbox.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        if (signInError.message.includes('Invalid login credentials')) {
+          // User doesn't exist, create them
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: adminEmail,
+            password: ADMIN_PASSWORD,
+            options: {
+              data: {
+                full_name: 'Admin User',
+                role: 'admin'
+              },
+              emailRedirectTo: `${window.location.origin}/admin`
             }
+          });
+
+          if (signUpError) {
+            throw signUpError;
           }
-        });
 
-        if (signUpError) {
-          throw signUpError;
+          toast({
+            title: "Admin account created",
+            description: "Please check admin@roboticsacademy.com for a confirmation email, then return to login.",
+            variant: "default",
+          });
+          return;
         }
-
-        // After signup, sign in
-        const { data: newAuthData, error: newSignInError } = await supabase.auth.signInWithPassword({
-          email: adminEmail,
-          password: ADMIN_PASSWORD,
-        });
-
-        if (newSignInError) {
-          throw newSignInError;
-        }
-
-        authData = newAuthData;
-      } else if (signInError) {
+        
         throw signInError;
       }
 
