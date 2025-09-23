@@ -75,7 +75,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     };
     
     initialize();
-  }, [loadRegistrations]);
+  }, []);
 
   // Handle manual refresh with forced authentication
   const handleManualRefresh = async () => {

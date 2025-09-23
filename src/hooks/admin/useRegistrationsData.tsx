@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { 
   getAllRegistrations,
@@ -14,7 +14,7 @@ export function useRegistrationsData() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const loadRegistrations = async () => {
+  const loadRegistrations = useCallback(async () => {
     try {
       setIsLoading(true);
       
@@ -71,11 +71,11 @@ export function useRegistrationsData() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     loadRegistrations();
-  }, []);
+  }, [loadRegistrations]);
 
   return {
     registrations,
