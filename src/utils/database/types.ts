@@ -34,6 +34,7 @@ export interface Registration {
 // Supabase database format (snake_case columns) - Updated to support 'regular' program type
 export interface SupabaseRegistration {
   id?: number;
+  user_id?: string | null;
   registrationid: string;
   parentname: string;
   parentemail: string;

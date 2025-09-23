@@ -37,6 +37,7 @@ export const addRegistration = async (registration: Registration): Promise<{succ
     
     // Convert from camelCase to lowercase/snake_case for Supabase
     const supabaseRegistration: SupabaseRegistration = {
+      user_id: null, // Set to null for anonymous registrations
       registrationid: registration.registrationId,
       parentname: registration.parentName,
       parentemail: registration.parentEmail,
