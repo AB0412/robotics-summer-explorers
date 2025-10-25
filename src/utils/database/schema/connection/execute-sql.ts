@@ -8,25 +8,7 @@ export const executeSql = async (sql: string): Promise<{ success: boolean; error
   try {
     console.log('Executing SQL:', sql);
     
-    // First make sure we're authenticated
-    const { data: session } = await supabase.auth.getSession();
-    if (!session.session) {
-      console.log('No active session, attempting to sign in anonymously...');
-      const { error: signInError } = await supabase.auth.signInAnonymously();
-      if (signInError) {
-        console.error('Anonymous sign-in failed:', signInError);
-        return {
-          success: false,
-          error: `Authentication failed: ${signInError.message}`,
-          details: signInError
-        };
-      }
-      console.log('Anonymous sign-in successful');
-    }
-    
-    // Debug: Check current authentication status
-    const { data: currentSession } = await supabase.auth.getSession();
-    console.log('Current session status:', currentSession.session ? 'Authenticated' : 'Not authenticated');
+    // No authentication required - RLS policies will handle access control
     
     // Split the script into individual statements
     const statements = sql
@@ -66,28 +48,19 @@ export const executeSql = async (sql: string): Promise<{ success: boolean; error
             console.log('Direct table access succeeded, but RPC failed. This suggests an RPC permission issue.');
           }
           
-          // Try direct query as fallback
+          // Try re-executing without re-authentication
           try {
-            // For DDL statements that modify the schema, we need special permissions
-            console.log('Attempting re-authentication...');
-            const { error: reAuthError } = await supabase.auth.signInAnonymously();
+            console.log('Retrying statement...');
+            const { error: retryError } = await supabase.rpc('execute_sql', { 
+              sql: stmt + ';' 
+            });
             
-            if (!reAuthError) {
-              // Retry with new auth
-              console.log('Re-authentication successful, retrying statement...');
-              const { error: retryError } = await supabase.rpc('execute_sql', { 
-                sql: stmt + ';' 
-              });
-              
-              if (!retryError) {
-                console.log('SQL executed successfully after re-authentication');
-                successCount++;
-                continue;
-              } else {
-                console.error('Retry failed after re-authentication:', retryError);
-              }
+            if (!retryError) {
+              console.log('SQL executed successfully on retry');
+              successCount++;
+              continue;
             } else {
-              console.error('Re-authentication failed:', reAuthError);
+              console.error('Retry failed:', retryError);
             }
           } catch (fallbackError) {
             console.error('Fallback error:', fallbackError);

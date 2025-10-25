@@ -17,19 +17,7 @@ export const checkDatabaseConnection = async (): Promise<{
   try {
     console.log('Checking database connection...');
     
-    // Ensure we're authenticated
-    const { data: authData } = await supabase.auth.getSession();
-    if (!authData.session) {
-      console.log('No active session, attempting to sign in anonymously...');
-      const { error: signInError } = await supabase.auth.signInAnonymously();
-      if (signInError) {
-        return {
-          connected: false,
-          error: `Authentication failed: ${signInError.message}`,
-          details: signInError
-        };
-      }
-    }
+    // No need to authenticate - anonymous users should be able to register
     
     // Check if we can connect to Supabase at all using our new heartbeat function
     const { data: healthData, error: healthError } = await supabase.rpc('heartbeat');
