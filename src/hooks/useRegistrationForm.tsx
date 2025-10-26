@@ -47,15 +47,7 @@ export const useRegistrationForm = () => {
 
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
-    if (!hasValidCredentials()) {
-      toast({
-        title: "Database Configuration Required",
-        description: "Please configure valid Supabase credentials to submit registrations.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+    // No credential check needed - RLS policies handle anonymous registration
     setIsSubmitting(true);
     console.log('Form submitted with data:', data);
     

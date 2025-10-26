@@ -4,36 +4,9 @@ import { Registration, SupabaseRegistration } from '../types';
 
 // Add a new registration
 export const addRegistration = async (registration: Registration): Promise<{success: boolean; error?: string}> => {
-  // If no valid Supabase credentials, don't attempt to save
-  if (!hasValidCredentials()) {
-    console.error('Missing Supabase credentials. Cannot add registration.');
-    console.log('Current credentials state:', { 
-      hasCredentials: hasValidCredentials(),
-      tableName: REGISTRATIONS_TABLE
-    });
-    return {
-      success: false,
-      error: 'Missing Supabase credentials. Cannot add registration.'
-    };
-  }
-
+  // No credential check needed - RLS policies handle anonymous registration
   try {
     console.log('Attempting to add registration to Supabase:', registration);
-    
-    // Test if table exists and is accessible
-    const { error: testError } = await supabase
-      .from(REGISTRATIONS_TABLE)
-      .select('count')
-      .limit(1);
-      
-    if (testError) {
-      console.error('Database connection test failed:', testError);
-      console.log('Table name being used:', REGISTRATIONS_TABLE);
-      return {
-        success: false,
-        error: `Database connection test failed: ${testError.message}`
-      };
-    }
     
     // Convert from camelCase to lowercase/snake_case for Supabase
     const supabaseRegistration: SupabaseRegistration = {
@@ -87,7 +60,7 @@ export const addRegistration = async (registration: Registration): Promise<{succ
       } else if (error.code === "42703") {
         errorMessage = `Column not found in database schema: ${error.message}`;
       } else if (error.code === "42501" || error.message?.includes("policy")) {
-        errorMessage = "Row security policy violation. Please check your database permissions and make sure to run the create-table.sql script in the Supabase SQL Editor.";
+        errorMessage = "Registration submission blocked. This appears to be a database permissions issue. Please contact the administrator.";
       } else if (error.code?.startsWith("23")) {
         errorMessage = "The registration data doesn't match the database schema.";
       }
