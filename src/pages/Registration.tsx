@@ -1,11 +1,7 @@
 import React from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
-import useDatabaseCheck from '@/hooks/useDatabaseCheck';
 
 const Registration = () => {
-  // We'll keep this hook for its functionality, but we won't display its UI elements
-  useDatabaseCheck();
-
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold text-center mb-8">Summer Robotics Program Registration</h1>

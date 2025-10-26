@@ -9,32 +9,14 @@ import RoboticsExperienceSection from './registration/RoboticsExperienceSection'
 import LogisticsConsentSection from './registration/LogisticsConsentSection';
 import PaymentOptionsSection from './registration/PaymentOptionsSection';
 import { useRegistrationForm } from '@/hooks/useRegistrationForm';
-import { hasValidCredentials } from '@/utils/supabase/client';
-import DatabaseFeedback from './registration/DatabaseFeedback';
 import SubmitButton from './registration/SubmitButton';
-import { useDatabaseConnection } from '@/hooks/useDatabaseConnection';
 
 const RegistrationForm = () => {
   const { form, registrationId, isSubmitting, onSubmit } = useRegistrationForm();
-  const { 
-    databaseReady,
-    databaseError,
-    isCheckingDatabase,
-    connectionDetails,
-    checkDatabase
-  } = useDatabaseConnection();
-
+  
+  // No need for database validation checks - RLS policies handle anonymous registration
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-lg p-6 shadow-md">
-      <DatabaseFeedback
-        databaseReady={databaseReady}
-        databaseError={databaseError}
-        isCheckingDatabase={isCheckingDatabase}
-        checkDatabase={checkDatabase}
-        connectionDetails={connectionDetails}
-        registrationId={registrationId}
-        hasValidCredentials={hasValidCredentials}
-      />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -62,8 +44,8 @@ const RegistrationForm = () => {
           {/* Submit Button */}
           <SubmitButton 
             isSubmitting={isSubmitting}
-            hasValidCredentials={hasValidCredentials()}
-            databaseReady={databaseReady}
+            hasValidCredentials={true}
+            databaseReady={true}
           />
         </form>
       </Form>
