@@ -265,18 +265,9 @@ export type Database = {
         Args: { permission: string; table_name: string }
         Returns: Json
       }
-      check_write_permission: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      execute_sql: {
-        Args: { sql: string }
-        Returns: undefined
-      }
-      get_current_user_role: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      check_write_permission: { Args: never; Returns: boolean }
+      execute_sql: { Args: { sql: string }; Returns: undefined }
+      get_current_user_role: { Args: never; Returns: string }
       get_table_columns: {
         Args: { table_name: string }
         Returns: {
@@ -284,14 +275,8 @@ export type Database = {
           data_type: string
         }[]
       }
-      heartbeat: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      heartbeat: { Args: never; Returns: boolean }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       day_of_week:
