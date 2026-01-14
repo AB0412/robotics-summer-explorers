@@ -10,25 +10,16 @@ export const checkRLSPolicies = async (): Promise<{
   details?: any;
 }> => {
   try {
-    // First try to sign in anonymously if not already signed in
+    // IMPORTANT: Do not create anonymous sessions.
+    // This helper should never overwrite an existing admin session.
     const { data: sessionData } = await supabase.auth.getSession();
     if (!sessionData.session) {
-      console.log('No active session, attempting to sign in anonymously...');
-      const { error: signInError } = await supabase.auth.signInAnonymously();
-      if (signInError) {
-        console.error('Anonymous sign-in failed:', signInError);
-        return {
-          success: false,
-          message: `Authentication error: ${signInError.message}`,
-          details: signInError
-        };
-      }
-      console.log('Anonymous sign-in successful');
-      
-      // Wait a moment for auth to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      return {
+        success: false,
+        message: 'Authentication required to check policies. Please log in as admin.',
+      };
     }
-    
+
     // First check if we can get a count of registrations
     const { count, error: countError } = await supabase
       .from(REGISTRATIONS_TABLE)
@@ -103,23 +94,16 @@ export const fixRLSPolicies = async (): Promise<{
       }
     }
     
-    // Attempt to sign in anonymously if not already signed in
+    // IMPORTANT: Do not create anonymous sessions.
+    const { data: sessionData } = await supabase.auth.getSession();
+
     if (!sessionData.session) {
-      console.log('No active session, attempting to sign in anonymously...');
-      const { error: signInError } = await supabase.auth.signInAnonymously();
-      if (signInError) {
-        return {
-          success: false,
-          message: `Anonymous sign-in failed: ${signInError.message}`,
-          details: signInError
-        };
-      }
-      console.log('Anonymous sign-in successful');
-      
-      // Wait a moment for auth to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      return {
+        success: false,
+        message: 'Authentication required to fix policy access. Please log in as admin.',
+      };
     }
-    
+
     // Try the database access again
     const { success, message } = await checkRLSPolicies();
     

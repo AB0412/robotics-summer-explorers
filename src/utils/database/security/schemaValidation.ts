@@ -19,23 +19,16 @@ export const validateDatabaseSetup = async (): Promise<{
       };
     }
 
-    // Try to sign in anonymously if needed
+    // IMPORTANT: Do not sign in anonymously here.
+    // Anonymous sessions can overwrite an admin session and cause "Permission denied" on protected tables.
     const { data: session } = await supabase.auth.getSession();
     if (!session.session) {
-      console.log('No active session, attempting to sign in anonymously...');
-      const { error: signInError } = await supabase.auth.signInAnonymously();
-      if (signInError) {
-        console.error('Anonymous sign-in failed:', signInError);
-        return {
-          isValid: false,
-          error: `Authentication error: ${signInError.message}`
-        };
-      }
-      
-      // Wait a moment for auth to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      return {
+        isValid: false,
+        error: 'Authentication required to validate database setup.',
+      };
     }
-    
+
     // Test connection first
     const connectionResult = await checkDatabaseConnection();
     
