@@ -1,33 +1,18 @@
-
-import { createClient } from '@supabase/supabase-js';
+// Re-export everything from the Lovable Cloud Supabase client
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
-// Update the Supabase URL with the correct project URL
-export const supabaseUrl = 'https://affmifojscdamiybxioe.supabase.co';
-export const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmZm1pZm9qc2NkYW1peWJ4aW9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMwMjI1MDIsImV4cCI6MjA1ODU5ODUwMn0.nK_rXmi303lLdXf8p7je1SInOA5Ej9B18ITQ1ubrmnY';
+// Export the Lovable Cloud supabase client
+export { supabase };
+
+// Supabase URL and anon key from environment
+export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+export const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 
 // Check if Supabase credentials are valid
 export const hasValidCredentials = (): boolean => {
-  // Check if keys are empty or contain placeholder text
-  return !(!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder') || supabaseAnonKey.includes('placeholder'));
-}
-
-// Create Supabase client with error handling
-export const supabase = createClient(
-  supabaseUrl,
-  supabaseAnonKey,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  }
-);
-
-// Log Supabase initialization
-console.log('Supabase client initialized with URL:', supabaseUrl);
-console.log('Credentials valid:', hasValidCredentials());
+  return !!(supabaseUrl && supabaseAnonKey);
+};
 
 // Table name in Supabase
 export const REGISTRATIONS_TABLE = 'registrations';
@@ -40,7 +25,7 @@ export const initializeDatabase = async (): Promise<void> => {
   try {
     // Check if we have valid credentials before proceeding
     if (!hasValidCredentials()) {
-      console.warn('Using placeholder Supabase credentials. Please configure valid Supabase credentials to use the application.');
+      console.warn('Missing Supabase credentials. Please configure valid Supabase credentials.');
       toast({
         title: "Database Configuration Required",
         description: "Please configure valid Supabase credentials to use this application.",
@@ -61,7 +46,7 @@ export const initializeDatabase = async (): Promise<void> => {
       console.error('Table check error - table might not exist:', tableCheckError);
       toast({
         title: "Database Table Missing",
-        description: `Please create a table named '${REGISTRATIONS_TABLE}' in your Supabase project. Use the SQL script provided in the documentation.`,
+        description: `Please create a table named '${REGISTRATIONS_TABLE}' in your Supabase project.`,
         variant: "destructive",
       });
       return;
@@ -71,8 +56,6 @@ export const initializeDatabase = async (): Promise<void> => {
     await enhancedInitializeDatabase();
     
     console.log(`Successfully connected to ${REGISTRATIONS_TABLE} table in Supabase`);
-    
-    // Removed the success toast message
     
   } catch (error) {
     console.error('Error initializing database:', error);

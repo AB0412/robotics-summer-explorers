@@ -7,8 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/utils/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import type { TimeSlot } from '@/types/schedule';
+
+// Type assertion helper for tables not yet in the schema
+const fromTable = (tableName: string) => supabase.from(tableName as any);
 
 interface TimeSlotManagerProps {
   timeSlots: TimeSlot[];
@@ -62,8 +65,7 @@ export const TimeSlotManager: React.FC<TimeSlotManagerProps> = ({ timeSlots, onU
     try {
       if (editingId) {
         // Update existing time slot
-        const { error } = await supabase
-          .from('program_time_slots')
+        const { error } = await fromTable('program_time_slots')
           .update({
             ...formData,
             updated_at: new Date().toISOString(),
@@ -78,8 +80,7 @@ export const TimeSlotManager: React.FC<TimeSlotManagerProps> = ({ timeSlots, onU
         });
       } else {
         // Create new time slot
-        const { error } = await supabase
-          .from('program_time_slots')
+        const { error } = await fromTable('program_time_slots')
           .insert([formData]);
 
         if (error) throw error;
@@ -123,8 +124,7 @@ export const TimeSlotManager: React.FC<TimeSlotManagerProps> = ({ timeSlots, onU
     }
 
     try {
-      const { error } = await supabase
-        .from('program_time_slots')
+      const { error } = await fromTable('program_time_slots')
         .delete()
         .eq('id', id);
 

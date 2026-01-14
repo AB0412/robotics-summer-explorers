@@ -1,6 +1,5 @@
-
 import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '../supabase/client';
-import { DBStorage, emptyDB } from './types';
+import { DBStorage, emptyDB, SupabaseRegistration } from './types';
 
 // Helper function to convert registrations to CSV format
 const convertToCSV = (registrations: any[]): string => {
@@ -79,7 +78,7 @@ export const loadDatabase = async (): Promise<{success: boolean; data?: DBStorag
     return {
       success: true,
       data: {
-        registrations: data || []
+        registrations: (data as unknown as any[]) || []
       }
     };
   } catch (error) {
@@ -108,7 +107,7 @@ export const saveDatabase = async (db: DBStorage): Promise<{success: boolean; er
     const { error: deleteError } = await supabase
       .from(REGISTRATIONS_TABLE)
       .delete()
-      .neq('registrationId', ''); // Delete all records
+      .neq('registrationid', ''); // Delete all records
     
     if (deleteError) {
       console.error('Error deleting registrations:', deleteError);
@@ -122,7 +121,7 @@ export const saveDatabase = async (db: DBStorage): Promise<{success: boolean; er
     if (db.registrations.length > 0) {
       const { error: insertError } = await supabase
         .from(REGISTRATIONS_TABLE)
-        .insert(db.registrations);
+        .insert(db.registrations as unknown as any[]);
       
       if (insertError) {
         console.error('Error inserting registrations:', insertError);
