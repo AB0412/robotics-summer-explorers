@@ -24,13 +24,13 @@ export const useDatabaseConnection = () => {
     try {
       console.log('Starting database check...');
       
-      // Ensure authentication
+      // Don't auto-create an anonymous session.
+      // Admin operations (like delete) require a real authenticated admin session.
       const { data: authData } = await supabase.auth.getSession();
       if (!authData.session) {
-        console.log('No active session, attempting to sign in anonymously...');
-        await supabase.auth.signInAnonymously();
+        console.log('No active session. Skipping anonymous sign-in (admin actions require login).');
       }
-      
+
       // Initialize the database
       await initializeDatabase();
       

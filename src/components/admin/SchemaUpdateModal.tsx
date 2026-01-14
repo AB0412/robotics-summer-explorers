@@ -116,13 +116,17 @@ ALTER TABLE registrations FORCE ROW LEVEL SECURITY;
   const handleRefreshRegistrations = async () => {
     setIsRefreshing(true);
     try {
-      // First, ensure we're authenticated
+      // Do not sign in anonymously here; admin tools require a real authenticated session.
       const { data: authData } = await supabase.auth.getSession();
       if (!authData.session) {
-        console.log('No active session, attempting to sign in...');
-        await supabase.auth.signInAnonymously();
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to refresh database data.",
+          variant: "destructive",
+        });
+        return;
       }
-      
+
       // Directly query the database
       const { data: directData, error: directError } = await supabase
         .from(REGISTRATIONS_TABLE)
@@ -187,13 +191,17 @@ ALTER TABLE registrations FORCE ROW LEVEL SECURITY;
         description: "This may take a moment...",
       });
       
-      // First authenticate if needed
+      // First authenticate if needed (no anonymous sessions)
       const { data: authData } = await supabase.auth.getSession();
       if (!authData.session) {
-        console.log('No active session, attempting to sign in...');
-        await supabase.auth.signInAnonymously();
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to run database setup.",
+          variant: "destructive",
+        });
+        return;
       }
-      
+
       // Execute each SQL statement separately, skipping comments and empty lines
       const statements = sqlScript
         .split(';')
