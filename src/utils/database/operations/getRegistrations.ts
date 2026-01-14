@@ -1,4 +1,3 @@
-
 import { supabase, REGISTRATIONS_TABLE, hasValidCredentials } from '../../supabase/client';
 import { Registration } from '../types';
 
@@ -31,16 +30,6 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
       if (countError.code === 'PGRST301' || countError.message?.includes('policy')) {
         console.error('This appears to be a Row Level Security (RLS) policy issue.');
         console.log('Current authentication status:', supabase.auth.getSession());
-        
-        // Try checking which policies exist
-        try {
-          const { data: rlsData, error: rlsError } = await supabase
-            .rpc('check_table_permissions', { table_name: REGISTRATIONS_TABLE, permission: 'select' });
-            
-          console.log('RLS check result:', rlsData, rlsError);
-        } catch (rlsCheckError) {
-          console.error('Error checking RLS policies:', rlsCheckError);
-        }
       }
       
       return [];
@@ -112,7 +101,7 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
             console.error('Retry query failed:', retryError);
           } else {
             console.log('Retry query results:', retryData);
-            return retryData as any[];
+            return retryData as unknown as Registration[];
           }
         }
       }
@@ -120,7 +109,7 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
     
     // The data from Supabase will be in snake_case format, so we need to convert it
     // We'll perform this transformation in the useAdminDashboard hook for flexibility
-    return data as any[];
+    return data as unknown as Registration[];
   } catch (error) {
     console.error('Error accessing Supabase:', error);
     return [];

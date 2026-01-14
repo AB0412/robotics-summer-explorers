@@ -8,8 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { UserPlus, Search, Trash2, Clock, User, Calendar, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/utils/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import type { TimeSlot, StudentSchedule, Registration } from '@/types/schedule';
+
+// Type assertion helper for tables not yet in the schema
+const fromTable = (tableName: string) => supabase.from(tableName as any);
 
 interface StudentScheduleAssignmentProps {
   timeSlots: TimeSlot[];
@@ -106,8 +109,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
         notes: notes || null,
       });
 
-      const { error } = await supabase
-        .from('student_schedules')
+      const { error } = await fromTable('student_schedules')
         .insert([{
           registration_id: selectedStudent,
           time_slot_id: selectedTimeSlot,
@@ -147,8 +149,7 @@ export const StudentScheduleAssignment: React.FC<StudentScheduleAssignmentProps>
     }
 
     try {
-      const { error } = await supabase
-        .from('student_schedules')
+      const { error } = await fromTable('student_schedules')
         .delete()
         .eq('id', scheduleId);
 

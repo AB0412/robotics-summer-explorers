@@ -1,12 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar, Users, Settings } from 'lucide-react';
 import { StudentScheduleAssignment } from '@/components/schedule/StudentScheduleAssignment';
 import { ScheduleCalendarView } from '@/components/schedule/ScheduleCalendarView';
 import { TimeSlotManager } from '@/components/schedule/TimeSlotManager';
-import { supabase } from '@/utils/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import type { TimeSlot, StudentSchedule } from '@/types/schedule';
+
+// Type assertion helper for tables not yet in the schema
+const fromTable = (tableName: string) => supabase.from(tableName as any);
 
 const ScheduleManagement = () => {
   const [activeTab, setActiveTab] = useState<'assignments' | 'calendar' | 'timeslots'>('assignments');
@@ -22,17 +24,15 @@ const ScheduleManagement = () => {
     setIsLoading(true);
     try {
       // Load time slots
-      const { data: slots, error: slotsError } = await supabase
-        .from('program_time_slots')
+      const { data: slots, error: slotsError } = await fromTable('program_time_slots')
         .select('*')
         .order('start_time');
 
       if (slotsError) throw slotsError;
-      setTimeSlots(slots || []);
+      setTimeSlots((slots as unknown as TimeSlot[]) || []);
 
       // Load student schedules with related data
-      const { data: schedules, error: schedulesError } = await supabase
-        .from('student_schedules')
+      const { data: schedules, error: schedulesError } = await fromTable('student_schedules')
         .select(`
           *,
           registrations(childname, parentname, childage, childgrade),
@@ -41,7 +41,7 @@ const ScheduleManagement = () => {
         .order('assigned_at', { ascending: false });
 
       if (schedulesError) throw schedulesError;
-      setStudentSchedules(schedules || []);
+      setStudentSchedules((schedules as unknown as StudentSchedule[]) || []);
     } catch (error) {
       console.error('Error loading schedule data:', error);
     } finally {

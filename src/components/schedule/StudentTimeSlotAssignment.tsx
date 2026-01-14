@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,8 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { UserPlus, Search, Trash2, Clock, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/utils/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
+
+// Type assertion helper for tables not yet in the schema
+const fromTable = (tableName: string) => supabase.from(tableName as any);
 
 interface TimeSlot {
   id: string;
@@ -60,13 +62,12 @@ export const StudentTimeSlotAssignment: React.FC = () => {
     setIsLoading(true);
     try {
       // Load time slots
-      const { data: slots, error: slotsError } = await supabase
-        .from('program_time_slots')
+      const { data: slots, error: slotsError } = await fromTable('program_time_slots')
         .select('*')
         .order('start_time');
 
       if (slotsError) throw slotsError;
-      setTimeSlots(slots || []);
+      setTimeSlots((slots as unknown as TimeSlot[]) || []);
 
       // Load registrations
       const { data: regs, error: regsError } = await supabase
@@ -75,11 +76,10 @@ export const StudentTimeSlotAssignment: React.FC = () => {
         .order('childname');
 
       if (regsError) throw regsError;
-      setRegistrations(regs || []);
+      setRegistrations((regs as unknown as Registration[]) || []);
 
       // Load student schedules
-      const { data: schedules, error: schedulesError } = await supabase
-        .from('student_schedules')
+      const { data: schedules, error: schedulesError } = await fromTable('student_schedules')
         .select(`
           *,
           registrations(childname, parentname, childage, childgrade),
@@ -88,7 +88,7 @@ export const StudentTimeSlotAssignment: React.FC = () => {
         .order('assigned_at', { ascending: false });
 
       if (schedulesError) throw schedulesError;
-      setStudentSchedules(schedules || []);
+      setStudentSchedules((schedules as unknown as StudentSchedule[]) || []);
     } catch (error) {
       console.error('Error loading data:', error);
       toast({
@@ -126,8 +126,7 @@ export const StudentTimeSlotAssignment: React.FC = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('student_schedules')
+      const { error } = await fromTable('student_schedules')
         .insert([{
           registration_id: selectedStudent,
           time_slot_id: selectedTimeSlot,
@@ -159,8 +158,7 @@ export const StudentTimeSlotAssignment: React.FC = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('student_schedules')
+      const { error } = await fromTable('student_schedules')
         .delete()
         .eq('id', scheduleId);
 

@@ -1,4 +1,3 @@
-
 import { supabase, REGISTRATIONS_TABLE } from '../supabase/client';
 import { Registration } from './types';
 
@@ -14,13 +13,21 @@ export const searchRegistrations = async (
       return getAllRegistrations();
     }
     
+    // Map camelCase field names to snake_case database columns
+    const fieldMap: Record<string, string> = {
+      parentName: 'parentname',
+      childName: 'childname',
+      parentEmail: 'parentemail',
+      registrationId: 'registrationid'
+    };
+    
     if (field === 'all') {
       // For 'all' we need to make multiple queries and combine results
       const [nameResults, emailResults, idResults, childNameResults] = await Promise.all([
-        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('parentName', `%${term}%`),
-        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('parentEmail', `%${term}%`),
-        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('registrationId', `%${term}%`),
-        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('childName', `%${term}%`)
+        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('parentname', `%${term}%`),
+        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('parentemail', `%${term}%`),
+        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('registrationid', `%${term}%`),
+        supabase.from(REGISTRATIONS_TABLE).select('*').ilike('childname', `%${term}%`)
       ]);
       
       // Combine results, removing duplicates
@@ -31,25 +38,26 @@ export const searchRegistrations = async (
         ...(childNameResults.data || [])
       ];
       
-      // Remove duplicates by registrationId
+      // Remove duplicates by registrationid
       const uniqueResults = Array.from(
-        new Map(combinedResults.map(item => [item.registrationId, item])).values()
+        new Map(combinedResults.map(item => [item.registrationid, item])).values()
       );
       
-      return uniqueResults as Registration[];
+      return uniqueResults as unknown as Registration[];
     } else {
       // For specific fields, we can do a single query
+      const dbField = fieldMap[field] || field.toLowerCase();
       const { data, error } = await supabase
         .from(REGISTRATIONS_TABLE)
         .select('*')
-        .ilike(field, `%${term}%`);
+        .ilike(dbField, `%${term}%`);
       
       if (error) {
         console.error(`Error searching registrations by ${field}:`, error);
         return [];
       }
       
-      return data as Registration[];
+      return data as unknown as Registration[];
     }
   } catch (error) {
     console.error('Error searching registrations:', error);
