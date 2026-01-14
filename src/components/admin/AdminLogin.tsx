@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,7 @@ interface AdminLoginProps {
   onLogin: () => void;
 }
 
-// Hard-coded admin password - in a real app, this would be handled securely
+// NOTE: This is a temporary admin login. For production, replace with proper admin auth.
 const ADMIN_PASSWORD = "Rock@987654321$";
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
@@ -20,91 +19,91 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
   const handleAuthentication = async () => {
     if (password !== ADMIN_PASSWORD) {
       toast({
-        title: "Authentication failed",
-        description: "Incorrect password",
-        variant: "destructive",
+        title: 'Authentication failed',
+        description: 'Incorrect password',
+        variant: 'destructive',
       });
       return;
     }
 
     try {
-      // Sign in as admin user using Supabase
       const adminEmail = 'billoreavinash12@gmail.com';
-      
+
       // Try to sign in first
-      let { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
         email: adminEmail,
         password: ADMIN_PASSWORD,
       });
 
-      // Handle specific error cases
       if (signInError) {
         if (signInError.message.includes('Email not confirmed')) {
           toast({
-            title: "Email confirmation required",
-            description: "Please check your email and click the confirmation link before logging in. Check billorevinash12@gmail.com inbox.",
-            variant: "destructive",
+            title: 'Email confirmation required',
+            description:
+              'Please check your email and click the confirmation link before logging in. Check billorevinash12@gmail.com inbox.',
+            variant: 'destructive',
           });
           return;
         }
-        
+
         if (signInError.message.includes('Invalid login credentials')) {
           // User doesn't exist, create them
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          const { error: signUpError } = await supabase.auth.signUp({
             email: adminEmail,
             password: ADMIN_PASSWORD,
             options: {
               data: {
                 full_name: 'Admin User',
-                role: 'admin'
               },
-              emailRedirectTo: `${window.location.origin}/admin`
-            }
+              emailRedirectTo: `${window.location.origin}/admin`,
+            },
           });
 
-          if (signUpError) {
-            throw signUpError;
-          }
+          if (signUpError) throw signUpError;
 
           toast({
-            title: "Admin account created",
-            description: "Please check billorevinash12@gmail.com for a confirmation email, then return to login.",
-            variant: "default",
+            title: 'Admin account created',
+            description:
+              'Please check billorevinash12@gmail.com for a confirmation email, then return to login.',
           });
           return;
         }
-        
+
         throw signInError;
       }
 
-      // Ensure profile has admin role
+      // Verify role via backend function (server-side truth)
       if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            id: authData.user.id,
-            email: adminEmail,
-            full_name: 'Admin User',
-            role: 'admin'
-          });
+        const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', {
+          _user_id: authData.user.id,
+          _role: 'admin',
+        });
 
-        if (profileError) {
-          console.warn('Profile update error:', profileError);
+        if (roleError) {
+          console.warn('Role check error:', roleError);
+        }
+
+        if (!isAdmin) {
+          toast({
+            title: 'Not authorized',
+            description: 'This account is not an admin in the database.',
+            variant: 'destructive',
+          });
+          return;
         }
       }
 
-      sessionStorage.setItem('adminAuthenticated', 'true');
       onLogin();
       toast({
-        title: "Authentication successful",
-        description: "Welcome to the admin dashboard",
+        title: 'Authentication successful',
+        description: 'Welcome to the admin dashboard',
       });
     } catch (error) {
       console.error('Admin authentication error:', error);
       toast({
-        title: "Authentication failed",
-        description: error instanceof Error ? error.message : "Authentication error",
-        variant: "destructive",
+        title: 'Authentication failed',
+        description: error instanceof Error ? error.message : 'Authentication error',
+        variant: 'destructive',
       });
     }
   };
@@ -126,10 +125,10 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             <label htmlFor="password" className="block text-sm font-medium mb-1">
               Password
             </label>
-            <Input 
-              id="password" 
-              type="password" 
-              value={password} 
+            <Input
+              id="password"
+              type="password"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={handleKeyDown}
             />
@@ -140,3 +139,4 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
     </Card>
   );
 };
+
