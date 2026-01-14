@@ -75,7 +75,9 @@ export const generateSchemaUpdateSQL = async (): Promise<string> => {
     console.log('Retrieved columns:', columns);
     
     // Get all column names in lowercase for case-insensitive comparison
-    const columnNames = columns.map(col => col.column_name.toLowerCase());
+    // Ensure columns is always treated as an array
+    const columnsArray = Array.isArray(columns) ? columns : [columns];
+    const columnNames = columnsArray.map(col => col.column_name.toLowerCase());
     
     // Get expected columns
     const expectedColumnsMap = getExpectedColumns();
