@@ -29,7 +29,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
 
     try {
       // Sign in as admin user using Supabase
-      const adminEmail = 'billorevinash12@gmail.com';
+      const adminEmail = 'billoreavinash12@gmail.com';
       
       // Try to sign in first
       let { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
