@@ -14,16 +14,203 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      registrations: {
+        Row: {
+          alternatebatch: string | null
+          childage: string
+          childgrade: string
+          childname: string
+          emergencycontact: string
+          experiencedescription: string | null
+          haspriorexperience: string
+          id: number
+          interestlevel: string | null
+          medicalinfo: string | null
+          parentemail: string
+          parentname: string
+          parentphone: string
+          photoconsent: boolean
+          preferredbatch: string
+          programtype: string
+          referralsource: string
+          registrationid: string
+          schoolname: string
+          specialrequests: string | null
+          submittedat: string
+          tshirtsize: string | null
+          user_id: string | null
+          volunteerinterest: boolean
+          waiveragreement: boolean
+        }
+        Insert: {
+          alternatebatch?: string | null
+          childage: string
+          childgrade: string
+          childname: string
+          emergencycontact: string
+          experiencedescription?: string | null
+          haspriorexperience: string
+          id?: number
+          interestlevel?: string | null
+          medicalinfo?: string | null
+          parentemail: string
+          parentname: string
+          parentphone: string
+          photoconsent?: boolean
+          preferredbatch: string
+          programtype?: string
+          referralsource: string
+          registrationid: string
+          schoolname: string
+          specialrequests?: string | null
+          submittedat: string
+          tshirtsize?: string | null
+          user_id?: string | null
+          volunteerinterest?: boolean
+          waiveragreement?: boolean
+        }
+        Update: {
+          alternatebatch?: string | null
+          childage?: string
+          childgrade?: string
+          childname?: string
+          emergencycontact?: string
+          experiencedescription?: string | null
+          haspriorexperience?: string
+          id?: number
+          interestlevel?: string | null
+          medicalinfo?: string | null
+          parentemail?: string
+          parentname?: string
+          parentphone?: string
+          photoconsent?: boolean
+          preferredbatch?: string
+          programtype?: string
+          referralsource?: string
+          registrationid?: string
+          schoolname?: string
+          specialrequests?: string | null
+          submittedat?: string
+          tshirtsize?: string | null
+          user_id?: string | null
+          volunteerinterest?: boolean
+          waiveragreement?: boolean
+        }
+        Relationships: []
+      }
+      student_payments: {
+        Row: {
+          created_at: string
+          id: string
+          is_paid: boolean
+          month_year: string
+          notes: string | null
+          payment_date: string | null
+          payment_method: string | null
+          receipt_path: string | null
+          registration_id: string
+          student_name: string
+          tuition_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_paid?: boolean
+          month_year: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          receipt_path?: string | null
+          registration_id: string
+          student_name: string
+          tuition_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_paid?: boolean
+          month_year?: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          receipt_path?: string | null
+          registration_id?: string
+          student_name?: string
+          tuition_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["registrationid"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "parent"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +337,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "parent"],
+    },
   },
 } as const
