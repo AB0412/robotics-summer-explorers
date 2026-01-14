@@ -1,8 +1,8 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { initializeDatabase, hasValidCredentials } from '@/utils/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -10,8 +10,10 @@ const Admin = () => {
   const [hasValidDb, setHasValidDb] = useState(false);
   // Add state to track if we've already initialized to prevent double toasts
   const [hasInitialized, setHasInitialized] = useState(false);
-  
+
   useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+
     // Only run initialization once
     if (!hasInitialized) {
       const init = async () => {
@@ -19,34 +21,40 @@ const Admin = () => {
           await initializeDatabase();
           const valid = hasValidCredentials();
           setHasValidDb(valid);
+
+          // Drive "authenticated" UI state from the real auth session (not sessionStorage)
+          const { data } = await supabase.auth.getSession();
+          setIsAuthenticated(!!data.session);
+
+          const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+            setIsAuthenticated(!!session);
+          });
+          unsubscribe = () => listener.subscription.unsubscribe();
         } catch (error) {
-          console.error("Failed to initialize database:", error);
+          console.error('Failed to initialize database:', error);
           setHasValidDb(false);
         } finally {
           setIsInitializing(false);
           setHasInitialized(true);
         }
       };
-      
+
       init();
     }
-    
-    // Check if user is already authenticated in this session
-    const authStatus = sessionStorage.getItem('adminAuthenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
+
+    return () => {
+      unsubscribe?.();
+    };
   }, [hasInitialized]);
 
   const handleAuthentication = () => {
+    // AdminLogin completes a real sign-in; this is just an immediate UX update.
     setIsAuthenticated(true);
-    // Store authentication status in session storage
-    sessionStorage.setItem('adminAuthenticated', 'true');
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsAuthenticated(false);
-    sessionStorage.removeItem('adminAuthenticated');
   };
 
   if (isInitializing) {
@@ -64,7 +72,7 @@ const Admin = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-      
+
       {!isAuthenticated ? (
         <AdminLogin onLogin={handleAuthentication} />
       ) : (
