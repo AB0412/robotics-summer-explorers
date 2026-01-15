@@ -47,9 +47,10 @@ const Admin = () => {
     };
   }, [hasInitialized]);
 
-  const handleAuthentication = () => {
-    // AdminLogin completes a real sign-in; this is just an immediate UX update.
-    setIsAuthenticated(true);
+  const handleAuthentication = async () => {
+    // AdminLogin completes a real sign-in; confirm we actually have a session.
+    const { data } = await supabase.auth.getSession();
+    setIsAuthenticated(!!data.session);
   };
 
   const handleLogout = async () => {

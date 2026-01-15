@@ -74,39 +74,20 @@ export const getAllRegistrations = async (): Promise<Registration[]> => {
     
     // If we get an empty array but know there should be data, there might be a permission issue
     if (data && data.length === 0 && count && count > 0) {
-      console.warn('Found a mismatch: count shows records exist but query returned empty array. Possible RLS policy issue.');
-      
-      // Try to diagnose further
-      console.log('Attempting to diagnose RLS issues...');
-      
-      // Get the current auth status
+      console.warn(
+        'Found a mismatch: count shows records exist but query returned empty array. Possible RLS policy issue.'
+      );
+
+      // Do NOT sign in anonymously here.
+      // Anonymous sessions can mask real auth issues and can overwrite an admin session.
       const { data: authData } = await supabase.auth.getSession();
       console.log('Auth session state:', authData);
-      
-      // Try to authenticate anonymously if we're not authenticated
+
       if (!authData.session) {
-        console.log('Attempting anonymous authentication...');
-        const { error: signInError } = await supabase.auth.signInAnonymously();
-        
-        if (signInError) {
-          console.error('Anonymous auth failed:', signInError);
-        } else {
-          console.log('Anonymous auth successful, trying query again...');
-          // Try the query again
-          const { data: retryData, error: retryError } = await supabase
-            .from(REGISTRATIONS_TABLE)
-            .select('*');
-            
-          if (retryError) {
-            console.error('Retry query failed:', retryError);
-          } else {
-            console.log('Retry query results:', retryData);
-            return retryData as unknown as Registration[];
-          }
-        }
+        console.log('Not authenticated. Admin pages require a real admin login.');
       }
     }
-    
+
     // The data from Supabase will be in snake_case format, so we need to convert it
     // We'll perform this transformation in the useAdminDashboard hook for flexibility
     return data as unknown as Registration[];

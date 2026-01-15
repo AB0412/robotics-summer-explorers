@@ -83,9 +83,9 @@ export const fixRLSPolicies = async (): Promise<{
   try {
     // Check if we already have a session
     const { data: sessionData } = await supabase.auth.getSession();
-    
+
     // Clear existing session if there's an issue
-    if (sessionData.session && sessionData.session.expires_at) {
+    if (sessionData.session?.expires_at) {
       const expiryTimestamp = new Date(sessionData.session.expires_at * 1000);
       if (expiryTimestamp < new Date()) {
         // Session has expired, sign out first
@@ -93,11 +93,11 @@ export const fixRLSPolicies = async (): Promise<{
         console.log('Expired session cleared');
       }
     }
-    
-    // IMPORTANT: Do not create anonymous sessions.
-    const { data: sessionData } = await supabase.auth.getSession();
 
-    if (!sessionData.session) {
+    // IMPORTANT: Do not create anonymous sessions.
+    const { data: freshSessionData } = await supabase.auth.getSession();
+
+    if (!freshSessionData.session) {
       return {
         success: false,
         message: 'Authentication required to fix policy access. Please log in as admin.',
