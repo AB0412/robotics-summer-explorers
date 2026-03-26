@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
-import { initializeDatabase, hasValidCredentials } from '@/utils/supabase/client';
+import { hasValidCredentials } from '@/utils/supabase/client';
 import { supabase } from '@/integrations/supabase/client';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasValidDb, setHasValidDb] = useState(false);
-  // Add state to track if we've already initialized to prevent double toasts
-  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
     const valid = hasValidCredentials();
