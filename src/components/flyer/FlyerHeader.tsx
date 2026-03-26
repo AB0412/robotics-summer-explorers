@@ -21,7 +21,7 @@ const FlyerHeader: React.FC = () => {
       </h1>
       
       <p className="text-lg print:text-base relative z-10">
-        Hands-on summer program teaching VEX robotics for elementary students grades 1-5
+        Hands-on summer program teaching VEX IQ and V5 robotics for students grades 3 to 12
       </p>
     </div>
   );
