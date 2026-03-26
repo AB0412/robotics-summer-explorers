@@ -1,5 +1,6 @@
 
 import React from 'react';
+import PrintableFlyer from '@/components/PrintableFlyer';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -584,6 +585,21 @@ const SummerProgram = () => {
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Summer Camp Flyer */}
+      <section className="py-12 bg-gray-100">
+        <div className="container">
+          <div className="text-center mb-8">
+            <h2 className="font-display font-bold text-3xl mb-4 text-robotics-navy">
+              Summer Camp Flyer
+            </h2>
+            <p className="text-lg text-gray-600">
+              Download or print our summer camp flyer to share with friends and family
+            </p>
+          </div>
+          <PrintableFlyer />
         </div>
       </section>
     </div>
