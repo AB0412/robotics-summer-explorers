@@ -60,6 +60,14 @@ const Header = () => {
     }
   };
 
+  // Handle navigation to summer camp page
+  const handleSummerCampClick = () => {
+    navigate('/summer-program');
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  };
+
   return (
     <header className="bg-robotics-navy text-white">
       <div className="container mx-auto py-4 px-4 flex justify-between items-center">
