@@ -12,40 +12,24 @@ const Admin = () => {
   const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
+    const valid = hasValidCredentials();
+    setHasValidDb(valid);
 
-    // Only run initialization once
-    if (!hasInitialized) {
-      const init = async () => {
-        try {
-          await initializeDatabase();
-          const valid = hasValidCredentials();
-          setHasValidDb(valid);
+    // Check current session
+    supabase.auth.getSession().then(({ data }) => {
+      setIsAuthenticated(!!data.session);
+      setIsInitializing(false);
+    });
 
-          // Drive "authenticated" UI state from the real auth session (not sessionStorage)
-          const { data } = await supabase.auth.getSession();
-          setIsAuthenticated(!!data.session);
-
-          const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-            setIsAuthenticated(!!session);
-          });
-          unsubscribe = () => listener.subscription.unsubscribe();
-        } catch (error) {
-          console.error('Failed to initialize database:', error);
-          setHasValidDb(false);
-        } finally {
-          setIsInitializing(false);
-          setHasInitialized(true);
-        }
-      };
-
-      init();
-    }
+    // Listen for auth changes
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
 
     return () => {
-      unsubscribe?.();
+      listener.subscription.unsubscribe();
     };
-  }, [hasInitialized]);
+  }, []);
 
   const handleAuthentication = async () => {
     // AdminLogin completes a real sign-in; confirm we actually have a session.
