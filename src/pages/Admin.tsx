@@ -13,15 +13,28 @@ const Admin = () => {
     const valid = hasValidCredentials();
     setHasValidDb(valid);
 
-    // Check current session
-    supabase.auth.getSession().then(({ data }) => {
-      setIsAuthenticated(!!data.session);
+    // Check current session with a timeout to prevent hanging
+    const timeout = setTimeout(() => {
+      console.warn('Auth session check timed out');
       setIsInitializing(false);
-    });
+    }, 5000);
+
+    supabase.auth.getSession()
+      .then(({ data }) => {
+        clearTimeout(timeout);
+        setIsAuthenticated(!!data.session);
+        setIsInitializing(false);
+      })
+      .catch((err) => {
+        clearTimeout(timeout);
+        console.error('Failed to get session:', err);
+        setIsInitializing(false);
+      });
 
     // Listen for auth changes
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
+      if (isInitializing) setIsInitializing(false);
     });
 
     return () => {
@@ -33,6 +46,7 @@ const Admin = () => {
     // AdminLogin completes a real sign-in; confirm we actually have a session.
     const { data } = await supabase.auth.getSession();
     setIsAuthenticated(!!data.session);
+    setIsInitializing(false);
   };
 
   const handleLogout = async () => {
