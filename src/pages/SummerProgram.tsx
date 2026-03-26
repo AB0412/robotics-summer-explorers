@@ -28,7 +28,7 @@ const SummerProgram = () => {
               Summer Robotics Explorers
             </h1>
             <p className="text-xl md:text-2xl mb-8">
-              Intensive 8-week summer robotics program for elementary students
+              Intensive 8-week summer robotics program for elementary, middle, and high school students
             </p>
           </div>
         </div>
