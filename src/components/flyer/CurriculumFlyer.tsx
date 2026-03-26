@@ -238,7 +238,7 @@ const CurriculumFlyer = () => {
 
           {/* Footer */}
           <div className="bg-robotics-navy text-white p-2 text-center print:p-1">
-            <p className="text-xs">© 2025 Bot Venture - VEX Certified Robotics Education</p>
+            <p className="text-xs">© 2026 Bot Venture - VEX Certified Robotics Education</p>
           </div>
         </div>
       </div>
