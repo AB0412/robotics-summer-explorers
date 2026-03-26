@@ -46,6 +46,7 @@ const Admin = () => {
     // AdminLogin completes a real sign-in; confirm we actually have a session.
     const { data } = await supabase.auth.getSession();
     setIsAuthenticated(!!data.session);
+    setIsInitializing(false);
   };
 
   const handleLogout = async () => {
