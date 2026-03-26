@@ -60,6 +60,14 @@ const Header = () => {
     }
   };
 
+  // Handle navigation to summer camp page
+  const handleSummerCampClick = () => {
+    navigate('/summer-program');
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  };
+
   return (
     <header className="bg-robotics-navy text-white">
       <div className="container mx-auto py-4 px-4 flex justify-between items-center">
@@ -89,6 +97,12 @@ const Header = () => {
             className="hover:text-robotics-accent transition-colors"
           >
             Curriculum
+          </button>
+          <button
+            onClick={handleSummerCampClick}
+            className="hover:text-robotics-accent transition-colors"
+          >
+            Summer Camp
           </button>
           <a 
             href="#contact" 
