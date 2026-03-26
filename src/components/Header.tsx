@@ -98,6 +98,12 @@ const Header = () => {
           >
             Curriculum
           </button>
+          <button
+            onClick={handleSummerCampClick}
+            className="hover:text-robotics-accent transition-colors"
+          >
+            Summer Camp
+          </button>
           <a 
             href="#contact" 
             onClick={scrollToSection('contact')} 
