@@ -159,6 +159,37 @@ const SummerProgram = () => {
             </div>
           </div>
           
+          {/* Competition Pathways */}
+          <div className="max-w-4xl mx-auto mb-12">
+            <h2 className="font-display font-bold text-2xl mb-6 text-robotics-navy text-center">
+              Competition Pathways
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-full bg-robotics-lightblue/20 flex items-center justify-center text-robotics-blue">
+                    <Bot className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-display font-bold text-lg text-robotics-navy">VEX IQ Challenge</h3>
+                </div>
+                <p className="text-gray-600">
+                  Entry-level VEX competition for elementary and middle school students. Teams build and program robots to complete a yearly game on a field in cooperation with alliance partners.
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-full bg-robotics-lightblue/20 flex items-center justify-center text-robotics-blue">
+                    <Bot className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-display font-bold text-lg text-robotics-navy">VEX Robotics Competition (VRC)</h3>
+                </div>
+                <p className="text-gray-600">
+                  Middle and high school pathway using advanced VEX systems to design, build, and program larger robots for a new game each season.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <Tabs defaultValue="curriculum" className="max-w-4xl mx-auto">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="curriculum">Curriculum Overview</TabsTrigger>
