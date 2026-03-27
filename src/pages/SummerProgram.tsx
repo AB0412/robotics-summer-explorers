@@ -91,15 +91,15 @@ const SummerProgram = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span>1 class per week — choose one day:</span>
+                </li>
+                <li className="flex items-start gap-2 ml-6">
+                  <CheckCircle2 className="h-5 w-5 text-robotics-blue mt-0.5 flex-shrink-0" />
                   <span>Monday — 12:00 to 1:30 PM</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <li className="flex items-start gap-2 ml-6">
+                  <CheckCircle2 className="h-5 w-5 text-robotics-blue mt-0.5 flex-shrink-0" />
                   <span>Wednesday — 12:00 to 1:30 PM</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>1 class per week</span>
                 </li>
               </ul>
             </div>
