@@ -25,11 +25,11 @@ const ProgramDetails: React.FC = () => {
       <div className="space-y-2 print:space-y-1">
         <div className="border-l-4 border-robotics-blue pl-3 py-1">
           <p className="font-bold text-robotics-navy text-sm print:text-xs">VEX IQ Challenge</p>
-          <p className="text-xs print:text-[10px] text-gray-600">Entry-level competition for elementary and middle school students. Teams build and program robots to complete a yearly game in cooperation with alliance partners.</p>
+          <p className="text-xs print:text-[10px] text-gray-600">An introductory competition designed for elementary and middle school students. Teams collaborate to build and program robots, working with alliance partners to tackle a new game challenge each year.</p>
         </div>
         <div className="border-l-4 border-robotics-accent pl-3 py-1">
           <p className="font-bold text-robotics-navy text-sm print:text-xs">VEX Robotics Competition (VRC)</p>
-          <p className="text-xs print:text-[10px] text-gray-600">Middle and high school pathway using advanced VEX systems to design, build, and program larger robots for a new game each season.</p>
+          <p className="text-xs print:text-[10px] text-gray-600">An advanced track for middle and high school students who design, engineer, and code larger robots using the VEX V5 platform, competing in a fresh game challenge every season.</p>
         </div>
       </div>
     </div>
