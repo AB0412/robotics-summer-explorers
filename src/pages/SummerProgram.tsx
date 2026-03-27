@@ -173,7 +173,7 @@ const SummerProgram = () => {
                   <h3 className="font-display font-bold text-lg text-robotics-navy">VEX IQ Challenge</h3>
                 </div>
                 <p className="text-gray-600">
-                  Entry-level VEX competition for elementary and middle school students. Teams build and program robots to complete a yearly game on a field in cooperation with alliance partners.
+                  An introductory competition designed for elementary and middle school students. Teams collaborate to build and program robots, working together with alliance partners to tackle a new game challenge each year.
                 </p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
@@ -184,7 +184,7 @@ const SummerProgram = () => {
                   <h3 className="font-display font-bold text-lg text-robotics-navy">VEX Robotics Competition (VRC)</h3>
                 </div>
                 <p className="text-gray-600">
-                  Middle and high school pathway using advanced VEX systems to design, build, and program larger robots for a new game each season.
+                  An advanced track for middle and high school students who design, engineer, and code larger robots using the VEX V5 platform, competing in a fresh game challenge every season.
                 </p>
               </div>
             </div>
