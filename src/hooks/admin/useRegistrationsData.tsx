@@ -100,7 +100,7 @@ function normalizeRegistration(reg: any): EnhancedRegistration {
     childGrade: reg.childGrade || reg.childgrade || '',
     schoolName: reg.schoolName || reg.schoolname || '',
     medicalInfo: reg.medicalInfo || reg.medicalinfo || '',
-    programType: 'regular', // Updated to always use 'regular'
+    programType: (reg.programType || reg.programtype || 'regular') as "regular" | "summer-camp-2026",
     preferredBatch: reg.preferredBatch || reg.preferredbatch || '',
     alternateBatch: reg.alternateBatch || reg.alternatebatch || '',
     hasPriorExperience: (reg.hasPriorExperience || reg.haspriorexperience || 'no') as "yes" | "no",
@@ -162,7 +162,7 @@ async function tryMigrateOldRegistrations(
         // Convert old registrations to use 'regular' program type
         const normalizedOldRegistrations = parsedOldRegistrations.map(reg => ({
           ...reg,
-          programType: 'regular' as const
+          programType: (reg.programType || 'regular') as "regular" | "summer-camp-2026"
         })) as EnhancedRegistration[];
         setRegistrations(normalizedOldRegistrations);
       }
