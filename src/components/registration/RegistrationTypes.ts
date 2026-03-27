@@ -16,7 +16,7 @@ export const formSchema = z.object({
   medicalInfo: z.string().optional(),
   
   // 3. Program Type Selection - Updated to accept 'regular'
-  programType: z.enum(['regular'], {
+  programType: z.enum(['regular', 'summer-camp-2026'], {
     required_error: "Please select a program type",
   }),
   
@@ -53,6 +53,7 @@ export type FormValues = z.infer<typeof formSchema>;
 // Program type options - Updated to only include regular
 export const programTypes = [
   { value: "regular", label: "Regular Classes (Aug 2025 - May 2026)" },
+  { value: "summer-camp-2026", label: "Summer Camp - 2026" },
 ];
 
 // Experience level options
