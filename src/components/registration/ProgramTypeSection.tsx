@@ -23,7 +23,8 @@ interface ProgramTypeSectionProps {
 
 // Filter out summer program options
 const availableProgramTypes = [
-  { value: 'regular', label: 'Regular Classes (Aug 2025 - May 2026)' }
+  { value: 'regular', label: 'Regular Classes (Aug 2025 - May 2026)' },
+  { value: 'summer-camp-2026', label: 'Summer Camp - 2026' },
 ];
 
 const ProgramTypeSection = ({ form }: ProgramTypeSectionProps) => {
