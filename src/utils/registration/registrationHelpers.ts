@@ -109,31 +109,61 @@ Volunteer Interest: ${registration.volunteerInterest ? 'Yes' : 'No'}
   `.trim();
 };
 
-// Send confirmation email using the edge function
+// Send confirmation email using the Lovable transactional email system
 export const sendConfirmationEmail = async (registration: Registration): Promise<void> => {
   try {
     console.log('Sending confirmation email for registration:', registration.registrationId);
-    
+
     const registrationSummary = createRegistrationSummary(registration);
-    
-    const { data, error } = await supabase.functions.invoke('send-registration-email', {
+    const adminEmail = 'billoreavinash12@gmail.com';
+
+    const parentSend = supabase.functions.invoke('send-transactional-email', {
       body: {
-        parentEmail: registration.parentEmail,
-        parentName: registration.parentName,
-        childName: registration.childName,
-        registrationId: registration.registrationId,
-        preferredBatch: registration.preferredBatch,
-        registrationSummary: registrationSummary
-      }
+        templateName: 'registration-confirmation',
+        recipientEmail: registration.parentEmail,
+        idempotencyKey: `reg-confirm-${registration.registrationId}`,
+        templateData: {
+          parentName: registration.parentName,
+          childName: registration.childName,
+          registrationId: registration.registrationId,
+          preferredBatch: registration.preferredBatch,
+          programType: registration.programType,
+        },
+      },
     });
 
-    if (error) {
-      console.error('Error calling email function:', error);
-      throw new Error(`Failed to send confirmation email: ${error.message}`);
+    const adminSend = supabase.functions.invoke('send-transactional-email', {
+      body: {
+        templateName: 'registration-admin-notification',
+        recipientEmail: adminEmail,
+        idempotencyKey: `reg-admin-${registration.registrationId}`,
+        templateData: {
+          parentName: registration.parentName,
+          parentEmail: registration.parentEmail,
+          parentPhone: registration.parentPhone,
+          childName: registration.childName,
+          childAge: registration.childAge,
+          childGrade: registration.childGrade,
+          schoolName: registration.schoolName,
+          registrationId: registration.registrationId,
+          programType: registration.programType,
+          preferredBatch: registration.preferredBatch,
+          alternateBatch: registration.alternateBatch,
+          registrationSummary,
+        },
+      },
+    });
+
+    const [parentResult, adminResult] = await Promise.all([parentSend, adminSend]);
+
+    if (parentResult.error) console.error('Error sending parent confirmation:', parentResult.error);
+    if (adminResult.error) console.error('Error sending admin notification:', adminResult.error);
+
+    if (parentResult.error && adminResult.error) {
+      throw new Error('Failed to send confirmation emails');
     }
 
-    console.log('Email function response:', data);
-    console.log(`Confirmation emails sent to: ${registration.parentEmail} and billoreavinash12@gmail.com`);
+    console.log(`Confirmation emails queued to: ${registration.parentEmail} and ${adminEmail}`);
   } catch (error) {
     console.error('Error sending confirmation email:', error);
     throw new Error('Failed to send confirmation email');

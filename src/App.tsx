@@ -11,6 +11,7 @@ const Payments = lazy(() => import('./pages/Payments'));
 const SummerProgram = lazy(() => import('./pages/SummerProgram'));
 const Curriculum = lazy(() => import('./pages/Curriculum'));
 const ScheduleManagement = lazy(() => import('./pages/ScheduleManagement'));
+const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/summer-program" element={<SummerProgram />} />
             <Route path="/curriculum" element={<Curriculum />} />
             <Route path="/schedule-management" element={<ScheduleManagement />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
